@@ -1,0 +1,48 @@
+---
+const today = new Date();
+---
+
+<footer class="bg-gray-50 mt-10">
+  <div class="mx-auto px-3 md:px-8 max-w-screen-xl py-5 md:flex justify-between">
+    <div class="flex items-center justify-center md:justify-start">
+      <svg width="37" height="27" viewBox="0 0 37 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g clip-path="url(#clip0_7879_1304)">
+          <path
+            d="M25.2047 0H24.5218L17.3826 16.3421L9.80873 0H9.43624L0 26.8062H5.52517L10.1191 12.4665L14.8372 22.1555L12.7265 27H18.5L20.9832 20.7344H28.7433L31.2886 27H37.0621L25.2047 0ZM22.7836 16.2775L24.8943 11.0455L27.005 16.2775H22.7836V16.2775Z"
+            fill="#3B3075"></path>
+        </g>
+        <defs>
+          <clipPath id="clip0_7879_1304">
+            <rect width="37" height="27" fill="white"></rect>
+          </clipPath>
+        </defs>
+      </svg>
+
+      <div class="ms-2">
+        &copy; {today.getFullYear()} killki Corporation.
+      </div>
+    </div>
+    <div class="mt-3 md:mt-0 text-center md:text-start">Security | Privacy | terms</div>
+  </div>
+</footer>
+<!-- <style>
+  footer {
+    padding: 2em 1em 6em 1em;
+    background: linear-gradient(var(--gray-gradient)) no-repeat;
+    color: rgb(var(--gray));
+    text-align: center;
+  }
+  .social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    margin-top: 1em;
+  }
+  .social-links a {
+    text-decoration: none;
+    color: rgb(var(--gray));
+  }
+  .social-links a:hover {
+    color: rgb(var(--gray-dark));
+  }
+</style> -->

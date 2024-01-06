@@ -1,0 +1,247 @@
+---
+// import { getRelativeLocaleUrl } from "astro:i18n";
+import BaseHead from "../components/BaseHead.astro";
+import Footer from "../components/Footer.astro";
+import Icons from "../components/Icons.astro";
+import Menu from "../components/Menu.astro";
+import MenuFooter from "../components/MenuFooter.astro";
+import Social from "../components/Social.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
+import type { Locale } from "../data/translations";
+import { translations } from "../data/translations";
+
+const currentLocale: Locale = "es";
+const texts = translations[currentLocale];
+---
+
+<!doctype html>
+<html lang={currentLocale}>
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <!-- <Header title={SITE_TITLE} /> -->
+    <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
+      <svg class="fixed z-[-1] top-[-450px] start-[-300px] opacity-30" width="1020" height="932" viewBox="0 0 1020 932" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.3" filter="url(#filter0_f_8710_4643)">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M864.057 486.614C846.653 541.287 806.82 583.111 770.741 627.698C739.657 666.112 706.529 700.357 667.059 730.064C623.094 763.155 581.632 809.207 526.674 811.397C471.538 813.594 425.235 772.698 379.685 741.515C336.858 712.197 306.364 671.8 269.447 635.304C218.92 585.354 131.721 557.014 121.837 486.614C112.283 418.556 181.643 365.732 224.009 311.657C261.557 263.732 303.468 221.284 355.036 188.966C407.988 155.781 464.867 112.886 526.674 121.978C588.379 131.055 614.616 209.842 671.469 235.515C737.749 265.445 836.532 224.162 880.816 281.9C923.187 337.144 885.182 420.249 864.057 486.614Z"
+            fill="#8873EF"></path>
+        </g>
+        <defs>
+          <filter id="filter0_f_8710_4643" x="0.94458" y="0.740356" width="1019.06" height="930.741" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
+            <feGaussianBlur stdDeviation="60" result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
+          </filter>
+        </defs>
+      </svg>
+
+      <article class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
+        <div class="lg:sticky lg:top-0 lg:h-[100vh] lg:flex lg:flex-col lg:justify-between pt-10">
+          <div>
+            <div class="flex flex-col lg:flex-row">
+              <span class="md:text-xl text-primary-600 font-bold lg:mb-2 order-2">{texts.welcome}</span>
+              <div class="text-start lg:hidden block order-1">
+                <Menu />
+              </div>
+            </div>
+            <h1 class="font-black text-secondary-950 text-4xl md:text-6xl mb-4">{texts.senior}</h1>
+            <span class="text-xl md:text-2xl text-secondary-950 font-bold">{texts.career}</span>
+            <p class="text-secondary-950 mt-2">{texts.presentation}</p>
+          </div>
+
+          <nav class="menu-home">
+            <ul class="[&>*]:mb-2 hidden lg:block">
+              {
+                texts.menu.map((item) => (
+                  <li>
+                    <a class="font-bold text-primary-600" href={"#" + item.path}>
+                      {item.label}
+                    </a>
+                  </li>
+                ))
+              }
+            </ul>
+          </nav>
+
+          <Social />
+        </div>
+        <!-- BODY -->
+        <div class="mt-4 lg:mt-10">
+          <section class="hidden lg:block">
+            <Menu />
+          </section>
+
+          <section id="about" class="mb-7">
+            <p>
+              {texts.profile}
+            </p>
+          </section>
+
+          <section id="experience">
+            {
+              texts.experience.map((items) => {
+                return (
+                  <div class="md:flex lg-14 mb-8">
+                    <div class="me-3 font-bold pt-1 text-secondary-950">{items.startDate}</div>
+                    <div>
+                      <div class="md:flex items-center justify-between mb-3">
+                        <div class="text-lg font-bold text-primary-600 text-shadow">{items.position}</div>
+                        <div class="md:font-bold text-secondary-950">{items.company}</div>
+                      </div>
+
+                      <div class="mb-3">{items.description}</div>
+                      <div>
+                        <ul class="list-disc">{items.tasks && items.tasks.map((task) => <li class="mb-3">{task}</li>)}</ul>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </section>
+          <section id="projects" class="mt-14">
+            {
+              texts.projects.map((item) => {
+                return (
+                  <div class="group relative mb-5 border-primary-600/[0] md:py-4 md:px-4 md:ms-[-16px] border-2 md:hover:border-primary-600/[0.3] rounded-lg flex-col md:flex-row flex transition-all ease-in-out">
+                    <div class="absolute z-[-1] top-[-90px] right-0 opacity-0 group-hover:opacity-50">
+                      <svg width="759" height="430" viewBox="0 0 759 430" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <g opacity="0.3" filter="url(#filter0_f_8757_5886)">
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M614.621 220.721C603.057 235.632 576.591 247.039 552.619 259.2C531.965 269.677 509.955 279.017 483.729 287.119C454.518 296.144 426.969 308.704 390.453 309.302C353.819 309.901 323.054 298.747 292.789 290.242C264.334 282.246 244.073 271.228 219.544 261.274C185.972 247.651 128.035 239.922 121.468 220.721C115.119 202.159 161.204 187.752 189.353 173.003C214.301 159.932 242.149 148.355 276.412 139.541C311.595 130.49 349.387 118.791 390.453 121.27C431.452 123.746 448.885 145.234 486.66 152.236C530.698 160.4 596.332 149.14 625.756 164.888C653.909 179.955 628.657 202.621 614.621 220.721Z"
+                            fill="#8873EF"
+                          />
+                        </g>
+                        <defs>
+                          <filter id="filter0_f_8757_5886" x="0.874512" y="0.932983" width="757.628" height="428.392" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+                            <feGaussianBlur stdDeviation="60" result="effect1_foregroundBlur_8757_5886" />
+                          </filter>
+                        </defs>
+                      </svg>
+                    </div>
+
+                    <div class="mt-4 md:mt-0 order-2 md:order-1 relative rounded-lg overflow-hidden grow-0 shrink-0 w-[130px] h-[130px]">
+                      <div class="group-hover:bg-primary-900/[0] bg-primary-900 mix-blend-hue absolute w-full h-full" />
+                      <img src={"/projects/" + item.image} class="w-100 h-100" alt="" />
+                    </div>
+                    <div class="md:ms-5 order-1 md:order-2">
+                      <h2 class="text-base font-bold text-primary-600 md:text-secondary-950 group-hover:text-primary-600 mb-2">{item.title}</h2>
+                      <p class="text-secondary-950 mb-4">{item.description}</p>
+                      <ul class="flex flex-wrap">
+                        {item.stack.map((tag) => (
+                          <li class="py-1 px-3 mb-2 text-sm text-primary-600 group-hover:bg-primary-600 bg-primary-50 rounded-2xl me-2  group-hover:text-primary-50">{tag}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })
+            }
+          </section>
+
+          <section id="skills" class="mt-14">
+            <div class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-1">
+              {
+                texts.skills.map((item) => {
+                  return (
+                    <div class="mb-8">
+                      <Icons name={item.icon} />
+                      <span class="font-bold block mt-4">{item.title}</span>
+                    </div>
+                  );
+                })
+              }
+            </div>
+          </section>
+
+          <MenuFooter />
+        </div>
+      </article>
+    </main>
+    <Footer />
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const sections = document.querySelectorAll("section"),
+          nav: any = document.querySelector("nav"),
+          navLinks = nav.querySelectorAll("a"),
+          navHeight = nav.offsetHeight;
+
+        window.addEventListener("scroll", function () {
+          const curPos = window.scrollY;
+
+          sections.forEach(function (section) {
+            const top = section.offsetTop - navHeight,
+              bottom = top + section.offsetHeight;
+
+            if (curPos >= top && curPos <= bottom) {
+              navLinks.forEach(function (link: any) {
+                link.classList.remove("active");
+              });
+              sections.forEach(function (sec) {
+                sec.classList.remove("active");
+              });
+
+              section.classList.add("active");
+              nav.querySelector('a[href="#' + section.getAttribute("id") + '"]')?.classList.add("active");
+            }
+          });
+        });
+
+        navLinks.forEach(function (link: any) {
+          link.addEventListener("click", (e: any) => {
+            e.preventDefault();
+            var targetId = link.getAttribute("href"),
+              targetSection = document.querySelector(targetId);
+
+            if (targetSection) {
+              var targetOffsetTop = targetSection.offsetTop - navHeight;
+
+              window.scrollTo({
+                top: targetOffsetTop,
+                behavior: "smooth",
+              });
+            }
+          });
+        });
+      });
+    </script>
+
+    <style lang="scss">
+      .menu-home {
+        & a {
+          position: relative;
+          padding-left: 30px;
+          transition: 0.5s ease-in-out;
+          color: #042b43;
+          &:before {
+            content: "";
+            position: absolute;
+            border: solid 1px #042b43;
+            left: -10px;
+            top: 50%;
+            width: 0;
+            transition: 0.5s ease-in-out;
+            padding-right: 20px;
+          }
+
+          &.active {
+            padding-left: 55px;
+            color: #8873ef;
+            &:before {
+              width: 50px;
+              border: solid 1px #8873ef;
+            }
+          }
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+---
+// Importa la biblioteca 'node-fetch'
+import fetch from "node-fetch";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import MenuFooter from "../../components/MenuFooter.astro";
+import Social from "../../components/Social.astro";
+import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import { converObjectToArray } from "../../utils/gogoleSheets";
+import Content from "./Content";
+
+function getUrlSheets(id: string, gid: number) {
+  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+}
+
+async function fetchDataByUrl(url: string) {
+  return fetch(url)
+    .then((res: any) => res.text())
+    .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
+}
+
+// Usa la función para obtener los datos
+// const data = Astro.fetchContent(getData(Astro.request.params.id));
+const { id } = Astro.params;
+const urlData = getUrlSheets(id, 0);
+const data = await fetchDataByUrl(urlData);
+
+const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
+
+export async function getStaticPaths() {
+  function getRowsAandB(data: any) {
+    const rowsAandB = data.table.rows.map((row: any) => {
+      const columnA = row.c[0].v;
+      const columnB = row.c[1].v;
+      return [columnA, columnB];
+    });
+    return rowsAandB;
+  }
+  const getUrl = "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
+
+  const response = await fetch(getUrl)
+    .then((res: any) => res.text())
+    .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
+  const listIds: any = getRowsAandB(response);
+
+  // Mapea los IDs a objetos con una propiedad `params` que contiene el ID
+  return listIds.map((item: any) => ({
+    params: { id: item[1] },
+  }));
+}
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+  </head>
+  <body>
+    <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
+      <svg class="fixed z-[-1] top-[-450px] start-[-300px] opacity-30" width="1020" height="932" viewBox="0 0 1020 932" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g opacity="0.3" filter="url(#filter0_f_8710_4643)">
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M864.057 486.614C846.653 541.287 806.82 583.111 770.741 627.698C739.657 666.112 706.529 700.357 667.059 730.064C623.094 763.155 581.632 809.207 526.674 811.397C471.538 813.594 425.235 772.698 379.685 741.515C336.858 712.197 306.364 671.8 269.447 635.304C218.92 585.354 131.721 557.014 121.837 486.614C112.283 418.556 181.643 365.732 224.009 311.657C261.557 263.732 303.468 221.284 355.036 188.966C407.988 155.781 464.867 112.886 526.674 121.978C588.379 131.055 614.616 209.842 671.469 235.515C737.749 265.445 836.532 224.162 880.816 281.9C923.187 337.144 885.182 420.249 864.057 486.614Z"
+            fill="#8873EF"></path>
+        </g>
+        <defs>
+          <filter id="filter0_f_8710_4643" x="0.94458" y="0.740356" width="1019.06" height="930.741" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
+            <feGaussianBlur stdDeviation="60" result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
+          </filter>
+        </defs>
+      </svg>
+
+      <div>
+        <!-- {JSON.stringify(listIds)} -->
+        <h1 class="font-black text-secondary-950 text-4xl md:text-5xl mb-12 mt-14">Angular</h1>
+      </div>
+
+      <Content data={columns} client:load />
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
+        <div class="mt-14">
+          <Social />
+        </div>
+        <MenuFooter />
+      </div>
+    </main>
+
+    <Footer />
+  </body>
+</html>
