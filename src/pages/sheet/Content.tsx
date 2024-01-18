@@ -63,7 +63,7 @@ export default function Content({data}: any) {
     
     return (
         <div className="mb-5">
-            <div className=" md:columns-2 lg:columns-4 text-sm gap-4 mb-14">
+            <div className="md:columns-2 lg:columns-4 text-sm gap-4 mb-14">
             { outputArray.map(({title, items}: any, index: number) => {
             return  (<div key={index} className="break-inside-avoid mb-6">
                 <div className="border-b-4 border-primary-600">

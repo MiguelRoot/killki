@@ -188,11 +188,9 @@ export const translations = {
                     position: "Front-end web developer",
                     company: "Avantis",
                     description: "Help companies hire, pay and develop effectively with talented workforce.",
-                    tasks: [
-                        "Migration of management dashboard to Laravel + Angular",
-                        "Web System (dashboard, Ui) for administration Angular",
-                        "App of queries and forms, notifications, login by social networks. Ionic Angular.",
-                    ]
+                    // tasks: [
+                    //     "Migration of management dashboard to Laravel + Angular",
+                    // ]
                 }
             ],
             projects: [

@@ -94,9 +94,6 @@ const texts = translations[currentLocale];
                       </div>
 
                       <div class="mb-3">{items.description}</div>
-                      <div>
-                        <ul class="list-disc">{items.tasks && items.tasks.map((task) => <li class="mb-3">{task}</li>)}</ul>
-                      </div>
                     </div>
                   </div>
                 );
@@ -129,8 +126,8 @@ const texts = translations[currentLocale];
                     </div>
 
                     <div class="mt-4 md:mt-0 order-2 md:order-1 relative rounded-lg overflow-hidden grow-0 shrink-0 w-[130px] h-[130px]">
-                      <div class="group-hover:bg-primary-900/[0] bg-primary-900 mix-blend-hue absolute w-full h-full" />
-                      <img src={"/projects/" + item.image} class="w-100 h-100" alt="" />
+                      <div class="group-hover:bg-primary-900/[0] bg-primary-900 mix-blend-hue absolute w-full h-100 top-1 bottom-1" />
+                      <img src={"/projects/" + item.image} class="w-full h-full" alt="" />
                     </div>
                     <div class="md:ms-5 order-1 md:order-2">
                       <h2 class="text-base font-bold text-primary-600 md:text-secondary-950 group-hover:text-primary-600 mb-2">{item.title}</h2>
