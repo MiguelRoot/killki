@@ -70,7 +70,7 @@ export const translations = {
             welcome: "Hola, mi nombre es",
             senior: "Miguel Angel",
             career: "Frontnd Developer Engineer",
-            presentation: "Disfruto transformar problemas complejos en diseños simples, atractivos e intuitivos. Fuera del ámbito de la programación 👨‍💻, me encontrarás sumergido en videojuegos, disfrutando de la jardinería 🌱 o dedicándome a la práctica deportiva ⛹️‍♀️.",
+            presentation: "Disfruto transformar problemas complejos en diseños simples, atractivos e intuitivos. Fuera del ámbito de la programación 👨‍💻, me encontrarás sumergido en videojuegos, disfrutando de la jardinería 🌱 o dedicándome a la práctica deportiva 🏀.",
             profile: "Con más de 4 años de experiencia en el desarrollo de páginas web y aplicaciones móviles utilizando tecnologías como Ionic, Flutter y Angular. Tuve el privilegio de formar parte en la creación del 'Sistema de selección de docentes' para Adex Datatrade, donde lideré el desarrollo del frontend utilizando Angular. Además, participé en el desarrollo de la aplicación móvil 'Mis Primeros Tres' para Fundación Baltazar y Nicolás, en la que tuve la responsabilidad de desarrollar todo el frontend utilizando Ionic, Angular y Firebase. También formé parte del equipo encargado del desarrollo de la aplicación móvil 'Alerta Vecinos' para la Municipalidad de Santa Maria del Mar, utilizando Flutter y las APIs de Google Maps, entre otras tecnologías.",
             experience: [
                 {

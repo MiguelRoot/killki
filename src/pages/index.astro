@@ -82,6 +82,7 @@ const texts = translations[currentLocale];
           </section>
 
           <section id="experience">
+            <h2 class="font-bold text-xl mb-3 lg:hidden">{texts.menu[1]?.label}</h2>
             {
               texts.experience.map((items) => {
                 return (
@@ -101,6 +102,7 @@ const texts = translations[currentLocale];
             }
           </section>
           <section id="projects" class="mt-14">
+            <h2 class="font-bold text-xl mb-3 lg:hidden">{texts.menu[2]?.label}</h2>
             {
               texts.projects.map((item) => {
                 return (
@@ -145,6 +147,8 @@ const texts = translations[currentLocale];
           </section>
 
           <section id="skills" class="mt-14">
+            <h2 class="font-bold text-xl mb-5 lg:hidden">{texts.menu[3]?.label}</h2>
+
             <div class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-1">
               {
                 texts.skills.map((item) => {
