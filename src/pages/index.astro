@@ -42,13 +42,23 @@ const texts = translations[currentLocale];
       <article class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
         <div class="lg:sticky lg:top-0 lg:h-[100vh] lg:flex lg:flex-col lg:justify-between pt-10">
           <div>
-            <div class="flex flex-col lg:flex-row">
-              <span class="md:text-xl text-primary-600 font-bold lg:mb-2 order-2">{texts.welcome}</span>
-              <div class="text-start lg:hidden block order-1">
-                <Menu />
+            <div class="flex mb-1">
+              <div class="w-[64px] h-[64px] bg-gray-300 rounded-full me-3">
+                <img src="/images/profile_killki.png" alt="miguel killki">
               </div>
+              
+              <div>
+                <!-- <button class="px-4 py-2 mb-1 border leading-[14px] border-gray-500 rounded-full flex items-center bg-gray-200">
+                  <span>No disponible</span>
+                </button> -->
+                <div class="py-1 px-5 me-2 mb-1 text-sm font-medium text-gray-900 focus:outline-none bg-gray-200 rounded-full border border-gray-400 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">No disponible</div>
+                <span class="md:text-xl text-primary-600 font-bold lg:mb-2 order-2">{texts.welcome}</span>
+              </div>
+              <!-- <div class="text-start lg:hidden block order-1">
+                <Menu />
+              </div> -->
             </div>
-            <h1 class="font-black text-secondary-950 text-4xl md:text-6xl mb-4">{texts.senior}</h1>
+            <h1 class="bg-text-title font-black text-secondary-950 text-4xl md:text-6xl mb-4">{texts.senior}</h1>
             <span class="text-xl md:text-2xl text-secondary-950 font-bold">{texts.career}</span>
             <p class="text-secondary-950 mt-2">{texts.presentation}</p>
           </div>
@@ -82,12 +92,12 @@ const texts = translations[currentLocale];
           </section>
 
           <section id="experience">
-            <h2 class="font-bold text-xl mb-3 lg:hidden">{texts.menu[1]?.label}</h2>
+            <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden"><Icons name="porfolio"></Icons> <span class="ms-2">{texts.menu[1]?.label}</span></h2>
             {
               texts.experience.map((items) => {
                 return (
                   <div class="md:flex lg-14 mb-8">
-                    <div class="me-3 font-bold pt-1 text-secondary-950">{items.startDate}</div>
+                    <div class="me-3 pt-1 text-secondary-950 text-sm leading-5 min-w-[88px]">{items.startDate}</div>
                     <div>
                       <div class="md:flex items-center justify-between mb-3">
                         <div class="text-lg font-bold text-primary-600 text-shadow">{items.position}</div>
@@ -102,7 +112,7 @@ const texts = translations[currentLocale];
             }
           </section>
           <section id="projects" class="mt-14">
-            <h2 class="font-bold text-xl mb-3 lg:hidden">{texts.menu[2]?.label}</h2>
+            <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden"><Icons name="code"></Icons>  <span class="ms-2">{texts.menu[2]?.label}</span></h2>
             {
               texts.projects.map((item) => {
                 return (
@@ -147,7 +157,7 @@ const texts = translations[currentLocale];
           </section>
 
           <section id="skills" class="mt-14">
-            <h2 class="font-bold text-xl mb-5 lg:hidden">{texts.menu[3]?.label}</h2>
+            <h2 class="font-bold flex items-center text-xl mb-5 lg:hidden"><Icons name="skills"></Icons>  <span class="ms-2">{texts.menu[3]?.label}</span></h2>
 
             <div class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-1">
               {
@@ -242,6 +252,13 @@ const texts = translations[currentLocale];
             }
           }
         }
+      }
+      .bg-text-title {
+        background: linear-gradient(90deg, #2E2364 0.08%, #32266A 39.51%, #8873EF 99.91%);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 69px;
       }
     </style>
   </body>
