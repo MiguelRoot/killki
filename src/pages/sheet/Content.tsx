@@ -1,16 +1,61 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Editor from "@monaco-editor/react";
+import { converObjectToArray } from "../../utils/gogoleSheets";
+// import { emmetHTML } from "emmet-monaco-es";
+// import * as monaco from "monaco-editor";
 
-export default function Content({ data }: any) {
+// const MyComponent = () => {
+//   const containerRef = useRef(null);
+
+//   useEffect(() => {
+//     if (containerRef.current) {
+//       const myEditor = monaco.editor.create(containerRef.current, {
+//         value: "your code here",
+//         language: "javascript",
+//         automaticLayout: true,
+//       });
+//     }
+//   }, []);
+
+//   return <div id="container" ref={containerRef}></div>;
+// };
+
+// export { MyComponent };
+
+function getUrlSheets(id: string, gid: number) {
+  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+}
+
+async function fetchDataByUrl(url: string) {
+  return fetch(url)
+    .then((res: any) => res.text())
+    .then((json: any) =>
+      JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
+    );
+}
+
+export default function Content({ idSheet }: any) {
   const [content, setContent] = useState<null | any>(null);
   const [active, setActive] = useState<null | string>(null);
   const [activeAudio, setActiveAudio] = useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState(true);
-  const [dataSheet, setdataSheet] = useState(null);
+  const [dataSheet, setdataSheet] = useState<any>(null);
+
+  useEffect(() => {
+    const initFech = async () => {
+      const url = getUrlSheets(idSheet, 0);
+      console.log("id, 🎁🎁", idSheet);
+      const data = await fetchDataByUrl(url);
+      const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
+      setdataSheet(columns);
+      setIsLoading(false);
+    };
+    initFech();
+  }, []);
 
   function transformArray(inputArray: any) {
-    useEffect(() => {}, []);
-
+    if (!inputArray) return [];
     const resultArray = [];
     let currentTitle = null;
     let currentItems = [];
@@ -75,7 +120,7 @@ export default function Content({ data }: any) {
     synth.speak(utterThis);
   }
 
-  const outputArray = transformArray(data);
+  const outputArray = transformArray(dataSheet);
 
   return (
     <div className="mb-5">
@@ -127,7 +172,6 @@ export default function Content({ data }: any) {
       {content && (
         <div className="border-2 relative border-primary-200 rounded-xl p-6">
           {/* absolute top-[-120px] opacity-30 z-[-1] */}
-
           <svg
             width="1247"
             height="513"
@@ -168,11 +212,11 @@ export default function Content({ data }: any) {
               </filter>
             </defs>
           </svg>
-
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-secondary-950 ">
               {content?.subtitle}
             </h3>
+
             {content.description && (
               <div
                 onClick={onStartAudio}
@@ -198,8 +242,21 @@ export default function Content({ data }: any) {
             )}
           </div>
           <div className="grid gap-8 grid-cols-10">
-            <div className="w-100 col-span-7 border bg-white border-gray-100 rounded p-4 overflow-x-auto">
-              <pre>{content?.code}</pre>
+            <div className="w-100 col-span-7 border bg-white border-gray-100 rounded overflow-x-auto">
+              {/* <pre>{}</pre> */}
+              <Editor
+                theme="vs-light"
+                height="50vh"
+                defaultLanguage="javascript"
+                value={content?.code}
+                options={{
+                  minimap: {
+                    enabled: false,
+                  },
+                  glyphMargin: false,
+                  contextmenu: false,
+                }}
+              />
             </div>
             <div className="col-span-3 whitespace-pre-line text-secondary-950">
               {content?.description}

@@ -6,26 +6,26 @@ import Footer from "../../components/Footer.astro";
 import MenuFooter from "../../components/MenuFooter.astro";
 import Social from "../../components/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
-import { converObjectToArray } from "../../utils/gogoleSheets";
+// import { converObjectToArray } from "../../utils/gogoleSheets";
 import Content from "./Content";
 
-function getUrlSheets(id: string, gid: number) {
-  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
-}
+// function getUrlSheets(id: string, gid: number) {
+//   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
+// }
 
-async function fetchDataByUrl(url: string) {
-  return fetch(url)
-    .then((res: any) => res.text())
-    .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
-}
+// async function fetchDataByUrl(url: string) {
+//   return fetch(url)
+//     .then((res: any) => res.text())
+//     .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
+// }
 
 // Usa la función para obtener los datos
 // const data = Astro.fetchContent(getData(Astro.request.params.id));
 const { id } = Astro.params;
-const urlData = getUrlSheets(id, 0);
-const data = await fetchDataByUrl(urlData);
+// const urlData = getUrlSheets(id, 0);
+// const data = await fetchDataByUrl(urlData);
 
-const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
+// const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
 
 export async function getStaticPaths() {
   function getRowsAandB(data: any) {
@@ -78,8 +78,10 @@ export async function getStaticPaths() {
         <!-- {JSON.stringify(listIds)} -->
         <h1 class="font-black text-secondary-950 text-4xl md:text-5xl mb-12 mt-14">Angular</h1>
       </div>
+      <!-- {id} -->
+      <Content idSheet={id} client:load />
 
-      <Content data={columns} client:load />
+      <!-- <MyComponent client:load /> -->
 
       <div class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
         <div class="mt-14">

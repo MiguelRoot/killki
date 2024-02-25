@@ -63,10 +63,15 @@ const skillsList = [
     icon: "wordpress",
     title: "Wordpress",
   },
+  {
+    icon: "prestashop",
+    title: "PrestaShop",
+  },
 ];
 
 export const translations = {
   es: {
+    status: "No disponible",
     welcome: "Hey, soy",
     senior: "Miguel Angel",
     career: "Frontend Developer Engineer",
@@ -143,23 +148,28 @@ export const translations = {
     ],
   },
   en: {
+    status: "Not available",
     welcome: "Hey, I'm",
     senior: "Miguel Angel",
     career: "Frontend Developer Engineer",
     presentation:
-      "I enjoy transforming complex problems into simple, attractive, and intuitive designs. Outside the programming field 👨‍💻, you will find me immersed in video games, enjoying gardening 🌱, or dedicating myself to sports practice ⛹️‍♀️.",
+      "I enjoy transforming complex problems into simple, attractive, and intuitive designs. Outside the programming field 👨‍💻, you will find me immersed in video games, enjoying gardening 🌱, or dedicating myself to sports practice 🏀.",
     profile:
-      "Web developer with more than 5 years of experience in software development. Throughout these years, I have had the privilege of being part of the creation of the Adex Datatrade dashboard, improving efficiency and user experience. I am looking to be part of the frontend developer team contributing my extensive knowledge in Angular.",
+      "With over 4 years of experience in web page and mobile application development using technologies such as Ionic, Flutter, and Angular. I had the privilege of being part of the creation of the 'Teacher Selection System' for Adex Datatrade, where I led the frontend development using Angular. I also participated in the development of the mobile application 'Mis Primeros Tres' for the Baltazar and Nicolás Foundation, where I was responsible for developing the entire frontend using Ionic, Angular, and Firebase. I also formed part of the team responsible for the development of the mobile application 'Alerta Vecinos' for the Municipality of Santa Maria del Mar, using Flutter and Google Maps APIs, among other technologies.",
     experience: [
       {
-        startDate: "08/2019",
-        position: "Front-end web developer",
-        company: "Avantis",
+        startDate: "2022 — Currently...",
+        position: "Frontend web & mobile developer",
+        company: "Avanti Consultores",
         description:
-          "Help companies hire, pay and develop effectively with talented workforce.",
-        // tasks: [
-        //     "Migration of management dashboard to Laravel + Angular",
-        // ]
+          "Responsible for developing the frontend of web and mobile platforms using technologies such as Angular, Redux, Ionic, (HTML, Typescript, JavaScript, CSS, Sass...). I have carried out projects such as:",
+      },
+      {
+        startDate: "2019 — 2021",
+        position: "Frontend web developer",
+        company: "Municialidad de S.A.",
+        description:
+          "Responsible for maintaining the municipal web systems, using technologies such as PHP, Java, (HTML, Typescript, JavaScript, CSS, Sass...)",
       },
     ],
     projects: [
