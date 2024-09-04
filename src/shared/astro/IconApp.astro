@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface IconProps {
+  name: string;
+  size?: "small" | "large" | "default" | string;
+}
+const { name = "", size = "default" }: IconProps = Astro.props as IconProps;
+
+function getSize(size: IconProps["size"]): string {
+  const sizeAsNumber = Number(size);
+  if (!isNaN(sizeAsNumber)) {
+    return `${sizeAsNumber}px`;
+  } else {
+    switch (size) {
+      case "small":
+        return "16px";
+      case "large":
+        return "48px";
+      default:
+        return "24px"; // Default size
+    }
+  }
+}
+
+const iconSize: string = getSize(size);
+---
+
+{(<Icon name={name} width={iconSize} height={iconSize} />)}

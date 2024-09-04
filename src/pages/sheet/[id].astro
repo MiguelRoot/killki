@@ -7,7 +7,8 @@ import MenuFooter from "../../components/MenuFooter.astro";
 import Social from "../../components/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 // import { converObjectToArray } from "../../utils/gogoleSheets";
-import Content from "./Content";
+// import Content from "./Content";
+import CodeEditor from "./EditCode";
 
 // function getUrlSheets(id: string, gid: number) {
 //   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
@@ -21,7 +22,9 @@ import Content from "./Content";
 
 // Usa la función para obtener los datos
 // const data = Astro.fetchContent(getData(Astro.request.params.id));
-const { id } = Astro.params;
+
+// const { id } = Astro.params; <------------------------
+
 // const urlData = getUrlSheets(id, 0);
 // const data = await fetchDataByUrl(urlData);
 
@@ -36,11 +39,14 @@ export async function getStaticPaths() {
     });
     return rowsAandB;
   }
-  const getUrl = "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
+  const getUrl =
+    "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
 
   const response = await fetch(getUrl)
     .then((res: any) => res.text())
-    .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
+    .then((json: any) =>
+      JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
+    );
   const listIds: any = getRowsAandB(response);
 
   // Mapea los IDs a objetos con una propiedad `params` que contiene el ID
@@ -57,7 +63,14 @@ export async function getStaticPaths() {
   </head>
   <body>
     <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
-      <svg class="fixed z-[-1] top-[-450px] start-[-300px] opacity-30" width="1020" height="932" viewBox="0 0 1020 932" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        class="fixed z-[-1] top-[-450px] start-[-300px] opacity-30"
+        width="1020"
+        height="932"
+        viewBox="0 0 1020 932"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <g opacity="0.3" filter="url(#filter0_f_8710_4643)">
           <path
             fill-rule="evenodd"
@@ -66,20 +79,38 @@ export async function getStaticPaths() {
             fill="#8873EF"></path>
         </g>
         <defs>
-          <filter id="filter0_f_8710_4643" x="0.94458" y="0.740356" width="1019.06" height="930.741" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <filter
+            id="filter0_f_8710_4643"
+            x="0.94458"
+            y="0.740356"
+            width="1019.06"
+            height="930.741"
+            filterUnits="userSpaceOnUse"
+            color-interpolation-filters="sRGB"
+          >
             <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
-            <feGaussianBlur stdDeviation="60" result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="BackgroundImageFix"
+              result="shape"></feBlend>
+            <feGaussianBlur
+              stdDeviation="60"
+              result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
           </filter>
         </defs>
       </svg>
 
       <div>
         <!-- {JSON.stringify(listIds)} -->
-        <h1 class="font-black text-secondary-950 text-4xl md:text-5xl mb-12 mt-14">Angular</h1>
+        <h1 class="font-black text-primary-0 text-4xl md:text-5xl mb-12 mt-14">
+          Angular
+        </h1>
       </div>
       <!-- {id} -->
-      <Content idSheet={id} client:load />
+      <!-- <Content idSheet={id} client:load /> -->
+
+      <CodeEditor client:only />
 
       <!-- <MyComponent client:load /> -->
 

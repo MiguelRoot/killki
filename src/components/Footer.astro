@@ -1,11 +1,21 @@
 ---
+// import IconApp from "../shared/astro/IconApp.astro";
+
 const today = new Date();
 ---
 
 <footer class="bg-gray-50 mt-10">
-  <div class="mx-auto px-3 md:px-8 max-w-screen-xl py-5 md:flex justify-between">
+  <div
+    class="mx-auto px-3 md:px-8 max-w-screen-xl py-5 md:flex justify-between"
+  >
     <div class="flex items-center justify-center md:justify-start">
-      <svg width="37" height="27" viewBox="0 0 37 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width="37"
+        height="27"
+        viewBox="0 0 37 27"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
         <g clip-path="url(#clip0_7879_1304)">
           <path
             d="M25.2047 0H24.5218L17.3826 16.3421L9.80873 0H9.43624L0 26.8062H5.52517L10.1191 12.4665L14.8372 22.1555L12.7265 27H18.5L20.9832 20.7344H28.7433L31.2886 27H37.0621L25.2047 0ZM22.7836 16.2775L24.8943 11.0455L27.005 16.2775H22.7836V16.2775Z"
@@ -19,7 +29,13 @@ const today = new Date();
       </svg>
 
       <div class="mx-2">
-        <svg width="24" height="28" viewBox="0 0 24 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg
+          width="24"
+          height="28"
+          viewBox="0 0 24 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
           <g clip-path="url(#clip0_8901_672)">
             <path
               d="M23.4317 20.4566C20.5901 24.9741 15.5191 27.9574 9.7049 27.9574C6.07649 27.9574 2.71037 26.764 0.0437012 24.8036C0.48086 17.3881 5.46447 7.84167 11.0164 7.84167C15.6503 7.88429 21.377 13.2968 23.4317 20.4566Z"
@@ -57,11 +73,17 @@ const today = new Date();
         </svg>
       </div>
 
+      <!-- <div>
+        <IconApp name="code" size="small" />
+      </div> -->
+
       <div class="ms-1">
         &copy; {today.getFullYear()} killki Corporation.
       </div>
     </div>
-    <div class="mt-3 md:mt-0 text-center md:text-start">Security | Privacy | terms</div>
+    <div class="mt-3 md:mt-0 text-center md:text-start">
+      Security | Privacy | terms
+    </div>
   </div>
 </footer>
 <!-- <style>

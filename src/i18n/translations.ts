@@ -21,7 +21,11 @@ const skillsList = [
   },
   {
     icon: "reactjs",
-    title: "ReactJS",
+    title: "ReactJs",
+  },
+  {
+    icon: "reactjs",
+    title: "React Native",
   },
   {
     icon: "mongodb",
@@ -31,10 +35,10 @@ const skillsList = [
     icon: "figma",
     title: "Figma",
   },
-  {
-    icon: "flutter",
-    title: "Flutter",
-  },
+  // {
+  //   icon: "flutter",
+  //   title: "Flutter",
+  // },
   {
     icon: "github",
     title: "Git/Github",
@@ -43,10 +47,10 @@ const skillsList = [
     icon: "jest",
     title: "Jest",
   },
-  {
-    icon: "dart",
-    title: "Dart",
-  },
+  // {
+  //   icon: "dart",
+  //   title: "Dart",
+  // },
   {
     icon: "redux",
     title: "Redux",
@@ -64,8 +68,8 @@ const skillsList = [
     title: "Wordpress",
   },
   {
-    icon: "prestashop",
-    title: "PrestaShop",
+    icon: "odoo",
+    title: "Odoo",
   },
 ];
 
