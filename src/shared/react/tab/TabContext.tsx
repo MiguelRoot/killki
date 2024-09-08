@@ -10,14 +10,14 @@ const TabContext = createContext<TabContextProps | undefined>(undefined);
 
 interface TabProviderProps {
   children: ReactNode;
-  defaultTab: string;
+  defaultTab: string | undefined;
 }
 
 export const TabProvider: React.FC<TabProviderProps> = ({
   children,
   defaultTab,
 }) => {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab);
+  const [activeTab, setActiveTab] = useState<string>(defaultTab || "");
 
   return (
     <TabContext.Provider value={{ activeTab, setActiveTab }}>

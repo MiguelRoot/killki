@@ -1,0 +1,51 @@
+/* Estilos básicos del dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+  padding-top: 5px;
+  margin-left: 10px;
+}
+
+.dropdown-toggle {
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background-color: rgb(255 255 255 / 60%);
+  box-shadow: 4px 8px 41px rgba(0, 0, 0, 0.08);
+  padding: 8px;
+  z-index: 1;
+  min-width: 160px;
+  border-radius: 8px;
+  backdrop-filter: blur(6px);
+  border: 0.04rem solid #eeeeee;
+  font-weight: 400;
+}
+
+.dropdown-menu-left {
+  left: 0;
+}
+
+.dropdown-menu-right {
+  right: 0;
+}
+
+.dropdown-menu .item {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.dropdown-menu .item:hover {
+  background-color: rgba(210, 210, 210, 0.2);
+}
+.border-hr-menu {
+  margin: 4px 0px;
+  border-top: 1px dashed #eeeeee;
+}
+
+.dropdown-menu button {
+  width: 100%;
+}

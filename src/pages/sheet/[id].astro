@@ -1,14 +1,16 @@
 ---
 // Importa la biblioteca 'node-fetch'
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 import BaseHead from "../../components/BaseHead.astro";
 import Footer from "../../components/Footer.astro";
 import MenuFooter from "../../components/MenuFooter.astro";
 import Social from "../../components/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
+import Content from "./Content";
 // import { converObjectToArray } from "../../utils/gogoleSheets";
 // import Content from "./Content";
-import CodeEditor from "./EditCode";
+// import { AppEditor } from "./EditCode";
+import { LISTPAGESID } from "./listPageId";
 
 // function getUrlSheets(id: string, gid: number) {
 //   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
@@ -23,7 +25,7 @@ import CodeEditor from "./EditCode";
 // Usa la función para obtener los datos
 // const data = Astro.fetchContent(getData(Astro.request.params.id));
 
-// const { id } = Astro.params; <------------------------
+const { id } = Astro.params;
 
 // const urlData = getUrlSheets(id, 0);
 // const data = await fetchDataByUrl(urlData);
@@ -31,27 +33,29 @@ import CodeEditor from "./EditCode";
 // const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
 
 export async function getStaticPaths() {
-  function getRowsAandB(data: any) {
-    const rowsAandB = data.table.rows.map((row: any) => {
-      const columnA = row.c[0].v;
-      const columnB = row.c[1].v;
-      return [columnA, columnB];
-    });
-    return rowsAandB;
-  }
-  const getUrl =
-    "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
+  // function getRowsAandB(data: any) {
+  //   const rowsAandB = data.table.rows.map((row: any) => {
+  //     const columnA = row.c[0].v;
+  //     const columnB = row.c[1].v;
+  //     return [columnA, columnB];
+  //   });
+  //   return rowsAandB;
+  // }
+  // const getUrl =
+  //   "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
 
-  const response = await fetch(getUrl)
-    .then((res: any) => res.text())
-    .then((json: any) =>
-      JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
-    );
-  const listIds: any = getRowsAandB(response);
+  // const response = await fetch(getUrl)
+  //   .then((res: any) => res.text())
+  //   .then((json: any) =>
+  //     JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
+  //   );
+  // const listIds: any = getRowsAandB(response);
+
+  // LISTPAGESID
 
   // Mapea los IDs a objetos con una propiedad `params` que contiene el ID
-  return listIds.map((item: any) => ({
-    params: { id: item[1] },
+  return LISTPAGESID.map((item: any) => ({
+    params: { id: item.pageId },
   }));
 }
 ---
@@ -108,9 +112,7 @@ export async function getStaticPaths() {
         </h1>
       </div>
       <!-- {id} -->
-      <!-- <Content idSheet={id} client:load /> -->
-
-      <CodeEditor client:only />
+      <Content idSheet={id} client:load />
 
       <!-- <MyComponent client:load /> -->
 

@@ -16,3 +16,7 @@
   background: var(--gradient);
   border-radius: 3px;
 }
+
+.g-border-b-4::before {
+  height: 4px;
+}

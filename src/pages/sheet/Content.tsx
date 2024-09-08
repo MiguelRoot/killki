@@ -1,38 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import Editor from "@monaco-editor/react";
-import { converObjectToArray } from "../../utils/gogoleSheets";
-// import { emmetHTML } from "emmet-monaco-es";
-// import * as monaco from "monaco-editor";
-
-// const MyComponent = () => {
-//   const containerRef = useRef(null);
-
-//   useEffect(() => {
-//     if (containerRef.current) {
-//       const myEditor = monaco.editor.create(containerRef.current, {
-//         value: "your code here",
-//         language: "javascript",
-//         automaticLayout: true,
-//       });
-//     }
-//   }, []);
-
-//   return <div id="container" ref={containerRef}></div>;
-// };
-
-// export { MyComponent };
-
-function getUrlSheets(id: string, gid: number) {
-  return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
-}
-
-async function fetchDataByUrl(url: string) {
-  return fetch(url)
-    .then((res: any) => res.text())
-    .then((json: any) =>
-      JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
-    );
-}
+import {
+  aggregateData,
+  fetchDataByUrl,
+  getUrlSheets,
+  googleSheetData,
+} from "../../shared/react/sheets/googleSheetData";
+import { AppEditor } from "./EditCode";
 
 export default function Content({ idSheet }: any) {
   const [content, setContent] = useState<null | any>(null);
@@ -45,65 +18,18 @@ export default function Content({ idSheet }: any) {
   useEffect(() => {
     const initFech = async () => {
       const url = getUrlSheets(idSheet, 0);
-      console.log("id, 🎁🎁", idSheet);
       const data = await fetchDataByUrl(url);
-      const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
+      console.log("data, 🎁🎁", data);
+      const columns = googleSheetData(data, 0, ["A", "B", "C"]);
+      console.log("dataSheet, 🎁🎁", columns);
       setdataSheet(columns);
       setIsLoading(false);
     };
     initFech();
   }, []);
 
-  function transformArray(inputArray: any) {
-    if (!inputArray) return [];
-    const resultArray = [];
-    let currentTitle = null;
-    let currentItems = [];
-
-    for (const row of inputArray) {
-      const firstCell = row[0];
-
-      if (firstCell === "$") {
-        // If the row starts with '$', it is a title row
-        if (currentTitle !== null) {
-          // Save the previous title and items
-          resultArray.push({
-            title: currentTitle,
-            items: currentItems,
-          });
-        }
-
-        // Set the new title
-        currentTitle = row[1];
-        // Reset the items array
-        currentItems = [];
-      } else {
-        // If the row doesn't start with '$', it is an item row
-        const item = {
-          subtitle: row[1],
-          description: row[2],
-          code: row[3],
-        };
-
-        // Add the item to the current items array
-        currentItems.push(item);
-      }
-    }
-
-    // Add the last title and items
-    if (currentTitle !== null) {
-      resultArray.push({
-        title: currentTitle,
-        items: currentItems,
-      });
-    }
-
-    return resultArray;
-  }
-
   function handleActive(index: string, contentCode: any) {
     setActive(index);
-    // setActiveChild(indexChild);
     setContent(contentCode);
   }
 
@@ -120,7 +46,18 @@ export default function Content({ idSheet }: any) {
     synth.speak(utterThis);
   }
 
-  const outputArray = transformArray(dataSheet);
+  const titleCase = (str: string) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const outputArray = aggregateData(dataSheet, { title: "#" }, [
+    "subtitle",
+    "code",
+  ]);
 
   return (
     <div className="mb-5">
@@ -128,15 +65,15 @@ export default function Content({ idSheet }: any) {
         {outputArray.map(({ title, items }: any, index: number) => {
           return (
             <div key={index} className="break-inside-avoid mb-6">
-              <div className="border-b-4 border-primary-600">
-                <span className="text-white pb-1 pt-2 px-4 font-bold bg-primary-600 rounded-t-md  rounded-sm">
+              <div className="g-border-b">
+                <span className="text-white inline-block pb-1 pt-2 px-4 font-bold bg-primary-0 rounded-t-md  rounded-sm">
                   {title}
                 </span>
               </div>
-              <ul className=" [&>*:nth-child(even)]:bg-primary-200">
+              <ul className=" [&>*:nth-child(even)]:bg-primary-100">
                 {items.map(
                   (
-                    { subtitle, description, code }: any,
+                    { subtitle, description = null, code }: any,
                     indexChild: number
                   ) => {
                     return (
@@ -144,7 +81,7 @@ export default function Content({ idSheet }: any) {
                         key={indexChild}
                         className={
                           active === index.toString() + indexChild.toString()
-                            ? "text-white font-bold px-3 py-1 !bg-primary-700 cursor-pointer text-shadow  rounded-sm"
+                            ? "text-white font-bold px-3 py-1 !bg-secondary-0 cursor-pointer text-shadow  rounded-sm"
                             : "" + "font-bold px-3 py-1 cursor-pointer"
                         }
                         onClick={() =>
@@ -170,8 +107,7 @@ export default function Content({ idSheet }: any) {
       </div>
 
       {content && (
-        <div className="border-2 relative border-primary-200 rounded-xl p-6">
-          {/* absolute top-[-120px] opacity-30 z-[-1] */}
+        <div className="relative">
           <svg
             width="1247"
             height="513"
@@ -214,7 +150,7 @@ export default function Content({ idSheet }: any) {
           </svg>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-2xl font-bold text-secondary-950 ">
-              {content?.subtitle}
+              {titleCase(content?.subtitle)}
             </h3>
 
             {content.description && (
@@ -241,27 +177,8 @@ export default function Content({ idSheet }: any) {
               </div>
             )}
           </div>
-          <div className="grid gap-8 grid-cols-10">
-            <div className="w-100 col-span-7 border bg-white border-gray-100 rounded overflow-x-auto">
-              {/* <pre>{}</pre> */}
-              <Editor
-                theme="vs-light"
-                height="50vh"
-                defaultLanguage="javascript"
-                value={content?.code}
-                options={{
-                  minimap: {
-                    enabled: false,
-                  },
-                  glyphMargin: false,
-                  contextmenu: false,
-                }}
-              />
-            </div>
-            <div className="col-span-3 whitespace-pre-line text-secondary-950">
-              {content?.description}
-            </div>
-          </div>
+
+          <AppEditor dataCode={content.code} />
         </div>
       )}
     </div>

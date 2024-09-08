@@ -1,41 +1,48 @@
 ---
 import { i18n } from "../i18n";
+import { LISTPAGESID } from "../pages/sheet/listPageId";
 // import type { Locale } from "../i18n/translations";
 // import { translations } from "../i18n/translations";
 
 // const currentLocale: Locale = "es";
 // const texts = translations[currentLocale];
 
-const { currentLocale } = Astro
+const { currentLocale } = Astro;
 
 const texts = i18n(currentLocale);
 
-function getRowsAandB(data: any) {
-  const rowsAandB = data.table.rows.map((row: any) => {
-    const columnA = row.c[0].v;
-    const columnB = row.c[1].v;
-    return [columnA, columnB];
-  });
-  return rowsAandB;
-}
+// function getRowsAandB(data: any) {
+//   const rowsAandB = data.table.rows.map((row: any) => {
+//     const columnA = row.c[0].v;
+//     const columnB = row.c[1].v;
+//     return [columnA, columnB];
+//   });
+//   return rowsAandB;
+// }
 
-const getUrl = "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
+// const getUrl =
+//   "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
 
-const response = await fetch(getUrl)
-  .then((res: any) => res.text())
-  .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
-const listIds: any = getRowsAandB(response);
+// const response = await fetch(getUrl)
+//   .then((res: any) => res.text())
+//   .then((json: any) =>
+//     JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
+//   );
+// const listIds: any = getRowsAandB(response);
 ---
 
 <div class="mt-14 columns-2 md:grid md:grid-cols-3">
   <div class="break-inside-avoid">
     <h4 class="font-bold mb-2">Secciones</h4>
     <ul class="[&>*]:mb-2">
-      <li><a href="/">{currentLocale === 'en' ? 'Home': 'Inicio'}</a></li>
+      <li><a href="/">{currentLocale === "en" ? "Home" : "Inicio"}</a></li>
       {
         texts.menu.map((item) => (
           <li>
-            <a class="text-secondary-950" href={`${currentLocale === 'en'? '/en': ''}/#${item.path}`}>
+            <a
+              class="text-secondary-950"
+              href={`${currentLocale === "en" ? "/en" : ""}/#${item.path}`}
+            >
               {item.label}
             </a>
           </li>
@@ -48,10 +55,10 @@ const listIds: any = getRowsAandB(response);
     <h4 class="font-bold mb-2">Cheatsheet</h4>
     <ul class="[&>*]:mb-2">
       {
-        listIds.map((item: any) => (
+        LISTPAGESID.map((item: any) => (
           <li>
-            <a class="text-secondary-950" href={"/sheet/" + item[1]}>
-              {item[0]}
+            <a class="text-secondary-950" href={"/sheet/" + item.pageId}>
+              {item.title}
             </a>
           </li>
         ))

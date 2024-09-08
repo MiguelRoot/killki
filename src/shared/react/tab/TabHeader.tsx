@@ -14,7 +14,7 @@ const TabHeader: FC<TabHeaderProps> = ({ value, children }) => {
     <div
       onClick={() => setActiveTab(value)}
       // style={value === activeTab ? activeTabHeaderStyle : tabHeaderStyle}
-      className={`p-2 rounded-[4px] text-primary-600 min-w-[70px] text-center font-bold cursor-pointer ${
+      className={`flex  items-center justify-center py-[8px] px-4 rounded-[4px] text-primary-600 min-w-[80px] font-bold cursor-pointer ${
         value === activeTab ? "bg-primary-600 text-white" : ""
       }`}
     >
@@ -22,21 +22,5 @@ const TabHeader: FC<TabHeaderProps> = ({ value, children }) => {
     </div>
   );
 };
-
-// Styles
-// const tabHeaderStyle: React.CSSProperties = {
-//   padding: "10px",
-//   textAlign: "center",
-//   cursor: "pointer",
-//   // backgroundColor: "#fff",
-//   borderBottom: "1px solid rgba(0,0,0,0.15)",
-// };
-
-// const activeTabHeaderStyle: React.CSSProperties = {
-//   ...tabHeaderStyle,
-//   backgroundColor: "#ccc",
-//   borderBottom: "none",
-//   cursor: "default",
-// };
 
 export default TabHeader;
