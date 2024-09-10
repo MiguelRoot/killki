@@ -3,8 +3,8 @@ body {
   font-family: "Atkinson", sans-serif;
   font-size: 1em;
   line-height: 1.5;
-  margin: 10px;
-  padding: 0;
+  // margin: 30px;
+  padding: 30px;
 }
 `;
 

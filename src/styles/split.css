@@ -26,6 +26,7 @@
   cursor: col-resize;
   background-repeat: no-repeat;
   background-position: 50%;
+  /* width: 0px !important; */
 }
 
 .gutter.gutter-vertical {

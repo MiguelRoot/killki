@@ -47,11 +47,7 @@ export default function Content({ idSheet }: any) {
   }
 
   const titleCase = (str: string) => {
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
+    return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
   const outputArray = aggregateData(dataSheet, { title: "#" }, [
