@@ -1,6 +1,7 @@
 // TabContent.js
 import React from "react";
-import { useTabContext } from "./TabContext";
+import { useTabStore } from "./TabContext";
+// import { useTabContext } from "./TabContext";
 
 interface TabContentProps {
   value: string;
@@ -8,7 +9,8 @@ interface TabContentProps {
 }
 
 const TabContent: React.FC<TabContentProps> = ({ value, children }) => {
-  const { activeTab } = useTabContext();
+  // const { activeTab } = useTabContext();
+  const { activeTab, setActiveTab } = useTabStore();
 
   return (
     <div style={{ display: value === activeTab ? "block" : "none" }}>

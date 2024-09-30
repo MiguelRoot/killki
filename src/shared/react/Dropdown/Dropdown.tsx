@@ -20,6 +20,7 @@ interface DropdownProps {
 
 interface DropdownToggleProps {
   children: ReactNode;
+  className?: string;
 }
 
 interface DropdownMenuProps {
@@ -78,7 +79,7 @@ const Dropdown: React.FC<DropdownProps> & {
 };
 
 // Subcomponente Toggle
-Dropdown.Toggle = ({ children }) => {
+Dropdown.Toggle = ({ children, className }) => {
   const context = useContext(DropdownContext);
   if (!context) {
     throw new Error("Dropdown.Toggle must be used within a Dropdown");
@@ -87,7 +88,7 @@ Dropdown.Toggle = ({ children }) => {
   return (
     <button
       onClick={toggleDropdown}
-      className={`transform-gpu dropdown-toggle ${isOpen ? "-rotate-90" : ""}`}
+      className={`transform-gpu dropdown-toggle ${isOpen ? className : ""}`}
     >
       {children}
     </button>

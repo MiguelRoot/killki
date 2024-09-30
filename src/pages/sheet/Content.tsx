@@ -15,13 +15,13 @@ export default function Content({ idSheet }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [dataSheet, setdataSheet] = useState<any>(null);
 
+  const boxcodeRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const initFech = async () => {
       const url = getUrlSheets(idSheet, 0);
       const data = await fetchDataByUrl(url);
-      console.log("data, 🎁🎁", data);
       const columns = googleSheetData(data, 0, ["A", "B", "C"]);
-      console.log("dataSheet, 🎁🎁", columns);
       setdataSheet(columns);
       setIsLoading(false);
     };
@@ -32,6 +32,17 @@ export default function Content({ idSheet }: any) {
     setActive(index);
     setContent(contentCode);
   }
+
+  const handleScroll = () => {
+    setTimeout(() => {
+      if (boxcodeRef.current) {
+        boxcodeRef.current.scrollIntoView({
+          behavior: "smooth", // Desplazamiento suave
+          block: "start", // Alineación al principio del elemento
+        });
+      }
+    }, 200);
+  };
 
   function onStartAudio() {
     if (activeAudio) {
@@ -80,7 +91,8 @@ export default function Content({ idSheet }: any) {
                             ? "text-white font-bold px-3 py-1 !bg-secondary-0 cursor-pointer text-shadow  rounded-sm"
                             : "" + "font-bold px-3 py-1 cursor-pointer"
                         }
-                        onClick={() =>
+                        onClick={() => {
+                          handleScroll();
                           handleActive(
                             index.toString() + indexChild.toString(),
                             {
@@ -88,8 +100,8 @@ export default function Content({ idSheet }: any) {
                               description,
                               code,
                             }
-                          )
-                        }
+                          );
+                        }}
                       >
                         {subtitle}
                       </li>
@@ -144,10 +156,13 @@ export default function Content({ idSheet }: any) {
               </filter>
             </defs>
           </svg>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-2xl font-bold text-secondary-950 ">
+          <div
+            ref={boxcodeRef}
+            className="boxcode flex items-center justify-between mb-3"
+          >
+            {/* <h3 className="text-2xl font-bold text-secondary-950 ">
               {titleCase(content?.subtitle)}
-            </h3>
+            </h3> */}
 
             {content.description && (
               <div
@@ -174,7 +189,10 @@ export default function Content({ idSheet }: any) {
             )}
           </div>
 
-          <AppEditor dataCode={content.code} />
+          <AppEditor
+            dataCode={content.code}
+            title={titleCase(content?.subtitle)}
+          />
         </div>
       )}
     </div>

@@ -1,96 +1,55 @@
 import { useState } from "react";
 
-interface Language {
+// interface Language {
+//   title: string;
+//   active: boolean;
+//   content: string;
+//   code: string;
+//   parse: string | null;
+// }
+
+// export interface LanguageGroup {
+//   [key: string]: Language;
+// }
+
+type CodeOption = {
+  title: string;
+  code: string;
+};
+
+type Language = {
   title: string;
   active: boolean;
   content: string;
   code: string;
-  parse: string | null;
-}
+  codes: CodeOption[];
+};
 
-export interface LanguageGroup {
-  [key: string]: Language;
-}
-
-// data object default:
-// const htmlGroup = useGroupState({
-//   html: {
-//     title: "HTML",
-//     active: true,
-//     content: "",
-//     code: "html",
-//     parse: null,
-//   },
-//   markdown: {
-//     title: "MD",
-//     active: false,
-//     content: "",
-//     code: "markdown",
-//     parse: "markdown",
-//   },
-// });
-
-// const cssGroup = useGroupState({
-//   css: {
-//     title: "CSS",
-//     active: true,
-//     content: "",
-//     code: "css",
-//     parse: null,
-//   },
-//   scss: {
-//     title: "SCSS",
-//     active: false,
-//     content: "",
-//     code: "scss",
-//     parse: "sass",
-//   },
-// });
-
-// const jsGroup = useGroupState({
-//   javascript: {
-//     title: "JS",
-//     active: true,
-//     content: "",
-//     code: "javascript",
-//     parse: null,
-//   },
-//   typescript: {
-//     title: "TS",
-//     active: false,
-//     content: "",
-//     code: "typescript",
-//     parse: "typescript",
-//   },
-// });
+// export interface LanguageGroup {
+//   [key: string]: Language;
+// }
 
 // fin data object default
 
-export const useGroupState = (initialState: LanguageGroup) => {
-  const [languages, setLanguages] = useState<LanguageGroup>(initialState);
+export const useGroupState = (initialState: Language) => {
+  const [languages, setLanguages] = useState<Language>(initialState);
 
   const toggleActive = (languageId: string) => {
     setLanguages((prevLanguages) => {
-      const updatedGroup: LanguageGroup = Object.keys(prevLanguages).reduce(
-        (acc, key) => {
-          if (key === languageId) {
-            const prevLanguage = prevLanguages[key];
-            if (prevLanguage) {
-              acc[key] = {
-                ...prevLanguage,
-                active: !prevLanguage.active,
-              };
-            }
-          } else {
-            const prevLanguage = prevLanguages[key];
-            if (prevLanguage) {
-              acc[key] = { ...prevLanguage, active: false };
-            }
-          }
-          return acc;
-        },
-        {} as LanguageGroup
-      );
+      if (key === languageId) {
+        const prevLanguage = prevLanguages[key];
+        if (prevLanguage) {
+          acc[key] = {
+            ...prevLanguage,
+            active: !prevLanguage.active,
+          };
+        }
+      } else {
+        const prevLanguage = prevLanguages[key];
+        if (prevLanguage) {
+          acc[key] = { ...prevLanguage, active: false };
+        }
+      }
 
       return updatedGroup;
     });

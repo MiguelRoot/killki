@@ -1,6 +1,7 @@
 /* style test */
 .wrap {
   display: flex;
+  height: 100%;
 }
 .sr-only {
   border: 0;
@@ -61,3 +62,7 @@
   background-color: #f9f9f9;
   margin-top: 5px;
 }
+
+/* .fuldiv * {
+  height: 100%;
+} */

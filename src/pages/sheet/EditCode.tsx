@@ -2,41 +2,47 @@ import { useState, useEffect, type FC, useRef } from "react";
 import { encode, decode } from "js-base64";
 import Split from "react-split";
 import Editor from "@monaco-editor/react";
-import { TabProvider, useTabContext } from "../../shared/react/tab/TabContext";
 import TabContent from "../../shared/react/tab/TabContent";
 import TabHeader from "../../shared/react/tab/TabHeader";
 import IconReact from "../../shared/react/icon/IconApp";
-import { useGroupState, type LanguageGroup } from "./groupStateHook";
 import Dropdown from "../../shared/react/Dropdown/Dropdown";
 import { marked } from "marked";
 import { styleBase, styleMarkDown } from "./defaultStyle";
+import useMenuItem, { type MenuItemType } from "./useMenuItem";
+import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
+import { useFullscreenStore } from "./editor/useFullscreen";
+import { useTabStore } from "../../shared/react/tab/TabContext";
 interface ComponentThatSetsHtmlProps {
   updateHtml: (newHtml: string) => void;
   defaultLanguage: string; // Nueva prop para configurar el lenguaje por defecto
   iniValue: string;
 }
 
-const joinLanguagesActive = (languages: LanguageGroup) => {
-  return Object.values(languages).find((language) => language.active);
-};
-
-export const createHtml = ([html, css, js]: LanguageGroup[]) => {
+export const createHtml = ([html, css, js]: MenuItemType[]) => {
   if (!html || !css || !js) return "";
-  const htmlJoin = joinLanguagesActive(html);
-  const cssJoin = joinLanguagesActive(css);
-  const jsJoin = joinLanguagesActive(js);
 
   let htmlContent;
   let cssDefault = "";
 
-  if (htmlJoin && htmlJoin.code == "markdown") {
-    htmlContent = marked(htmlJoin.content);
+  // markdown
+  let javascriptMarkdownRef = "";
+  let htmlMarkdownRef = "";
+
+  if (html && html.code == "markdown") {
+    htmlContent = marked(html.content);
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+    });
+    // console.log(htmlContent, "htmlContent");
     cssDefault = styleMarkDown;
+    javascriptMarkdownRef = javascriptMarkdown;
+    htmlMarkdownRef = htmlMarkdown;
   } else {
-    htmlContent = htmlJoin?.content;
+    htmlContent = html?.content;
   }
 
-  return `<!DOCTYPE html>
+  return /*html*/ `<!DOCTYPE html>
   <html lang="en" onload="resizeIframe()">
     <head>
       <meta charset="UTF-8" />
@@ -44,19 +50,26 @@ export const createHtml = ([html, css, js]: LanguageGroup[]) => {
       <style id="preview-style">
         ${styleBase}
         ${cssDefault}
-        ${cssJoin?.content}
+        ${css?.content}
       </style>
     </head>
-    <body >
-        ${htmlContent}
+    <body>
+      ${htmlMarkdownRef}
+      <div  id="markdown-content">
+      ${htmlContent}
+      </div>
       <script type="module">
-        ${jsJoin?.content}
+        ${js?.content}
         function resizeIframe() {
-          var document = window.parent.document;
-          var iframe = document.getElementById('widget'); 
+          const document = window.parent.document;
+          const iframe = document.getElementById('widget'); 
           iframe.style.height = (document.documentElement.scrollHeight + 18) + 'px';
           console.log(iframe);
         }
+      </script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.js"></script>
+      <script>
+        ${javascriptMarkdownRef}
       </script>
     </body>
   </html>`;
@@ -67,69 +80,224 @@ const hashedCode = (datahashed: any): string => {
   return hashedCode;
 };
 
-const copyToClipboard = async (data: any) => {
-  const hashed = hashedCode(data);
+const onCopy = async (document: any) => {
   try {
-    await navigator.clipboard.writeText(hashed);
-    await navigator.clipboard.writeText(hashed as string);
+    await navigator.clipboard.writeText(document);
+    await navigator.clipboard.writeText(document as string);
   } catch (err) {
     console.error("Failed to copy:", err);
   }
 };
 
-const hashedDecode = (hash: string) => {
+const copyToClipboard = async (data: any) => {
+  const hashed = hashedCode(data);
+  onCopy(hashed);
+};
+
+const copyJson = async (data: any) => {
+  const hashed = JSON.stringify(data);
+  onCopy(hashed);
+};
+
+// const hashedDecode = (hash: string) => {
+//   try {
+//     return JSON.parse(decode(hash));
+//   } catch (error) {
+//     return {
+//       config: {
+//         splitSize: [50, 50],
+//         setting: true,
+//       },
+//       languages: [
+//         {
+//           html: {
+//             title: "HTML",
+//             active: true,
+//             content: "",
+//             code: "html",
+//           },
+//           markdown: {
+//             title: "MD",
+//             active: false,
+//             content: "",
+//             code: "markdown",
+//           },
+//         },
+//         {
+//           css: {
+//             title: "CSS",
+//             active: true,
+//             content: "",
+//             code: "css",
+//           },
+//           scss: {
+//             title: "SCSS",
+//             active: false,
+//             content: "",
+//             code: "scss",
+//           },
+//         },
+//         {
+//           javascript: {
+//             title: "JS",
+//             active: true,
+//             content: "",
+//             code: "javascript",
+//           },
+//           typescript: {
+//             title: "TS",
+//             active: false,
+//             content: "",
+//             code: "typescript",
+//           },
+//         },
+//       ],
+//     };
+//   }
+// };
+
+function isJSONValid(cadena: string): [boolean, any] {
   try {
-    return JSON.parse(decode(hash));
+    const resParse = JSON.parse(cadena);
+    return [true, resParse];
+  } catch (e) {
+    return [false, null];
+  }
+}
+
+const hashedDecode2 = (hash: string) => {
+  try {
+    const [isvalidJson, data] = isJSONValid(hash);
+    if (isvalidJson) {
+      if (data.version === "1.0.0") {
+        return data;
+      }
+    }
+
+    const databefore = JSON.parse(decode(hash));
+    const config = databefore.config;
+    const version = databefore.version;
+    const languages = databefore.languages;
+    const [html, css, javascript] = languages;
+
+    const languagesjson = {
+      html: {
+        codeId: "HTML",
+        title:
+          Object.values<any>(html).find((language) => {
+            return language.active;
+          })?.title || "HTML",
+        active: Object.values<any>(html).some((language) => language.active),
+        content:
+          Object.values<any>(html).find((language) => {
+            return language.active;
+          })?.content || "",
+        code:
+          Object.values<any>(html).find((language: any) => {
+            return language.active;
+          })?.code || "html",
+        codes: [
+          { title: "HTML", code: "html" },
+          { title: "Markdown", code: "markdown" },
+          { title: "PUG", code: "pug" },
+        ],
+      },
+      css: {
+        codeId: "CSS",
+        title:
+          Object.values<any>(css).find((language: any) => {
+            return language.active;
+          })?.title || "CSS",
+        active: Object.values(css).some((language: any) => language.active),
+        content:
+          Object.values<any>(css).find((language) => {
+            if (language.active) {
+              return language.content;
+            }
+          })?.content || "",
+        code:
+          Object.values<any>(css).find((language: any) => {
+            return language.code;
+          })?.code || "css",
+        codes: [
+          { title: "CSS", code: "css" },
+          { title: "SCSS", code: "scss" },
+        ],
+      },
+      javascript: {
+        codeId: "JS",
+        title:
+          Object.values<any>(javascript).find((language) => {
+            return language.active;
+          })?.title || "JS",
+        active: Object.values(javascript).some(
+          (language: any) => language.active
+        ),
+        content:
+          Object.values<any>(javascript).find((language) => {
+            return language.active;
+          })?.content || "",
+        code:
+          Object.values<any>(javascript).find((language: any) => {
+            return language.active;
+          })?.code || "javascript",
+        codes: [
+          { title: "JS", code: "javascript" },
+          { title: "TypeScript", code: "typescript" },
+        ],
+      },
+    };
+    const response = {
+      config,
+      version: version || "1.0.0",
+      languages: languagesjson,
+    };
+    return response;
   } catch (error) {
     return {
+      version: "1.0.0",
       config: {
         splitSize: [50, 50],
         setting: true,
+        view: "html",
+        sizeWindow: "auto",
       },
-      languages: [
-        {
-          html: {
-            title: "HTML",
-            active: true,
-            content: "",
-            code: "html",
-          },
-          markdown: {
-            title: "MD",
-            active: false,
-            content: "",
-            code: "markdown",
-          },
+      languages: {
+        html: {
+          codeId: "HTML",
+          title: "HTML",
+          active: true,
+          content: "",
+          code: "html",
+          codes: [
+            { title: "HTML", code: "html" },
+            { title: "Markdown", code: "markdown" },
+            { title: "PUG", code: "pug" },
+          ],
         },
-        {
-          css: {
-            title: "CSS",
-            active: true,
-            content: "",
-            code: "css",
-          },
-          scss: {
-            title: "SCSS",
-            active: false,
-            content: "",
-            code: "scss",
-          },
+        css: {
+          codeId: "CSS",
+          title: "CSS",
+          active: false,
+          content: "",
+          code: "css",
+          codes: [
+            { title: "CSS", code: "css" },
+            { title: "SCSS", code: "scss" },
+          ],
         },
-        {
-          javascript: {
-            title: "JS",
-            active: true,
-            content: "",
-            code: "javascript",
-          },
-          typescript: {
-            title: "TS",
-            active: false,
-            content: "",
-            code: "typescript",
-          },
+        javascript: {
+          codeId: "JS",
+          title: "JS",
+          active: false,
+          content: "",
+          code: "javascript",
+          codes: [
+            { title: "JS", code: "javascript" },
+            { title: "TypeScript", code: "typescript" },
+          ],
         },
-      ],
+      },
     };
   }
 };
@@ -139,6 +307,8 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
   defaultLanguage,
   iniValue,
 }) => {
+  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
+
   const handleEditorChange = (value: string | undefined) => {
     if (value !== undefined) {
       updateHtml(value); // Actualiza el estado html en el componente padre
@@ -148,7 +318,8 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
   return (
     <Editor
       theme="vs-light"
-      height="70vh"
+      // height="calc(100vh - 47px)"
+      height={isFullscreen ? "calc(100vh - 47px)" : "70vh"}
       defaultLanguage={defaultLanguage}
       value={iniValue}
       onChange={handleEditorChange}
@@ -159,6 +330,9 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
         scrollBeyondLastLine: false,
         roundedSelection: false,
         padding: { top: 12, bottom: 12 },
+        // scrollbar: {
+        //   handleMouseWheel: false,
+        // },
       }}
     />
   );
@@ -175,7 +349,6 @@ const IframePreview = ({
 
   useEffect(() => {
     const iframe = iframeRef.current;
-
     const handleIframeResize = () => {
       if (iframe && iframe.contentWindow && iframe.contentDocument) {
         const iframeBody = iframe.contentDocument.body;
@@ -183,11 +356,9 @@ const IframePreview = ({
         iframe.style.height = `${iframeHeight + 50}px`; // Ajusta la altura del iframe
       }
     };
-
     if (iframe) {
       iframe.onload = handleIframeResize; // Ajusta cuando se carga
     }
-
     return () => {
       if (iframe) {
         iframe.onload = null; // Limpia el evento al desmontar
@@ -200,13 +371,13 @@ const IframePreview = ({
       <iframe
         ref={iframeRef}
         id="widget"
-        className="bg-white"
+        className="bg-white-degrade"
         name="widget"
         title="widget"
         frameBorder="0"
         width="100%"
         scrolling="auto"
-        sandbox={setting ? "allow-scripts" : "allow-same-origin"}
+        // sandbox={setting ? "allow-scripts" : "allow-same-origin"}
         srcDoc={output}
         style={{
           width: "100%",
@@ -218,50 +389,55 @@ const IframePreview = ({
   );
 };
 
-const getAllActiveTitles = (groups: Array<LanguageGroup>): Array<string> => {
-  const activeTitles: Array<string> = [];
-
-  for (const group of groups) {
-    for (const key in group) {
-      if (group[key] && group[key].active) {
-        activeTitles.push(group[key].code);
-      }
+const getAllActiveTitles = (groups: Array<MenuItemType>): Array<string> => {
+  return groups.reduce((acc: string[], lang) => {
+    if (lang.active) {
+      acc.push(lang.codeId);
+      return acc;
     }
-  }
-
-  return activeTitles;
+    return acc;
+  }, []);
 };
 
-const CodeEditor = ({ dataCode }: { dataCode: string }) => {
-  const { config, languages } = hashedDecode(dataCode);
-  const [html, css, javascript] = languages;
+const CodeEditor = ({
+  dataCode,
+  titleCode,
+}: {
+  dataCode: string;
+  titleCode: string;
+}) => {
+  // const { config, languages } = hashedDecode(dataCode);
+  const { config, languages, version } = hashedDecode2(dataCode);
+  // console.log(languages, "dataCode");
+  const { html, css, javascript } = languages;
 
   const [output, setOutput] = useState("");
-  const { activeTab, setActiveTab } = useTabContext();
+  // const { activeTab, setActiveTab } = useTabContext();
+  const { activeTab, setActiveTab } = useTabStore();
   const [configSetting, setConfigSetting] = useState(config); // Estado para controlar el ajuste automático
+  // const { isFullscreen, toggleFullscreen } = useFullscreen();
+  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
 
-  const htmlGroup = useGroupState(html);
-  const cssGroup = useGroupState(css);
-  const jsGroup = useGroupState(javascript);
+  const htmlGroup2 = useMenuItem(html);
+  const cssGroup2 = useMenuItem(css);
+  const jsGroup2 = useMenuItem(javascript);
 
   useEffect(() => {
-    htmlGroup.updateState(html);
-    cssGroup.updateState(css);
-    jsGroup.updateState(javascript);
+    htmlGroup2.updateState(html);
+    cssGroup2.updateState(css);
+    jsGroup2.updateState(javascript);
     setConfigSetting(config);
   }, [dataCode]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setOutput(
-        createHtml([htmlGroup.languages, cssGroup.languages, jsGroup.languages])
-      );
+      setOutput(createHtml([htmlGroup2.item, cssGroup2.item, jsGroup2.item]));
     }, 300); // Añadimos un pequeño retraso para evitar demasiadas actualizaciones
 
     const firstActiveTitle = getAllActiveTitles([
-      htmlGroup.languages,
-      cssGroup.languages,
-      jsGroup.languages,
+      htmlGroup2.item,
+      cssGroup2.item,
+      jsGroup2.item,
     ]);
 
     const tabActive = firstActiveTitle.some((title) => title === activeTab);
@@ -270,7 +446,7 @@ const CodeEditor = ({ dataCode }: { dataCode: string }) => {
     }
 
     return () => clearTimeout(timeout); // Limpiar el timeout en cada cambio
-  }, [htmlGroup.languages, cssGroup.languages, jsGroup.languages]);
+  }, [htmlGroup2.item, cssGroup2.item, jsGroup2.item]);
 
   const toggleSetting = () => {
     console.log("click");
@@ -280,177 +456,109 @@ const CodeEditor = ({ dataCode }: { dataCode: string }) => {
     }));
   };
 
+  // // Función para alternar entre pantalla completa y tamaño normal
+  // const onToggleFullscreen = () => {
+  //   toggleFullscreen(!isFullscreen);
+  // };
+
   return (
     <div className="editor-container">
       {/* {firstActiveTitle} */}
 
       <div>
-        <div className="App" style={{ minHeight: "100vh" }}>
-          <div>
+        <div className="App" style={{ minHeight: "70vh" }}>
+          <div
+            style={{
+              position: isFullscreen ? "fixed" : "relative", // Fijo si está en pantalla completa
+              top: isFullscreen ? 0 : "auto",
+              left: isFullscreen ? 0 : "auto",
+              width: isFullscreen ? "100%" : "auto", // 80% del ancho inicialmente, 100% si es fullscreen
+              height: isFullscreen ? "100vh" : "auto", // Altura inicial de 300px, 100% si es fullscreen
+              zIndex: isFullscreen ? 1000 : "auto", // Z-index alto solo cuando está en pantalla completa
+              backgroundColor: isFullscreen ? "white" : "initial", // Fondo blanco
+              transition: "all 0.2s ease-in-out", // Transición suave
+            }}
+          >
             {
               <>
                 <div className="g-border-b flex justify-between items-center text-[14px] pb-1">
-                  <div>
+                  <div
+                    style={{
+                      paddingLeft: isFullscreen ? "8px" : "auto",
+                    }}
+                    className="flex-grow basis-0"
+                  >
                     {configSetting.setting && (
                       <div className="flex ">
-                        {[
-                          ...Object.entries(htmlGroup.languages),
-                          ...Object.entries(cssGroup.languages),
-                          ...Object.entries(jsGroup.languages),
-                        ].map(([languageId, language]) => {
-                          if (language.active) {
-                            return (
-                              <div key={languageId}>
-                                <TabHeader value={languageId}>
-                                  {/* <IconReact size="20" name={language.code} /> */}
-                                  <div className="">{language.title}</div>
-                                </TabHeader>
-                              </div>
-                            );
-                          } else {
-                            return "";
+                        {[htmlGroup2.item, cssGroup2.item, jsGroup2.item].map(
+                          (lang) => {
+                            if (lang.active) {
+                              return (
+                                <div key={lang.codeId}>
+                                  <TabHeader value={lang.codeId}>
+                                    {/* <IconReact size="20" name={language.code} /> */}
+                                    <div className="flex items-center">
+                                      {lang.codeId}
+                                      <span className="ms-1 text-[12px]">
+                                        {lang.codeId !== lang.title && (
+                                          <span>({lang.title})</span>
+                                        )}
+                                      </span>
+                                    </div>
+                                  </TabHeader>
+                                </div>
+                              );
+                            } else {
+                              return "";
+                            }
                           }
-                        })}
+                        )}
 
                         <Dropdown>
-                          <Dropdown.Toggle>
+                          <Dropdown.Toggle className="-rotate-90">
                             <IconReact name="arrow-up" />
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
                             <div>
-                              {Object.entries(htmlGroup.languages).map(
-                                ([languageId, language]) => {
-                                  const disable = Object.values(
-                                    htmlGroup.languages
-                                  ).some(
-                                    (lang) => lang.active && lang !== language
-                                  );
-                                  return (
-                                    <div className="item" key={languageId}>
-                                      <button
-                                        onClick={() =>
-                                          htmlGroup.toggleActive(languageId)
-                                        }
-                                        disabled={disable}
+                              {[htmlGroup2, cssGroup2, jsGroup2].map((lang) => {
+                                return (
+                                  <div className="item" key={lang.item.codeId}>
+                                    <button onClick={() => lang.toggleActive()}>
+                                      <div
+                                        className={`p-1 flex items-center text-primary-0`}
                                       >
-                                        <div
-                                          className={`flex items-center ${
-                                            disable
-                                              ? "text-gray-500"
-                                              : "text-primary-0"
-                                          }`}
-                                        >
-                                          {language.active ? (
-                                            <IconReact size="20" name="close" />
-                                          ) : (
-                                            // <IconReact size="20" name="plus" />
-                                            <IconReact
-                                              size="20"
-                                              name={language.code}
-                                            />
-                                          )}
-                                          <div className="ps-3">
-                                            {language.title}{" "}
-                                          </div>
+                                        {lang.item.active ? (
+                                          <IconReact size="20" name="close" />
+                                        ) : (
+                                          // <IconReact size="20" name="plus" />
+                                          <IconReact
+                                            size="20"
+                                            name={lang.item.code}
+                                          />
+                                        )}
+                                        <div className="ps-3">
+                                          {lang.item.codeId}{" "}
                                         </div>
-                                      </button>
-                                    </div>
-                                  );
-                                }
-                              )}
-                            </div>
-                            <hr className="border-hr-menu" />
-                            <div>
-                              {Object.entries(cssGroup.languages).map(
-                                ([languageId, language]) => {
-                                  const disable = Object.values(
-                                    cssGroup.languages
-                                  ).some(
-                                    (lang) => lang.active && lang !== language
-                                  );
-                                  return (
-                                    <div className="item" key={languageId}>
-                                      <button
-                                        onClick={() =>
-                                          cssGroup.toggleActive(languageId)
-                                        }
-                                        disabled={disable}
-                                      >
-                                        <div
-                                          className={`flex items-center ${
-                                            disable
-                                              ? "text-gray-500"
-                                              : "text-primary-0"
-                                          }`}
-                                        >
-                                          {language.active ? (
-                                            <IconReact size="20" name="close" />
-                                          ) : (
-                                            // <IconReact size="20" name="plus" />
-                                            <IconReact
-                                              size="20"
-                                              name={language.code}
-                                            />
-                                          )}
-                                          <div className="ps-3">
-                                            {language.title}{" "}
-                                          </div>
-                                        </div>
-                                      </button>
-                                    </div>
-                                  );
-                                }
-                              )}
-                            </div>
-                            <hr className="border-hr-menu" />
-                            <div>
-                              {Object.entries(jsGroup.languages).map(
-                                ([languageId, language]) => {
-                                  const disable = Object.values(
-                                    jsGroup.languages
-                                  ).some(
-                                    (lang) => lang.active && lang !== language
-                                  );
-                                  return (
-                                    <div className="item" key={languageId}>
-                                      <button
-                                        onClick={() =>
-                                          jsGroup.toggleActive(languageId)
-                                        }
-                                        disabled={disable}
-                                      >
-                                        <div
-                                          className={`flex items-center ${
-                                            disable
-                                              ? "text-gray-500"
-                                              : "text-primary-0"
-                                          }`}
-                                        >
-                                          {language.active ? (
-                                            <IconReact size="20" name="close" />
-                                          ) : (
-                                            // <IconReact size="20" name="plus" />
-                                            <IconReact
-                                              size="20"
-                                              name={language.code}
-                                            />
-                                          )}
-                                          <div className="ps-3">
-                                            {language.title}{" "}
-                                          </div>
-                                        </div>
-                                      </button>
-                                    </div>
-                                  );
-                                }
-                              )}
+                                      </div>
+                                    </button>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
                     )}
                   </div>
-                  <div className="flex items-center">
+                  <h3 className="text-lg font-bold text-secondary-950">
+                    ({titleCode})
+                  </h3>
+                  <div
+                    style={{
+                      paddingRight: isFullscreen ? "8px" : "auto",
+                    }}
+                    className="flex items-center flex-grow basis-0 justify-end"
+                  >
                     <div
                       onClick={() => toggleSetting()}
                       className="p-2 hover:bg-secondary-200 rounded-md"
@@ -461,7 +569,10 @@ const CodeEditor = ({ dataCode }: { dataCode: string }) => {
                         <IconReact name="view" size="small" />
                       )}
                     </div>
-                    <div className="p-2 hover:bg-secondary-200 rounded-md">
+                    <div
+                      className="p-2 hover:bg-secondary-200 rounded-md"
+                      onClick={toggleFullscreen}
+                    >
                       <IconReact name="fullscreen" size="small" />
                     </div>
                     <Dropdown>
@@ -472,105 +583,122 @@ const CodeEditor = ({ dataCode }: { dataCode: string }) => {
                       </Dropdown.Toggle>
                       <Dropdown.Menu align="right">
                         <div className="p-2 hover:bg-gray-100/60 rounded-md">
-                          Copiar hash
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              copyJson({
+                                version: version,
+                                config: configSetting,
+                                languages: {
+                                  html: htmlGroup2.item,
+                                  css: cssGroup2.item,
+                                  javascript: jsGroup2.item,
+                                },
+                              });
+                            }}
+                          >
+                            Copiar json
+                          </Dropdown.Item>
                         </div>
                         <div className="p-2 hover:bg-gray-100/60 rounded-md">
                           <Dropdown.Item
                             onClick={() => {
                               // console.log(config);
                               copyToClipboard({
+                                version: version,
                                 config: configSetting,
                                 languages: [
-                                  htmlGroup.languages,
-                                  cssGroup.languages,
-                                  jsGroup.languages,
+                                  htmlGroup2.item,
+                                  cssGroup2.item,
+                                  jsGroup2.item,
                                 ],
                               });
                             }}
                           >
-                            Guardar
+                            Copiar hash
                           </Dropdown.Item>
                         </div>
                       </Dropdown.Menu>
                     </Dropdown>
                   </div>
                 </div>
-                <Split
-                  className="wrap"
-                  sizes={configSetting.splitSize}
-                  minSize={0}
-                  expandToMin={false}
-                  gutterSize={configSetting.setting ? 8 : 0}
-                  gutterAlign="center"
-                  snapOffset={30}
-                  dragInterval={1}
-                  direction="horizontal"
-                  cursor="col-resize"
-                >
-                  <div>
-                    {Object.entries(htmlGroup.languages).map(
-                      ([languageId, language]) => {
+                <div style={{ height: isFullscreen ? "100%" : "auto" }}>
+                  <Split
+                    className="wrap"
+                    sizes={configSetting.splitSize}
+                    minSize={0}
+                    expandToMin={false}
+                    gutterSize={configSetting.setting ? 8 : 0}
+                    gutterAlign="center"
+                    snapOffset={30}
+                    dragInterval={1}
+                    direction="horizontal"
+                    cursor="col-resize"
+                  >
+                    <div>
+                      {[htmlGroup2, cssGroup2, jsGroup2].map((lang) => {
                         return (
-                          <div key={languageId}>
-                            <TabContent value={languageId}>
-                              <ContentEditor
-                                updateHtml={(newContent) =>
-                                  htmlGroup.updateContent(
-                                    languageId,
-                                    newContent
-                                  )
-                                }
-                                defaultLanguage={language.code}
-                                iniValue={language.content}
-                              />
+                          <div key={lang.item.codeId}>
+                            <TabContent value={lang.item.codeId}>
+                              <div className="relative overflow-hidden">
+                                {configSetting.setting && (
+                                  <div className="absolute right-4 top-0 z-10">
+                                    <Dropdown>
+                                      <Dropdown.Toggle>
+                                        <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] bg-white/95 border border-primary-0 text-primary-0">
+                                          {lang.item.title}{" "}
+                                          <IconReact
+                                            size="small"
+                                            name="arrow-up"
+                                          />
+                                        </div>
+                                      </Dropdown.Toggle>
+                                      <Dropdown.Menu align="right">
+                                        {lang.item.codes.map((code) => {
+                                          return (
+                                            <div
+                                              key={code.code}
+                                              className={`p-2 hover:bg-gray-100/80 rounded-md my-1 cursor-pointer text-sm ${
+                                                code.code === lang.item.code
+                                                  ? "bg-gray-100/80"
+                                                  : ""
+                                              }`}
+                                            >
+                                              <Dropdown.Item
+                                                onClick={() =>
+                                                  lang.updateTitleAndCode(code)
+                                                }
+                                              >
+                                                {code.title}
+                                              </Dropdown.Item>
+                                            </div>
+                                          );
+                                        })}
+                                      </Dropdown.Menu>
+                                    </Dropdown>
+                                  </div>
+                                )}
+
+                                <ContentEditor
+                                  updateHtml={(newContent) =>
+                                    lang.updateContent(newContent)
+                                  }
+                                  defaultLanguage={lang.item.code}
+                                  iniValue={lang.item.content}
+                                />
+                              </div>
                             </TabContent>
                           </div>
                         );
-                      }
-                    )}
+                      })}
+                    </div>
 
-                    {Object.entries(cssGroup.languages).map(
-                      ([languageId, language]) => {
-                        return (
-                          <div key={languageId}>
-                            <TabContent value={languageId}>
-                              <ContentEditor
-                                updateHtml={(newContent) =>
-                                  cssGroup.updateContent(languageId, newContent)
-                                }
-                                defaultLanguage={language.code}
-                                iniValue={language.content}
-                              />
-                            </TabContent>
-                          </div>
-                        );
-                      }
-                    )}
-
-                    {Object.entries(jsGroup.languages).map(
-                      ([languageId, language]) => {
-                        return (
-                          <div key={languageId}>
-                            <TabContent value={languageId}>
-                              <ContentEditor
-                                updateHtml={(newContent) =>
-                                  jsGroup.updateContent(languageId, newContent)
-                                }
-                                defaultLanguage={language.code}
-                                iniValue={language.content}
-                              />
-                            </TabContent>
-                          </div>
-                        );
-                      }
-                    )}
-                  </div>
-
-                  <IframePreview
-                    output={output}
-                    setting={configSetting.setting}
-                  />
-                </Split>
+                    <IframePreview
+                      output={output}
+                      setting={configSetting.setting}
+                    />
+                  </Split>
+                </div>
               </>
             }
           </div>
@@ -583,10 +711,6 @@ const CodeEditor = ({ dataCode }: { dataCode: string }) => {
 export default CodeEditor;
 
 // Envolver MyTabsComponent dentro de TabProvider
-export const AppEditor = ({ dataCode }: any) => {
-  return (
-    <TabProvider defaultTab="">
-      <CodeEditor dataCode={dataCode} />
-    </TabProvider>
-  );
+export const AppEditor = ({ dataCode, title }: any) => {
+  return <CodeEditor dataCode={dataCode} titleCode={title} />;
 };

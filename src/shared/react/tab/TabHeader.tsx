@@ -1,6 +1,7 @@
 // TabHeader.js
 import React, { type FC } from "react";
-import { useTabContext } from "./TabContext";
+import { useTabStore } from "./TabContext";
+// import { useTabContext } from "./TabContext";
 
 interface TabHeaderProps {
   value: string;
@@ -8,7 +9,8 @@ interface TabHeaderProps {
 }
 
 const TabHeader: FC<TabHeaderProps> = ({ value, children }) => {
-  const { activeTab, setActiveTab } = useTabContext();
+  // const { activeTab, setActiveTab } = useTabContext();
+  const { activeTab, setActiveTab } = useTabStore();
 
   return (
     <div

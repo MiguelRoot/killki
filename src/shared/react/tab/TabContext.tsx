@@ -1,35 +1,47 @@
-import React, { createContext, useContext, useState } from "react";
-import type { ReactNode } from "react";
+import { create } from "zustand";
 
-interface TabContextProps {
+interface TabStore {
   activeTab: string;
   setActiveTab: (tabValue: string) => void;
 }
 
-const TabContext = createContext<TabContextProps | undefined>(undefined);
+export const useTabStore = create<TabStore>((set) => ({
+  activeTab: "",
+  setActiveTab: (tabValue) => set({ activeTab: tabValue }),
+}));
 
-interface TabProviderProps {
-  children: ReactNode;
-  defaultTab: string | undefined;
-}
+// import React, { createContext, useContext, useState } from "react";
+// import type { ReactNode } from "react";
 
-export const TabProvider: React.FC<TabProviderProps> = ({
-  children,
-  defaultTab,
-}) => {
-  const [activeTab, setActiveTab] = useState<string>(defaultTab || "");
+// interface TabContextProps {
+//   activeTab: string;
+//   setActiveTab: (tabValue: string) => void;
+// }
 
-  return (
-    <TabContext.Provider value={{ activeTab, setActiveTab }}>
-      {children}
-    </TabContext.Provider>
-  );
-};
+// const TabContext = createContext<TabContextProps | undefined>(undefined);
 
-export const useTabContext = () => {
-  const context = useContext(TabContext);
-  if (!context) {
-    throw new Error("useTabContext must be used within a TabProvider");
-  }
-  return context;
-};
+// interface TabProviderProps {
+//   children: ReactNode;
+//   defaultTab: string | undefined;
+// }
+
+// export const TabProvider: React.FC<TabProviderProps> = ({
+//   children,
+//   defaultTab,
+// }) => {
+//   const [activeTab, setActiveTab] = useState<string>(defaultTab || "");
+
+//   return (
+//     <TabContext.Provider value={{ activeTab, setActiveTab }}>
+//       {children}
+//     </TabContext.Provider>
+//   );
+// };
+
+// export const useTabContext = () => {
+//   const context = useContext(TabContext);
+//   if (!context) {
+//     throw new Error("useTabContext must be used within a TabProvider");
+//   }
+//   return context;
+// };

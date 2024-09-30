@@ -7,53 +7,11 @@ import MenuFooter from "../../components/MenuFooter.astro";
 import Social from "../../components/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 import Content from "./Content";
-// import { converObjectToArray } from "../../utils/gogoleSheets";
-// import Content from "./Content";
-// import { AppEditor } from "./EditCode";
 import { LISTPAGESID } from "./listPageId";
-
-// function getUrlSheets(id: string, gid: number) {
-//   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
-// }
-
-// async function fetchDataByUrl(url: string) {
-//   return fetch(url)
-//     .then((res: any) => res.text())
-//     .then((json: any) => JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1)));
-// }
-
-// Usa la función para obtener los datos
-// const data = Astro.fetchContent(getData(Astro.request.params.id));
 
 const { id } = Astro.params;
 
-// const urlData = getUrlSheets(id, 0);
-// const data = await fetchDataByUrl(urlData);
-
-// const columns = converObjectToArray(data, ["A", "B", "C", "D"]);
-
 export async function getStaticPaths() {
-  // function getRowsAandB(data: any) {
-  //   const rowsAandB = data.table.rows.map((row: any) => {
-  //     const columnA = row.c[0].v;
-  //     const columnB = row.c[1].v;
-  //     return [columnA, columnB];
-  //   });
-  //   return rowsAandB;
-  // }
-  // const getUrl =
-  //   "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
-
-  // const response = await fetch(getUrl)
-  //   .then((res: any) => res.text())
-  //   .then((json: any) =>
-  //     JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
-  //   );
-  // const listIds: any = getRowsAandB(response);
-
-  // LISTPAGESID
-
-  // Mapea los IDs a objetos con una propiedad `params` que contiene el ID
   return LISTPAGESID.map((item: any) => ({
     params: { id: item.pageId },
   }));
@@ -108,7 +66,13 @@ export async function getStaticPaths() {
       <div>
         <!-- {JSON.stringify(listIds)} -->
         <h1 class="font-black text-primary-0 text-4xl md:text-5xl mb-12 mt-14">
-          Angular
+          {
+            LISTPAGESID.map((item: any) => {
+              if (item.pageId === id) {
+                return item.title;
+              }
+            })
+          }
         </h1>
       </div>
       <!-- {id} -->
