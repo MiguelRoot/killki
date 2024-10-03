@@ -3,8 +3,6 @@ var o =
     ? globalThis
     : typeof window !== "undefined"
     ? window
-    : typeof global !== "undefined"
-    ? global
     : typeof self !== "undefined"
     ? self
     : {};
@@ -15,4 +13,4 @@ function l(e) {
     : e;
 }
 
-module.exports = { c: o, g: l };
+export { o as c, l as g };
