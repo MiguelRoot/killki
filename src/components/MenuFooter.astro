@@ -33,14 +33,14 @@ const texts = i18n(currentLocale);
 
 <div class="mt-14 columns-2 md:grid md:grid-cols-3">
   <div class="break-inside-avoid">
-    <h4 class="font-bold mb-2">Secciones</h4>
+    <h4 class="font-bold mb-2 text-secondary-0">Secciones</h4>
     <ul class="[&>*]:mb-2">
       <li><a href="/">{currentLocale === "en" ? "Home" : "Inicio"}</a></li>
       {
         texts.menu.map((item) => (
           <li>
             <a
-              class="text-secondary-950"
+              class="text-primary-1000"
               href={`${currentLocale === "en" ? "/en" : ""}/#${item.path}`}
             >
               {item.label}
@@ -52,12 +52,12 @@ const texts = i18n(currentLocale);
   </div>
 
   <div class="break-inside-avoid">
-    <h4 class="font-bold mb-2">Cheatsheet</h4>
+    <h4 class="font-bold mb-2 text-secondary-0">Cheatsheet</h4>
     <ul class="[&>*]:mb-2">
       {
         LISTPAGESID.map((item: any) => (
           <li>
-            <a class="text-secondary-950" href={"/sheet/" + item.pageId}>
+            <a class="text-primary-1000" href={"/sheet/" + item.pageId}>
               {item.title}
             </a>
           </li>
@@ -66,9 +66,17 @@ const texts = i18n(currentLocale);
     </ul>
   </div>
   <div class="break-inside-avoid">
-    <h4 class="font-bold mb-2">Utilities</h4>
+    <h4 class="font-bold mb-2 text-secondary-0">Utilities</h4>
     <ul>
-      <li>♥</li>
+      <li>
+        <a
+          class="text-primary-1000 blank"
+          target="_blank"
+          href="https://github.com/MiguelRoot/angular-sidebar-admin"
+        >
+          Angular Sidebar Admin
+        </a>
+      </li>
     </ul>
   </div>
 </div>

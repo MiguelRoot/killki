@@ -346,16 +346,25 @@ const IframePreview = ({
   setting: boolean;
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
+
+  const handleIframeResize = () => {
+    console.log(setting, "setting");
+    const iframe = iframeRef.current;
+    if (iframe && iframe.contentWindow && iframe.contentDocument) {
+      const iframeBody = iframe.contentDocument.body;
+      const iframeHeight = iframeBody.scrollHeight;
+      console.log(iframeHeight, "iframeHeight");
+      iframe.style.height = isFullscreen
+        ? "calc(100vh - 47px)"
+        : setting
+        ? "70vh"
+        : `${iframeHeight + 50}px`; // Ajusta la altura del iframe
+    }
+  };
 
   useEffect(() => {
     const iframe = iframeRef.current;
-    const handleIframeResize = () => {
-      if (iframe && iframe.contentWindow && iframe.contentDocument) {
-        const iframeBody = iframe.contentDocument.body;
-        const iframeHeight = iframeBody.scrollHeight;
-        iframe.style.height = `${iframeHeight + 50}px`; // Ajusta la altura del iframe
-      }
-    };
     if (iframe) {
       iframe.onload = handleIframeResize; // Ajusta cuando se carga
     }
@@ -366,8 +375,17 @@ const IframePreview = ({
     };
   }, [output]);
 
+  useEffect(() => {
+    handleIframeResize(); // Ajusta la altura del iframe cuando cambia el setting
+  }, [setting, isFullscreen]);
+
   return (
-    <div>
+    <div
+      style={{
+        width: "100%",
+        minHeight: "70vh",
+      }}
+    >
       <iframe
         ref={iframeRef}
         id="widget"
@@ -380,9 +398,7 @@ const IframePreview = ({
         // sandbox={setting ? "allow-scripts" : "allow-same-origin"}
         srcDoc={output}
         style={{
-          width: "100%",
-          minHeight: "70vh",
-          height: setting ? "auto" : "70vh",
+          height: "100%",
         }}
       />
     </div>

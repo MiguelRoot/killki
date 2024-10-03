@@ -1,7 +1,12 @@
 export const LISTPAGESID = [
-  { title: "Angular", pageId: "1e_ncgbrK5EzwtAMrPhExfLqpHQ2f795yI8_0PT0SZL4" },
+  {
+    title: "Angular",
+    description: "Notas de Angular",
+    pageId: "1e_ncgbrK5EzwtAMrPhExfLqpHQ2f795yI8_0PT0SZL4",
+  },
   {
     title: "Components",
+    description: "Lista de componentes",
     pageId: "1rRhJ2gYdXbuPnpvF3UJJvZB_CiqGfRnRukjyGBc41CM",
   },
   // {
@@ -10,6 +15,7 @@ export const LISTPAGESID = [
   // },
   {
     title: "Git/Github",
+    description: "Notas de Git y Github",
     pageId: "1STVMoKdhCsc9G6FbqEHS211HLeD00LwOazvXo0RAj0s",
   },
 ];

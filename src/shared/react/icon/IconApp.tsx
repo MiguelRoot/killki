@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import { baseUrlStatic } from "../../../consts";
 
 interface IconComponentProps {
   name: string;
@@ -10,7 +11,7 @@ const IconReact: React.FC<IconComponentProps> = ({ name, size = "24" }) => {
 
   useEffect(() => {
     const loadIcon = async () => {
-      const iconUrl = `/public/icons/${name}.svg`;
+      const iconUrl = `${baseUrlStatic}/icons/${name}.svg`;
 
       try {
         const response = await fetch(iconUrl);

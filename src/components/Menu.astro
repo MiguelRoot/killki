@@ -5,12 +5,8 @@ const { currentLocale } = Astro;
 ---
 
 <div class="flex items-center md:justify-end mb-5">
-  <!-- <div class="border-r pe-5 me-5">
-    <Icons name="sun" />
-  </div> -->
-
   <div class="flex items-center">
-    <div class="me-2">
+    <div class="me-2 text-secondary-0">
       <svg
         width="25"
         height="24"
@@ -23,15 +19,15 @@ const { currentLocale } = Astro;
           fill="currentColor"></path>
       </svg>
     </div>
-    <a href={LANG.es.link}>
+    <a href={LANG.es.link} class="text-secondary-1000">
       <span
-        class={`me-2 leading-none ${currentLocale !== "en" ? "font-bold text-primary-500" : ""}`}
+        class={`me-2 leading-none ${currentLocale !== "en" ? "font-bold text-secondary-0" : ""}`}
         >ES</span
       >
     </a>
-    <a href={LANG.en.link}>
+    <a href={LANG.en.link} class="text-secondary-1000">
       <span
-        class={`me-2 leading-none ${currentLocale === "en" ? "font-bold text-primary-500" : ""}`}
+        class={`me-2 leading-none ${currentLocale === "en" ? "font-bold text-secondary-0" : ""}`}
         >EN</span
       >
     </a>

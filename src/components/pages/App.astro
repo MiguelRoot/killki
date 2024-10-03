@@ -10,7 +10,6 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 import { i18n } from "../../i18n";
 import DonwloadCV from "../DonwloadCV.astro";
 
-// const currentLocale = "es";
 const { currentLocale } = Astro;
 
 const texts = i18n(currentLocale);
@@ -31,7 +30,7 @@ const texts = i18n(currentLocale);
     <!-- <Header title={SITE_TITLE} /> -->
     <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
       <svg
-        class="fixed z-[-1] top-[-450px] start-[-300px] opacity-30"
+        class="fixed z-10 top-[-450px] start-[-300px] opacity-30 pointer-events-none"
         width="1020"
         height="932"
         viewBox="0 0 1020 932"
@@ -74,44 +73,30 @@ const texts = i18n(currentLocale);
         >
           <div>
             <div class="flex mb-1">
-              <div class="bg-gray-300 rounded-full me-3 w-[70px]">
+              <div class="rounded-full me-3 w-[70px]">
                 <img src="/images/profile.png" alt="miguel killki" />
               </div>
-
               <div>
-                <!-- <button class="px-4 py-2 mb-1 border leading-[14px] border-gray-500 rounded-full flex items-center bg-gray-200">
-                  <span>No disponible</span>
-                </button> -->
-                <!-- <div
-                  class="py-1 px-4 mb-1 text-sm font-medium text-gray-500 bg-gray-50 rounded-full border-2 border-gray-300"
-                >
-                  {texts.status}
-                </div> -->
-                <!-- <a
-                  href="/"
-                  class="block py-1 px-4 mb-1 text-sm font-medium text-gray-500 bg-gray-50 rounded-full border-2 border-gray-300"
-                >
-                  descargar cv
-                </a> -->
                 <DonwloadCV />
-                <span
-                  class="md:text-xl text-primary-600 font-bold lg:mb-2 order-2"
-                  >{texts.welcome}</span
+                <div
+                  class="md:text-2xl text-primary-600 font-bold lg:mt-2 order-2"
                 >
+                  {texts.welcome}
+                </div>
               </div>
               <!-- <div class="text-start lg:hidden block order-1">
                 <Menu />
               </div> -->
             </div>
             <h1
-              class="bg-text-title font-black text-secondary-950 text-4xl md:text-6xl mb-4"
+              class="bg-text-title font-black text-primary-1000 text-4xl md:text-6xl mb-4"
             >
               {texts.senior}
             </h1>
-            <span class="text-xl md:text-2xl text-secondary-950 font-bold"
+            <span class="text-xl md:text-2xl text-primary-1000 font-bold"
               >{texts.career}</span
             >
-            <p class="text-secondary-950 mt-2">{texts.presentation}</p>
+            <p class="text-primary-1000 mt-2">{texts.presentation}</p>
           </div>
 
           <nav class="menu-home">
@@ -154,7 +139,7 @@ const texts = i18n(currentLocale);
               texts.experience.map((items) => {
                 return (
                   <div class="md:flex lg-14 mb-8">
-                    <div class="me-3 pt-1 text-secondary-950 text-sm leading-5 min-w-[88px]">
+                    <div class="me-3 pt-1 text-primary-1000 text-sm leading-5 min-w-[88px]">
                       {items.startDate}
                     </div>
                     <div>
@@ -162,7 +147,7 @@ const texts = i18n(currentLocale);
                         <div class="text-lg font-bold text-primary-600 text-shadow">
                           {items.position}
                         </div>
-                        <div class="md:font-bold text-secondary-950">
+                        <div class="md:font-bold text-secondary-1000">
                           {items.company}
                         </div>
                       </div>
@@ -182,72 +167,74 @@ const texts = i18n(currentLocale);
             {
               texts.projects.map((item) => {
                 return (
-                  <div class="group transform-none relative mb-5 border-primary-600/[0] md:py-4 md:px-4 md:ms-[-16px] border-2 md:hover:border-primary-600/[0.3] rounded-lg flex-col md:flex-row flex transition-all ease-in-out">
-                    <div class="absolute z-[-1] top-[-90px] right-0 opacity-0 group-hover:opacity-50">
-                      <svg
-                        width="759"
-                        height="430"
-                        viewBox="0 0 759 430"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g opacity="0.3" filter="url(#filter0_f_8757_5886)">
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M614.621 220.721C603.057 235.632 576.591 247.039 552.619 259.2C531.965 269.677 509.955 279.017 483.729 287.119C454.518 296.144 426.969 308.704 390.453 309.302C353.819 309.901 323.054 298.747 292.789 290.242C264.334 282.246 244.073 271.228 219.544 261.274C185.972 247.651 128.035 239.922 121.468 220.721C115.119 202.159 161.204 187.752 189.353 173.003C214.301 159.932 242.149 148.355 276.412 139.541C311.595 130.49 349.387 118.791 390.453 121.27C431.452 123.746 448.885 145.234 486.66 152.236C530.698 160.4 596.332 149.14 625.756 164.888C653.909 179.955 628.657 202.621 614.621 220.721Z"
-                            fill="#8873EF"
-                          />
-                        </g>
-                        <defs>
-                          <filter
-                            id="filter0_f_8757_5886"
-                            x="0.874512"
-                            y="0.932983"
-                            width="757.628"
-                            height="428.392"
-                            filterUnits="userSpaceOnUse"
-                            color-interpolation-filters="sRGB"
-                          >
-                            <feFlood
-                              flood-opacity="0"
-                              result="BackgroundImageFix"
+                  <div class="group bg-gradient-to-br transition-all hover:from-secondary-0 hover:to-primary-0 rounded-xl p-0.5 mb-5 md:ms-[-16px] relative">
+                    <div class="rounded-lg bg-white transform-none md:py-4 md:px-4  flex-col md:flex-row flex ease-in-out">
+                      <div class="absolute top-[-90px] right-0 opacity-0 group-hover:opacity-50 pointer-events-none">
+                        <svg
+                          width="759"
+                          height="430"
+                          viewBox="0 0 759 430"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <g opacity="0.3" filter="url(#filter0_f_8757_5886)">
+                            <path
+                              fill-rule="evenodd"
+                              clip-rule="evenodd"
+                              d="M614.621 220.721C603.057 235.632 576.591 247.039 552.619 259.2C531.965 269.677 509.955 279.017 483.729 287.119C454.518 296.144 426.969 308.704 390.453 309.302C353.819 309.901 323.054 298.747 292.789 290.242C264.334 282.246 244.073 271.228 219.544 261.274C185.972 247.651 128.035 239.922 121.468 220.721C115.119 202.159 161.204 187.752 189.353 173.003C214.301 159.932 242.149 148.355 276.412 139.541C311.595 130.49 349.387 118.791 390.453 121.27C431.452 123.746 448.885 145.234 486.66 152.236C530.698 160.4 596.332 149.14 625.756 164.888C653.909 179.955 628.657 202.621 614.621 220.721Z"
+                              fill="#8873EF"
                             />
-                            <feBlend
-                              mode="normal"
-                              in="SourceGraphic"
-                              in2="BackgroundImageFix"
-                              result="shape"
-                            />
-                            <feGaussianBlur
-                              stdDeviation="60"
-                              result="effect1_foregroundBlur_8757_5886"
-                            />
-                          </filter>
-                        </defs>
-                      </svg>
-                    </div>
+                          </g>
+                          <defs>
+                            <filter
+                              id="filter0_f_8757_5886"
+                              x="0.874512"
+                              y="0.932983"
+                              width="757.628"
+                              height="428.392"
+                              filterUnits="userSpaceOnUse"
+                              color-interpolation-filters="sRGB"
+                            >
+                              <feFlood
+                                flood-opacity="0"
+                                result="BackgroundImageFix"
+                              />
+                              <feBlend
+                                mode="normal"
+                                in="SourceGraphic"
+                                in2="BackgroundImageFix"
+                                result="shape"
+                              />
+                              <feGaussianBlur
+                                stdDeviation="60"
+                                result="effect1_foregroundBlur_8757_5886"
+                              />
+                            </filter>
+                          </defs>
+                        </svg>
+                      </div>
 
-                    <div class="mt-4 md:mt-0 order-2 md:order-1 relative rounded-lg overflow-hidden grow-0 shrink-0 w-[130px] h-[130px]">
-                      <div class="group-hover:bg-primary-900/[0] bg-primary-900 mix-blend-hue absolute w-full h-100 top-1 bottom-1" />
-                      <img
-                        src={"/projects/" + item.image}
-                        class="w-full h-full"
-                        alt=""
-                      />
-                    </div>
-                    <div class="md:ms-5 order-1 md:order-2">
-                      <h2 class="text-base font-bold text-primary-600 md:text-secondary-950 group-hover:text-primary-600 mb-2">
-                        {item.title}
-                      </h2>
-                      <p class="text-secondary-950 mb-4">{item.description}</p>
-                      <ul class="flex flex-wrap">
-                        {item.stack.map((tag) => (
-                          <li class="py-1 px-3 mb-2 text-sm text-primary-600 group-hover:bg-primary-600 bg-primary-50 rounded-2xl me-2  group-hover:text-primary-50">
-                            {tag}
-                          </li>
-                        ))}
-                      </ul>
+                      <div class="mt-4 md:mt-0 order-2 md:order-1 relative rounded-lg overflow-hidden grow-0 shrink-0 w-[130px] h-[130px]">
+                        <div class="group-hover:bg-transparent bg-primary-900 mix-blend-hue absolute w-full h-100 top-0 bottom-0" />
+                        <img
+                          src={"/projects/" + item.image}
+                          class="w-full h-full"
+                          alt=""
+                        />
+                      </div>
+                      <div class="md:ms-5 order-1 md:order-2">
+                        <h2 class="group-hover:blank text-base font-bold text-primary-600 md:text-primary-1000 group-hover:text-primary-600 mb-3">
+                          {item.title}
+                        </h2>
+                        <p class="text-primary-1000 mb-4">{item.description}</p>
+                        <ul class="flex flex-wrap">
+                          {item.stack.map((tag) => (
+                            <li class="py-1 px-3 mb-2 text-sm text-primary-600 group-hover:bg-secondary-100 bg-primary-50 rounded-md me-2 group-hover:text-secondary-0">
+                              {tag}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 );
@@ -347,16 +334,6 @@ const texts = i18n(currentLocale);
         height: 70px;
       }
 
-      // @keyframes adjust-info {
-      //   from {
-      //     height: 130px;
-      //   }
-      //   to {
-      //     height: 200px;
-      //   }
-      // }
-
-      // @supports (animation-timeline: view()) and (timeline-scope: --yes) {
       .info {
         animation: adjust-info block both;
       }
@@ -373,26 +350,17 @@ const texts = i18n(currentLocale);
       main {
         view-timeline: --main;
       }
-      // }
-
-      // .profile_image {
-      //   view-timeline-name: --profile_image;
-      //   view-timeline-axis: block;
-
-      //   animation-timeline: --profile_image;
-      //   animation-name: sizeImage;
-      // }
 
       .menu-home {
         & a {
           position: relative;
           padding-left: 30px;
           transition: 0.5s ease-in-out;
-          color: #042b43;
+          color: var(--primary);
           &:before {
             content: "";
             position: absolute;
-            border: solid 1px #042b43;
+            border: solid 1px var(--primary);
             left: -10px;
             top: 50%;
             width: 0;
@@ -402,10 +370,10 @@ const texts = i18n(currentLocale);
 
           &.active {
             padding-left: 55px;
-            color: #8873ef;
+            color: var(--secondary);
             &:before {
               width: 50px;
-              border: solid 1px #8873ef;
+              border: solid 1px var(--secondary);
             }
           }
         }
@@ -413,9 +381,9 @@ const texts = i18n(currentLocale);
       .bg-text-title {
         background: linear-gradient(
           90deg,
-          #2e2364 0.08%,
-          #32266a 39.51%,
-          #8873ef 99.91%
+          var(--primary) 0.08%,
+          var(--primary) 39.51%,
+          var(--secondary) 99.91%
         );
         background-clip: text;
         -webkit-background-clip: text;

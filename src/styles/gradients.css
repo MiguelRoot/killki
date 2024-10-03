@@ -1,5 +1,5 @@
 :root {
-  --gradient: linear-gradient(90deg, #6a15d6 0%, #f91111 100%);
+  --gradient: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
 }
 
 .g-border-b {
