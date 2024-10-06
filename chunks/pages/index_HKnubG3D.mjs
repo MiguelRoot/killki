@@ -2,9 +2,9 @@
 import { c as createAstro, a as createComponent, r as renderTemplate, m as maybeRenderHead, d as renderComponent, b as addAttribute, i as renderHead } from '../astro_Heksqiom.mjs';
 import 'kleur/colors';
 import 'clsx';
-import { $ as $$IconApp, c as $$BaseHead, d as $$Footer, S as SITE_TITLE, a as SITE_DESCRIPTION, g as getCollection, f as $$FormattedDate, h as $$Header } from './__Xb4qrwF8.mjs';
+import { $ as $$IconApp, c as $$BaseHead, d as $$Footer, S as SITE_TITLE, a as SITE_DESCRIPTION, g as getCollection, f as $$FormattedDate, h as $$Header } from './__5vJgdrSl.mjs';
 /* empty css                          */
-import { L as LANG, i as i18n, $ as $$Social, a as $$MenuFooter } from './_id__7PgDbVzT.mjs';
+import { L as LANG, i as i18n, $ as $$Social, a as $$MenuFooter } from './_id__WcG9Ml3c.mjs';
 /* empty css                          */
 
 const $$Astro$5 = createAstro("https://miguelkillki.com");

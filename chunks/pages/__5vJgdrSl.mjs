@@ -9,6 +9,7 @@ import 'clsx';
 const SITE_TITLE = "Miguel killki";
 const SITE_DESCRIPTION = "Welcome to my website!";
 let baseUrlStatic = "";
+const baseUrlLocal = "http://localhost:4321";
 {
   baseUrlStatic = "";
 }
@@ -32,7 +33,7 @@ const $$IconApp = createComponent(async ($$result, $$props, $$slots) => {
     class: className = ""
   } = Astro2.props;
   const loadIcon = async (width = 24, className2 = "") => {
-    const iconUrl = `${baseUrlStatic}/icons/${name}.svg`;
+    const iconUrl = `${baseUrlLocal}/icons/${name}.svg`;
     try {
       const response = await fetch(iconUrl);
       if (!response.ok) {

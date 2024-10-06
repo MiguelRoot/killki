@@ -2,7 +2,7 @@
 import { c as createAstro, a as createComponent, r as renderTemplate, d as renderComponent, m as maybeRenderHead } from '../astro_Heksqiom.mjs';
 import 'kleur/colors';
 import 'clsx';
-import { e as $$BlogPost } from './__Xb4qrwF8.mjs';
+import { e as $$BlogPost } from './__5vJgdrSl.mjs';
 
 const $$Astro = createAstro("https://miguelkillki.com");
 const $$About = createComponent(async ($$result, $$props, $$slots) => {

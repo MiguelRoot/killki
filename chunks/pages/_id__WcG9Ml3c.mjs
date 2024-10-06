@@ -2,7 +2,7 @@
 import { c as createAstro, a as createComponent, r as renderTemplate, m as maybeRenderHead, b as addAttribute, d as renderComponent, i as renderHead } from '../astro_Heksqiom.mjs';
 import 'kleur/colors';
 import 'clsx';
-import { $ as $$IconApp, b as baseUrlStatic, S as SITE_TITLE, a as SITE_DESCRIPTION, c as $$BaseHead, d as $$Footer } from './__Xb4qrwF8.mjs';
+import { $ as $$IconApp, b as baseUrlStatic, S as SITE_TITLE, a as SITE_DESCRIPTION, c as $$BaseHead, d as $$Footer } from './__5vJgdrSl.mjs';
 import { LISTPAGESID } from './listPageId_AMQuRaDo.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, createContext, useRef, useEffect, useContext } from 'react';
