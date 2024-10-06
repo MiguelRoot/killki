@@ -4,6 +4,8 @@
 export const SITE_TITLE = "Miguel killki";
 export const SITE_DESCRIPTION = "Welcome to my website!";
 
+export const baseUrlLocal = "http://localhost:4321";
+
 export let baseUrlStatic = "";
 
 if (import.meta.env.MODE === "development") {

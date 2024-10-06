@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { baseUrlStatic } from "../../../consts";
+import { baseUrlStatic } from "../../consts";
 
 interface IconComponentProps {
   name: string;

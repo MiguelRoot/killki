@@ -4,7 +4,7 @@ import {
   fetchDataByUrl,
   getUrlSheets,
   googleSheetData,
-} from "../../shared/react/sheets/googleSheetData";
+} from "../../react/sheets/googleSheetData";
 import { AppEditor } from "./EditCode";
 
 export default function Content({ idSheet }: any) {

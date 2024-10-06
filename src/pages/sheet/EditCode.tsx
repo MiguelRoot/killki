@@ -2,16 +2,16 @@ import { useState, useEffect, type FC, useRef } from "react";
 import { encode, decode } from "js-base64";
 import Split from "react-split";
 import Editor from "@monaco-editor/react";
-import TabContent from "../../shared/react/tab/TabContent";
-import TabHeader from "../../shared/react/tab/TabHeader";
-import IconReact from "../../shared/react/icon/IconApp";
-import Dropdown from "../../shared/react/Dropdown/Dropdown";
+import TabContent from "../../react/tab/TabContent";
+import TabHeader from "../../react/tab/TabHeader";
+import IconReact from "../../react/icon/IconApp";
+import Dropdown from "../../react/Dropdown/Dropdown";
 import { marked } from "marked";
 import { styleBase, styleMarkDown } from "./defaultStyle";
 import useMenuItem, { type MenuItemType } from "./useMenuItem";
 import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
 import { useFullscreenStore } from "./editor/useFullscreen";
-import { useTabStore } from "../../shared/react/tab/TabContext";
+import { useTabStore } from "../../react/tab/TabContext";
 interface ComponentThatSetsHtmlProps {
   updateHtml: (newHtml: string) => void;
   defaultLanguage: string; // Nueva prop para configurar el lenguaje por defecto

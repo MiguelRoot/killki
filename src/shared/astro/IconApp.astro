@@ -1,29 +1,79 @@
 ---
-import { Icon } from "astro-icon/components";
+import { baseUrlLocal } from "../../consts";
 
 interface IconProps {
   name: string;
-  size?: "small" | "large" | "default" | string;
+  size?: string | number;
+  class?: string;
 }
-const { name = "", size = "default" }: IconProps = Astro.props as IconProps;
 
-function getSize(size: IconProps["size"]): string {
+const {
+  name,
+  size = "24",
+  class: className = "",
+}: IconProps = Astro.props as IconProps;
+
+const loadIcon = async (
+  width: number = 24,
+  className: string = ""
+): Promise<string> => {
+  const iconUrl = `${baseUrlLocal}/icons/${name}.svg`;
+
+  try {
+    const response = await fetch(iconUrl);
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    let svgContent = await response.text();
+
+    // Reemplazar el ancho y altura del SVG dinámicamente
+    svgContent = svgContent.replace(/width="\d+"/, `width="${width}"`);
+    svgContent = svgContent.replace(/height="\d+"/, `height="${width}"`); // Ajustar height igual al ancho
+
+    // Agregar la clase si no existe un atributo class ya
+    if (svgContent.includes('class="')) {
+      svgContent = svgContent.replace(
+        /class="([^"]*)"/,
+        `class="$1 ${className}"`
+      );
+    } else {
+      svgContent = svgContent.replace("<svg", `<svg class="${className}"`);
+    }
+
+    return svgContent;
+  } catch (error) {
+    return `
+      <svg width="${width}" height="${width}" viewBox="0 0 800 800" class="${className}" fill="none" xmlns="http://www.w3.org/2000/svg">
+      </svg>
+    `;
+  }
+};
+
+const applySizeStyles = (size: string | number) => {
+  let sizeIcon: string;
   const sizeAsNumber = Number(size);
+
   if (!isNaN(sizeAsNumber)) {
-    return `${sizeAsNumber}px`;
+    sizeIcon = `${size}`;
   } else {
     switch (size) {
       case "small":
-        return "16px";
+        sizeIcon = "16";
+        break;
       case "large":
-        return "48px";
+        sizeIcon = "48";
+        break;
       default:
-        return "24px"; // Default size
+        sizeIcon = "24";
     }
   }
-}
 
-const iconSize: string = getSize(size);
+  return sizeIcon;
+};
+
+const setSizeStyles = applySizeStyles(size);
+
+const iconContent: string = await loadIcon(Number(setSizeStyles), className);
 ---
 
-{(<Icon name={name} width={iconSize} height={iconSize} />)}
+<Fragment set:html={iconContent} />
