@@ -2,13 +2,13 @@
 // import { getRelativeLocaleUrl } from "astro:i18n";
 import BaseHead from "../components/sections/BaseHead.astro";
 import Footer from "../components/sections/Footer.astro";
-import Icons from "../components/Icons.astro";
 import Menu from "../components/sections/Menu.astro";
 import MenuFooter from "../components/sections/MenuFooter.astro";
 import Social from "../components/sections/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
 import { i18n } from "../i18n";
 import DonwloadCV from "../components/DonwloadCV.astro";
+import AppIcon from "../components/AppIcon.astro";
 
 const { currentLocale } = Astro;
 
@@ -132,7 +132,7 @@ const texts = i18n(currentLocale);
 
           <section id="experience">
             <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden">
-              <Icons name="porfolio" />
+              <AppIcon name="porfolio" />
               <span class="ms-2">{texts.menu[1]?.label}</span>
             </h2>
             {
@@ -161,7 +161,7 @@ const texts = i18n(currentLocale);
           </section>
           <section id="projects" class="mt-14">
             <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden">
-              <Icons name="code" />
+              <AppIcon name="code" />
               <span class="ms-2">{texts.menu[2]?.label}</span>
             </h2>
             {
@@ -244,7 +244,7 @@ const texts = i18n(currentLocale);
 
           <section id="skills" class="mt-14">
             <h2 class="font-bold flex items-center text-xl mb-5 lg:hidden">
-              <Icons name="skills" />
+              <AppIcon name="skills" />
               <span class="ms-2">{texts.menu[3]?.label}</span>
             </h2>
 
@@ -253,7 +253,7 @@ const texts = i18n(currentLocale);
                 texts.skills.map((item) => {
                   return (
                     <div class="mb-8">
-                      <Icons name={item.icon} />
+                      <AppIcon name={`skill-${item.icon}`} size="72" />
                       <span class="font-bold block mt-4">{item.title}</span>
                     </div>
                   );

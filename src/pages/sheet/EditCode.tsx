@@ -4,14 +4,15 @@ import Split from "react-split";
 import Editor from "@monaco-editor/react";
 import TabContent from "../../react/tab/TabContent";
 import TabHeader from "../../react/tab/TabHeader";
-import IconReact from "../../react/icon/IconApp";
-import Dropdown from "../../react/Dropdown/Dropdown";
+
+import Dropdown from "../../react/components/Dropdown/Dropdown";
 import { marked } from "marked";
 import { styleBase, styleMarkDown } from "./defaultStyle";
 import useMenuItem, { type MenuItemType } from "./useMenuItem";
 import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
 import { useFullscreenStore } from "./editor/useFullscreen";
 import { useTabStore } from "../../react/tab/TabContext";
+import ReactIcon from "../../react/components/Icon/IconApp";
 interface ComponentThatSetsHtmlProps {
   updateHtml: (newHtml: string) => void;
   defaultLanguage: string; // Nueva prop para configurar el lenguaje por defecto
@@ -532,7 +533,7 @@ const CodeEditor = ({
 
                         <Dropdown>
                           <Dropdown.Toggle className="-rotate-90">
-                            <IconReact name="arrow-up" />
+                            <ReactIcon name="arrow-up" />
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
                             <div>
@@ -544,10 +545,10 @@ const CodeEditor = ({
                                         className={`p-1 flex items-center text-primary-0`}
                                       >
                                         {lang.item.active ? (
-                                          <IconReact size="20" name="close" />
+                                          <ReactIcon size="20" name="close" />
                                         ) : (
                                           // <IconReact size="20" name="plus" />
-                                          <IconReact
+                                          <ReactIcon
                                             size="20"
                                             name={lang.item.code}
                                           />
@@ -580,21 +581,21 @@ const CodeEditor = ({
                       className="p-2 hover:bg-secondary-200 rounded-md"
                     >
                       {configSetting.setting ? (
-                        <IconReact name="code" size="small" />
+                        <ReactIcon name="code" size="small" />
                       ) : (
-                        <IconReact name="view" size="small" />
+                        <ReactIcon name="view" size="small" />
                       )}
                     </div>
                     <div
                       className="p-2 hover:bg-secondary-200 rounded-md"
                       onClick={toggleFullscreen}
                     >
-                      <IconReact name="fullscreen" size="small" />
+                      <ReactIcon name="fullscreen" size="small" />
                     </div>
                     <Dropdown>
                       <Dropdown.Toggle>
                         <div className="p-2 hover:bg-secondary-100 rounded-md">
-                          <IconReact name="menu-kebab" size="small" />
+                          <ReactIcon name="menu-kebab" size="small" />
                         </div>
                       </Dropdown.Toggle>
                       <Dropdown.Menu align="right">
@@ -663,7 +664,7 @@ const CodeEditor = ({
                                       <Dropdown.Toggle>
                                         <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] bg-white/95 border border-primary-0 text-primary-0">
                                           {lang.item.title}{" "}
-                                          <IconReact
+                                          <ReactIcon
                                             size="small"
                                             name="arrow-up"
                                           />

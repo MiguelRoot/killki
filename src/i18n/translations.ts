@@ -24,7 +24,7 @@ const skillsList = [
     title: "ReactJs",
   },
   {
-    icon: "reactjs",
+    icon: "react-native",
     title: "React Native",
   },
   {
@@ -51,14 +51,14 @@ const skillsList = [
   //   icon: "dart",
   //   title: "Dart",
   // },
-  {
-    icon: "redux",
-    title: "Redux",
-  },
-  {
-    icon: "nextjs",
-    title: "NextJS",
-  },
+  // {
+  //   icon: "redux",
+  //   title: "Redux",
+  // },
+  // {
+  //   icon: "nextjs",
+  //   title: "NextJS",
+  // },
   {
     icon: "astro",
     title: "Astro",
@@ -67,9 +67,13 @@ const skillsList = [
     icon: "wordpress",
     title: "Wordpress",
   },
+  // {
+  //   icon: "odoo",
+  //   title: "Odoo",
+  // },
   {
-    icon: "odoo",
-    title: "Odoo",
+    icon: "java",
+    title: "Java",
   },
 ];
 

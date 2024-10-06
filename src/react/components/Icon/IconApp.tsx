@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import { baseUrlStatic } from "../../consts";
+import { baseUrlStatic } from "../../../consts";
 
 interface IconComponentProps {
   name: string;
   size?: string | number; // size puede ser un string como 'small', 'large' o un número para tamaño en px
 }
 
-const IconReact: React.FC<IconComponentProps> = ({ name, size = "24" }) => {
+const ReactIcon: React.FC<IconComponentProps> = ({ name, size = "24" }) => {
   const iconRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,4 +78,4 @@ const IconReact: React.FC<IconComponentProps> = ({ name, size = "24" }) => {
   return <div ref={iconRef} />;
 };
 
-export default IconReact;
+export default ReactIcon;
