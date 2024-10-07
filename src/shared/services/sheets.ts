@@ -7,6 +7,7 @@ export const getSheetData = async (getUrl: string) => {
   return response;
 };
 
+// gaaaaaaaaaaa
 export const getUrlSheets = (id: string, gid: number) => {
   return `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json&tq&gid=${gid}`;
 };
