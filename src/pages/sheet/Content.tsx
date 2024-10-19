@@ -74,7 +74,7 @@ export default function Content({ idSheet }: any) {
         </div>
       )}
       {!isLoading && (
-        <div className="mb-5">
+        <div className="mb-5 overflow-hidden">
           <div className="md:columns-2 lg:columns-4 text-sm gap-4 mb-14">
             {outputArray.map(({ title, items }: any, index: number) => {
               return (
@@ -97,7 +97,8 @@ export default function Content({ idSheet }: any) {
                               active ===
                               index.toString() + indexChild.toString()
                                 ? "text-white font-bold px-3 py-1 !bg-secondary-0 cursor-pointer text-shadow  rounded-sm"
-                                : "" + "font-bold px-3 py-1 cursor-pointer"
+                                : "" +
+                                  "font-bold font-raleway px-3 py-1 cursor-pointer"
                             }
                             onClick={() => {
                               handleScroll();

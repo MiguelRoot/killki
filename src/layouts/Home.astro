@@ -29,43 +29,47 @@ const texts = i18n(currentLocale);
     </div>
     <!-- <Header title={SITE_TITLE} /> -->
     <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
-      <svg
-        class="fixed z-10 top-[-450px] start-[-300px] opacity-30 pointer-events-none"
-        width="1020"
-        height="932"
-        viewBox="0 0 1020 932"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <div
+        class="fixed top-0 left-0 pointer-events-none w-full z-10 overflow-hidden"
       >
-        <g opacity="0.3" filter="url(#filter0_f_8710_4643)">
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M864.057 486.614C846.653 541.287 806.82 583.111 770.741 627.698C739.657 666.112 706.529 700.357 667.059 730.064C623.094 763.155 581.632 809.207 526.674 811.397C471.538 813.594 425.235 772.698 379.685 741.515C336.858 712.197 306.364 671.8 269.447 635.304C218.92 585.354 131.721 557.014 121.837 486.614C112.283 418.556 181.643 365.732 224.009 311.657C261.557 263.732 303.468 221.284 355.036 188.966C407.988 155.781 464.867 112.886 526.674 121.978C588.379 131.055 614.616 209.842 671.469 235.515C737.749 265.445 836.532 224.162 880.816 281.9C923.187 337.144 885.182 420.249 864.057 486.614Z"
-            fill="#8873EF"></path>
-        </g>
-        <defs>
-          <filter
-            id="filter0_f_8710_4643"
-            x="0.94458"
-            y="0.740356"
-            width="1019.06"
-            height="930.741"
-            filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
-          >
-            <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
-            <feBlend
-              mode="normal"
-              in="SourceGraphic"
-              in2="BackgroundImageFix"
-              result="shape"></feBlend>
-            <feGaussianBlur
-              stdDeviation="60"
-              result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
-          </filter>
-        </defs>
-      </svg>
+        <svg
+          class="mt-[-450px] ms-[-300px] opacity-30"
+          width="1020"
+          height="932"
+          viewBox="0 0 1020 932"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <g opacity="0.3" filter="url(#filter0_f_8710_4643)">
+            <path
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              d="M864.057 486.614C846.653 541.287 806.82 583.111 770.741 627.698C739.657 666.112 706.529 700.357 667.059 730.064C623.094 763.155 581.632 809.207 526.674 811.397C471.538 813.594 425.235 772.698 379.685 741.515C336.858 712.197 306.364 671.8 269.447 635.304C218.92 585.354 131.721 557.014 121.837 486.614C112.283 418.556 181.643 365.732 224.009 311.657C261.557 263.732 303.468 221.284 355.036 188.966C407.988 155.781 464.867 112.886 526.674 121.978C588.379 131.055 614.616 209.842 671.469 235.515C737.749 265.445 836.532 224.162 880.816 281.9C923.187 337.144 885.182 420.249 864.057 486.614Z"
+              fill="#8873EF"></path>
+          </g>
+          <defs>
+            <filter
+              id="filter0_f_8710_4643"
+              x="0.94458"
+              y="0.740356"
+              width="1019.06"
+              height="930.741"
+              filterUnits="userSpaceOnUse"
+              color-interpolation-filters="sRGB"
+            >
+              <feFlood flood-opacity="0" result="BackgroundImageFix"></feFlood>
+              <feBlend
+                mode="normal"
+                in="SourceGraphic"
+                in2="BackgroundImageFix"
+                result="shape"></feBlend>
+              <feGaussianBlur
+                stdDeviation="60"
+                result="effect1_foregroundBlur_8710_4643"></feGaussianBlur>
+            </filter>
+          </defs>
+        </svg>
+      </div>
 
       <article class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
         <div
@@ -79,7 +83,7 @@ const texts = i18n(currentLocale);
               <div>
                 <DonwloadCV />
                 <div
-                  class="md:text-2xl text-primary-600 font-bold lg:mt-2 order-2"
+                  class="md:text-2xl font-raleway text-primary-600 font-bold lg:mt-1 order-2"
                 >
                   {texts.welcome}
                 </div>
@@ -89,11 +93,12 @@ const texts = i18n(currentLocale);
               </div> -->
             </div>
             <h1
-              class="bg-text-title font-black text-primary-1000 text-4xl md:text-6xl mb-4"
+              class="font-raleway bg-text-title font-extrabold text-primary-1000 text-4xl md:text-6xl mb-4"
             >
               {texts.senior}
             </h1>
-            <span class="text-xl md:text-2xl text-primary-1000 font-bold"
+            <span
+              class="font-raleway text-xl md:text-2xl text-primary-1000 font-bold"
               >{texts.career}</span
             >
             <p class="text-primary-1000 mt-2">{texts.presentation}</p>
@@ -105,7 +110,7 @@ const texts = i18n(currentLocale);
                 texts.menu.map((item) => (
                   <li>
                     <a
-                      class="font-bold text-primary-600"
+                      class="font-raleway font-bold text-primary-600"
                       href={"#" + item.path}
                     >
                       {item.label}
@@ -139,20 +144,30 @@ const texts = i18n(currentLocale);
               texts.experience.map((items) => {
                 return (
                   <div class="md:flex lg-14 mb-8">
-                    <div class="me-3 pt-1 text-primary-1000 text-sm leading-5 min-w-[88px]">
+                    {/* <div class="me-3 pt-1 text-primary-1000 text-sm leading-5 min-w-[88px]">
                       {items.startDate}
-                    </div>
+                    </div> */}
                     <div>
-                      <div class="md:flex items-center justify-between mb-3">
-                        <div class="text-lg font-bold text-primary-600 text-shadow">
-                          {items.position}
-                        </div>
-                        <div class="md:font-bold text-secondary-1000">
+                      <div class="md:flex items-center justify-between">
+                        <div class="font-raleway font-semibold text-secondary-950 text-shadow">
                           {items.company}
                         </div>
+                        <div class="md:font-semibold font-raleway text-secondary-950">
+                          {items.city}
+                        </div>
                       </div>
-
-                      <div class="mb-3">{items.description}</div>
+                      <div class="md:flex items-center justify-between mb-3">
+                        <div class="text-lg font-raleway font-bold text-primary-600 text-shadow">
+                          {items.position}
+                        </div>
+                        <div class="">{items.startDate}</div>
+                      </div>
+                      {/* <div class="mb-3">{items.description}</div> */}
+                      <ul class="list-disc ps-4">
+                        {items.detalies.map((detalie) => (
+                          <li class="text-primary-1000 mb-1">{detalie}</li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 );
@@ -168,7 +183,7 @@ const texts = i18n(currentLocale);
               texts.projects.map((item) => {
                 return (
                   <div class="group bg-gradient-to-br transition-all hover:from-secondary-0 hover:to-primary-0 rounded-xl p-0.5 mb-5 md:ms-[-16px] relative">
-                    <div class="rounded-lg bg-white transform-none md:py-4 md:px-4  flex-col md:flex-row flex ease-in-out">
+                    <div class="hoverLInk rounded-lg bg-[#FCFCFF] transform-none md:pt-5 pb-4 md:px-4  flex-col md:flex-row flex ease-in-out">
                       <div class="absolute top-[-90px] right-0 opacity-0 group-hover:opacity-50 pointer-events-none">
                         <svg
                           width="759"
@@ -223,8 +238,10 @@ const texts = i18n(currentLocale);
                         />
                       </div>
                       <div class="md:ms-5 order-1 md:order-2">
-                        <h2 class="group-hover:blank text-base font-bold text-primary-600 md:text-primary-1000 group-hover:text-primary-600 mb-3">
-                          {item.title}
+                        <h2 class="blank font-raleway text-base font-bold text-primary-600 md:text-primary-1000 group-hover:text-primary-600 mb-3">
+                          <a target="_blank" href={item.link}>
+                            {item.title}
+                          </a>
                         </h2>
                         <p class="text-primary-1000 mb-4">{item.description}</p>
                         <ul class="flex flex-wrap">
@@ -253,8 +270,14 @@ const texts = i18n(currentLocale);
                 texts.skills.map((item) => {
                   return (
                     <div class="mb-8">
-                      <AppIcon name={`skill-${item.icon}`} size="72" />
-                      <span class="font-bold block mt-4">{item.title}</span>
+                      <AppIcon
+                        name={`skill-${item.icon}`}
+                        size="72"
+                        class="shadow-[0px_0px_24px_rgba(0,_0,_0,_0.04)] rounded-full"
+                      />
+                      <span class="font-bold font-raleway block mt-4">
+                        {item.title}
+                      </span>
                     </div>
                   );
                 })

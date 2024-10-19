@@ -1,6 +1,5 @@
 ---
-import { baseUrlLocal } from "../consts";
-
+import { baseUrlHost } from "../consts";
 interface IconProps {
   name: string;
   size?: string | number;
@@ -17,7 +16,7 @@ const loadIcon = async (
   width: number = 24,
   className: string = ""
 ): Promise<string> => {
-  const iconUrl = `${baseUrlLocal}/icons/${name}.svg`;
+  const iconUrl = `${baseUrlHost}/icons/${name}.svg`;
 
   try {
     const response = await fetch(iconUrl);

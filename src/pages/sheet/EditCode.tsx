@@ -567,7 +567,7 @@ const CodeEditor = ({
                       </div>
                     )}
                   </div>
-                  <h3 className="text-lg font-bold text-secondary-950">
+                  <h3 className="text-lg font-raleway font-bold text-secondary-950">
                     ({titleCode})
                   </h3>
                   <div

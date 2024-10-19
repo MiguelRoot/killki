@@ -4,10 +4,16 @@
 export const SITE_TITLE = "Miguel killki";
 export const SITE_DESCRIPTION = "Welcome to my website!";
 
-export const baseUrlLocal = "http://localhost:4321";
+export const baseUrlHost = "http://localhost:4321";
+
+// const currentUrl = import.meta.url;
+
+// Crear un objeto URL a partir de la URL actual
+// const currentDir = new URL(".", currentUrl);
+export const rootProject = new URL("..", import.meta.url).pathname;
+console.log("rootProject GAA2", rootProject);
 
 export let baseUrlStatic = "";
-
 if (import.meta.env.MODE === "development") {
   baseUrlStatic = "/public/";
 } else {

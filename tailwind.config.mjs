@@ -35,6 +35,11 @@ export default {
           1000: "var(--primary-1000)",
         },
       },
+      fontFamily: {
+        // Puedes agregar la fuente personalizada aquí
+        raleway: ["Raleway", "sans-serif"], // Si es de Google Fonts
+        custom: ["Atkinson", "sans-serif"], // Si es una fuente personalizada
+      },
     },
   },
   plugins: [],
