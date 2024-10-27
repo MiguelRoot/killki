@@ -199,14 +199,11 @@ ol {
 
 <button id="voiceButton">${ln}</button>`,Ui=`
 
-// require.config({
-//     paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' }
-//   });
+require.config({
+    paths: { 'vs': '/node_modules/monaco-editor/min/vs' }
+  });
 
-  // require(['vs/editor/editor.main'], function(monaco) {
-  // const monaco = require('monaco-editor');
-
-  import * as monaco from "monaco-editor";
+  require(['vs/editor/editor.main'], function(monaco) {
 
     // Función principal que procesa todos los bloques de código
     const codeBlocks = document.querySelectorAll('pre > code');
@@ -232,7 +229,7 @@ ol {
       codeBlock.parentElement.replaceWith(containerDiv);
 
       // Crear el editor y ajustar su alto dinámicamente
-      const editor = setupMonacoEditor( editorDiv, code, lang);
+      const editor = setupMonacoEditor(monaco, editorDiv, code, lang);
       adjustEditorHeight(editor, editorDiv);  // Ajustar la altura basado en el contenido
       
 
@@ -242,7 +239,7 @@ ol {
 
     // Funciones existentes...
 
-    function setupMonacoEditor(editorDiv, code, lang) {
+    function setupMonacoEditor(monaco, editorDiv, code, lang) {
       monaco.editor.defineTheme('default', {
         base: 'vs',
         inherit: true,
@@ -309,7 +306,7 @@ ol {
       document.execCommand('copy');
       document.body.removeChild(textarea);
     }
-  // });
+  });
 
     // Función para obtener el texto del
 function getTextDocument() {
@@ -418,6 +415,7 @@ function getTextDocument() {
           console.log(iframe);
         }
       <\/script>
+      <script src="/node_modules/monaco-editor/min/vs/loader.js"><\/script>
       <script>
         ${o}
       <\/script>
