@@ -100,7 +100,7 @@ export async function getStaticPaths() {
       <div>
         <!-- {JSON.stringify(listIds)} -->
         <h1
-          class="font-extrabold font-raleway text-primary-0 text-4xl md:text-5xl mb-12 mt-7"
+          class="font-extrabold font-raleway text-primary-0 text-4xl md:text-5xl mb-4 mt-7"
         >
           {
             LISTPAGESID.map((item: any) => {
@@ -110,6 +110,16 @@ export async function getStaticPaths() {
             })
           }
         </h1>
+
+        <p class="mb-12">
+          {
+            LISTPAGESID.map((item: any) => {
+              if (item.pageId === id) {
+                return item.description;
+              }
+            })
+          }
+        </p>
       </div>
       <!-- {id} -->
       <Content idSheet={id} client:load />

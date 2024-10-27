@@ -300,7 +300,10 @@ function createDocument(data: II18n) {
 // Guardar el documento
 const saveDocument = async () => {
   const buffer: Buffer = await Packer.toBuffer(createDocument(translations.es));
-  await writeFile("Curriculum_Miguel_Angel_Llacta_Flores.docx", buffer);
+  await writeFile(
+    "./dist/static/Curriculum_Miguel_Angel_Llacta_Flores.docx",
+    buffer
+  );
   console.log("Documento generado exitosamente.");
 };
 

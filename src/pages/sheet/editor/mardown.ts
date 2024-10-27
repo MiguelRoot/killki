@@ -11,7 +11,7 @@ export const htmlMarkdown = /*html*/ `
 export const javascriptMarkdown = /*javascript*/ `
 
 require.config({
-    paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs' }
+    paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.52.0/min/vs' }
   });
 
   require(['vs/editor/editor.main'], function(monaco) {
@@ -140,50 +140,61 @@ function getTextDocument() {
     return textToRead.trim();
 }
 
-
-
-/// reproducir voice ///
-// Estado inicial del SAM
-const state = {
-    isPlaying: false,
-    utterance: new SpeechSynthesisUtterance(getTextDocument()),
-  };
-  
-  // Acción: Controlar el click del botón
-  function toggleVoiceAction() {
-    if (!state.isPlaying) {
-      // Reproducir
-      state.utterance.lang = 'es-ES';  // Puedes cambiar el idioma aquí
-
-        // Configuración de callback cuando termina de hablar
-        state.utterance.onend = function () {
-            state.isPlaying = false;
-            updateView();
+  window.speechSynthesis.onvoiceschanged = function() {
+        // SAM Model
+        const model = {
+            isPlaying: false,
+            synth: window.speechSynthesis,
+            utterance: new SpeechSynthesisUtterance(getTextDocument()),
+            voices: [],
         };
 
-      speechSynthesis.speak(state.utterance);
-    } else {
-      // Detener la reproducción si está activa
-      speechSynthesis.cancel();
-    }
-  
-    // Actualizar el modelo con la acción ejecutada
-    updateModel();
-  }
-  
-  // Modelo: Cambiar el estado basado en si se está reproduciendo o no
-  function updateModel() {
-    state.isPlaying = !state.isPlaying;
-    updateView();
-  }
-  
-  // Vista: Actualizar el texto del botón basado en el estado
-  function updateView() {
-    const button = document.getElementById('voiceButton');
-    button.innerHTML = state.isPlaying ? '${iconStop}' : '${iconvoice}';
-  }
-  
-  // Escuchar el click del botón
-  document.getElementById('voiceButton').addEventListener('click', toggleVoiceAction);
+        // Configuración inicial
+        model.voices = model.synth.getVoices();
+        model.utterance.voice = model.voices[7];
+        model.utterance.lang = model.utterance.voice.lang;
+        model.utterance.rate = 1;
+        model.utterance.pitch = 1;
+
+        // SAM Actions
+        const actions = {
+            toggleSpeech: () => {
+                if (model.isPlaying) {
+                    actions.stopSpeech();
+                } else {
+                    actions.playSpeech();
+                }
+            },
+            playSpeech: () => {
+                model.synth.cancel();
+                model.synth.speak(model.utterance);
+                model.isPlaying = true;
+                render();
+            },
+            stopSpeech: () => {
+                model.synth.cancel();
+                model.isPlaying = false;
+                render();
+            }
+        };
+
+        // SAM State
+        function render() {
+            const speakButton = document.getElementById("voiceButton");
+            speakButton.innerHTML = model.isPlaying ? '${iconStop}' : '${iconvoice}';
+        }
+
+        // Event listeners
+        document.getElementById("voiceButton").addEventListener("click", actions.toggleSpeech);
+        
+        // Listener para cuando termine la reproducción
+        model.utterance.onend = () => {
+            model.isPlaying = false;
+            render();
+        };
+
+        // Inicializar
+        render();
+};
 
 `;
