@@ -4,5 +4,9 @@
     "strictNullChecks": true,
     "jsx": "react-jsx",
     "jsxImportSource": "react"
-  }
+  },
+    "include": [
+    "src",
+    "src/types" // Incluye la carpeta de tipos personalizada
+  ]
 }

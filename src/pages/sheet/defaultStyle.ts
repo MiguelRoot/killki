@@ -5,6 +5,10 @@ body {
   line-height: 1.5;
   // margin: 30px;
   padding: 30px;
+  font-family: "Ralway", sans-serif;
+  color: #583d7b;
+  font-weight: 500;
+
 }
 
 button {
@@ -21,7 +25,9 @@ h1, h2, h3, h4, h5, h6 {
   padding-left: 2px;
   padding-right: 2px;
   font-weight: 600;
+  color: #5112A0;
 }
+
 blockquote {
   background: #E6F2E6;
   border-left: 3px solid #408040;
@@ -30,7 +36,7 @@ blockquote {
   margin-left: 2px;
 }
 pre {
-    background: #f6f8fa;
+    background: #FAF9FF;
     padding: 10px;
     border-radius: 8px;
     font-size: 14px;
@@ -40,7 +46,7 @@ pre {
   // border: 1px solid #55AAFF;
 }
 code {
-  background: #E0F0FF;
+  background: #EDE7FF;
   font-family: consolas, monospace;
   font-size: 14px !important;
   padding: 2px;
@@ -80,7 +86,7 @@ ol {
     border-radius: 4px;
     // border: 1px solid #d3d3d3;
     padding: 10px 10px 0 0;
-    background: #f6f8fa;
+    background: #FAF9FF;
 }
 
 .code-block-container {

@@ -23,7 +23,7 @@
 
 /* test css */
 .gutter {
-  background-color: #f3f3f3;
+  background-color: var(--primary-50);
   cursor: col-resize;
   background-repeat: no-repeat;
   background-position: 50%;

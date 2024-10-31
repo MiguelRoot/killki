@@ -6,6 +6,7 @@ import {
   googleSheetData,
 } from "../../react/services/sheets/googleSheetData";
 import { AppEditor } from "./EditCode";
+import CodeEditorWithPreview from "./editor/editorStack";
 
 export default function Content({ idSheet }: any) {
   const [content, setContent] = useState<null | any>(null);
@@ -68,6 +69,7 @@ export default function Content({ idSheet }: any) {
 
   return (
     <div>
+      {/* <CodeEditorWithPreview /> */}
       {isLoading && (
         <div className="text-lg text-primary-0 flex justify-center w-full">
           <div className="loading">Cargando</div>

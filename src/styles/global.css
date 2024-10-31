@@ -204,3 +204,16 @@ a.blank::before {
   bottom: 50%;
   margin: auto;
 }
+
+.options-active {
+  &::before {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    border-bottom: var(--secondary-500) 2px solid;
+    margin-bottom: -1px;
+    right: 0;
+  }
+}

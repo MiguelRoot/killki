@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro check && astro build && tsx doc/generateCV",
+    "monaco": "shx mkdir -p dist/static/monaco && shx cp -r node_modules/monaco-editor/min/vs dist/static/monaco/",
+    "generateCV": "tsx doc/generateCV",
+    "build": "astro check && astro build && npm run generateCV && npm run monaco",
     "preview": "astro preview",
     "astro": "astro",
     "deploy": "gh-pages -d dist"
@@ -17,8 +19,11 @@
     "@astrojs/rss": "^4.0.1",
     "@astrojs/sitemap": "^3.0.3",
     "@astrojs/tailwind": "^5.0.4",
+    "@babel/standalone": "^7.26.2",
     "@monaco-editor/react": "^4.6.0",
+    "@supabase/supabase-js": "^2.45.6",
     "@types/node": "^22.7.7",
+    "@types/node-sass": "^4.11.8",
     "@types/react": "^18.2.46",
     "@types/react-dom": "^18.2.18",
     "astro": "^4.0.7",
@@ -27,18 +32,23 @@
     "easy-speech": "^2.4.0",
     "emmet-monaco-es": "^5.3.0",
     "js-base64": "^3.7.7",
+    "markdown-it": "^14.1.0",
     "marked": "^14.1.1",
     "monaco-editor": "^0.45.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-split": "^2.0.14",
     "sass": "^1.77.8",
+    "sass.js": "^0.11.1",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.3.3",
+    "typescript": "^5.6.3",
     "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
+    "@types/babel__standalone": "^7.1.7",
     "@types/file-saver": "^2.0.7",
-    "gh-pages": "^6.1.1"
+    "@types/markdown-it": "^14.1.2",
+    "gh-pages": "^6.1.1",
+    "shx": "^0.3.4"
   }
 }

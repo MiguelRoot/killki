@@ -13,21 +13,44 @@ import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
 import { useFullscreenStore } from "./editor/useFullscreen";
 import { useTabStore } from "../../react/tab/TabContext";
 import ReactIcon from "../../react/components/Icon/IconApp";
+import { MONACO_BASE_PATH } from "../../content/config";
+// const ts = require("typescript");
+import ts from "typescript";
 interface ComponentThatSetsHtmlProps {
   updateHtml: (newHtml: string) => void;
   defaultLanguage: string; // Nueva prop para configurar el lenguaje por defecto
   iniValue: string;
 }
 
+const transpileTypeScriptToJavaScript = (typeScriptCode: string) => {
+  const result = ts.transpileModule(typeScriptCode, {
+    compilerOptions: { module: ts.ModuleKind.CommonJS },
+  });
+  return result.outputText;
+};
+
 export const createHtml = ([html, css, js]: MenuItemType[]) => {
+  console.log(html, css, js, "html, css, js");
   if (!html || !css || !js) return "";
 
+  // default content
   let htmlContent;
-  let cssDefault = "";
+  let cssContent = "";
+  let jsContent = "";
+
+  // Ejemplo de uso:
+  const tsCode = `
+  const saludo: string = 'Hola, mundo!';
+  console.log(saludo);
+`;
+
+  const jsCode = transpileTypeScriptToJavaScript(tsCode);
+  console.log(jsCode, "jsCode");
 
   // markdown
   let javascriptMarkdownRef = "";
   let htmlMarkdownRef = "";
+  let cssMarkdownRef = "";
 
   if (html && html.code == "markdown") {
     htmlContent = marked(html.content);
@@ -36,7 +59,7 @@ export const createHtml = ([html, css, js]: MenuItemType[]) => {
       breaks: true,
     });
     // console.log(htmlContent, "htmlContent");
-    cssDefault = styleMarkDown;
+    cssMarkdownRef = styleMarkDown;
     javascriptMarkdownRef = javascriptMarkdown;
     htmlMarkdownRef = htmlMarkdown;
   } else {
@@ -50,7 +73,7 @@ export const createHtml = ([html, css, js]: MenuItemType[]) => {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <style id="preview-style">
         ${styleBase}
-        ${cssDefault}
+        ${cssMarkdownRef}
         ${css?.content}
       </style>
     </head>
@@ -59,6 +82,7 @@ export const createHtml = ([html, css, js]: MenuItemType[]) => {
       <div  id="markdown-content">
       ${htmlContent}
       </div>
+
       <script type="module">
         ${js?.content}
         function resizeIframe() {
@@ -68,8 +92,8 @@ export const createHtml = ([html, css, js]: MenuItemType[]) => {
           console.log(iframe);
         }
       </script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.js"></script>
-      <script>
+      <script src="${MONACO_BASE_PATH}/loader.js"></script>
+      <script type="module">
         ${javascriptMarkdownRef}
       </script>
     </body>
@@ -100,63 +124,6 @@ const copyJson = async (data: any) => {
   onCopy(hashed);
 };
 
-// const hashedDecode = (hash: string) => {
-//   try {
-//     return JSON.parse(decode(hash));
-//   } catch (error) {
-//     return {
-//       config: {
-//         splitSize: [50, 50],
-//         setting: true,
-//       },
-//       languages: [
-//         {
-//           html: {
-//             title: "HTML",
-//             active: true,
-//             content: "",
-//             code: "html",
-//           },
-//           markdown: {
-//             title: "MD",
-//             active: false,
-//             content: "",
-//             code: "markdown",
-//           },
-//         },
-//         {
-//           css: {
-//             title: "CSS",
-//             active: true,
-//             content: "",
-//             code: "css",
-//           },
-//           scss: {
-//             title: "SCSS",
-//             active: false,
-//             content: "",
-//             code: "scss",
-//           },
-//         },
-//         {
-//           javascript: {
-//             title: "JS",
-//             active: true,
-//             content: "",
-//             code: "javascript",
-//           },
-//           typescript: {
-//             title: "TS",
-//             active: false,
-//             content: "",
-//             code: "typescript",
-//           },
-//         },
-//       ],
-//     };
-//   }
-// };
-
 function isJSONValid(cadena: string): [boolean, any] {
   try {
     const resParse = JSON.parse(cadena);
@@ -167,6 +134,155 @@ function isJSONValid(cadena: string): [boolean, any] {
 }
 
 const hashedDecode2 = (hash: string) => {
+  const html = { title: "HTML", code: "html" };
+  const css = { title: "CSS", code: "css" };
+  const scss = { title: "SCSS", code: "scss" };
+  const javascript = { title: "JS", code: "javascript" };
+  const typescript = { title: "TS", code: "typescript" };
+  const markdown = { title: "Markdown", code: "markdown" };
+  const typescriptReact = { title: "TSX", code: "typescript" };
+
+  const configDefault = {
+    splitSize: [50, 50],
+    setting: true,
+    sizeWindow: "auto",
+    stack: "notes",
+
+    stacks: {
+      angular: {
+        icon: "angular",
+        title: "Angular",
+        subtitle: "Typescript",
+        console: true,
+        view: true,
+        language: {
+          html: {
+            codeId: "HTML",
+            content: "",
+            active: "html",
+            codes: [html],
+          },
+          css: {
+            codeId: "CSS",
+            content: "",
+            active: "scss",
+            codes: [scss, css],
+          },
+          javascript: {
+            codeId: "JS",
+            content: "",
+            active: "typescript",
+            codes: [typescript],
+          },
+        },
+      },
+
+      react: {
+        icon: "react",
+        title: "React",
+        subtitle: "Typescript",
+        console: true,
+        view: true,
+        language: {
+          html: {
+            codeId: "HTML",
+            content: "",
+            active: "html",
+            codes: [html],
+          },
+          css: {
+            codeId: "CSS",
+            content: "",
+            active: "scss",
+            codes: [scss, css],
+          },
+          javascript: {
+            codeId: "JS",
+            content: "",
+            active: "typescript",
+            codes: [typescriptReact],
+          },
+        },
+      },
+
+      vanillaJs: {
+        icon: "javascript",
+        title: "Vanilla",
+        subtitle: "Javascript",
+        console: true,
+        view: false,
+        language: {
+          javascript: {
+            codeId: "JS",
+            content: "",
+            active: "javascript",
+            codes: [javascript],
+          },
+        },
+      },
+
+      vanillaTs: {
+        icon: "typescript",
+        title: "Vanilla",
+        subtitle: "Typescript",
+        console: true,
+        view: false,
+        language: {
+          javascript: {
+            codeId: "JS",
+            content: "",
+            active: "typescript",
+            codes: [typescript],
+          },
+        },
+      },
+
+      static: {
+        icon: "html5",
+        title: "Static",
+        subtitle: "HTML/CSS/JS",
+        console: true,
+        view: true,
+        language: {
+          html: {
+            codeId: "HTML",
+            content: "",
+            active: "html",
+            codes: [html],
+          },
+          css: {
+            codeId: "CSS",
+            content: "",
+            active: "css",
+            codes: [css, scss],
+          },
+          javascript: {
+            codeId: "JS",
+            content: "",
+            active: "javascript",
+            codes: [javascript],
+          },
+        },
+      },
+
+      notes: {
+        icon: "markdown",
+        title: "Notes",
+        subtitle: "Markdown",
+        console: false,
+        view: false,
+        language: {
+          html: {
+            codeId: "HTML",
+            content: "",
+            active: "markdown",
+            codes: [markdown],
+          },
+        },
+      },
+    },
+  };
+
   try {
     const [isvalidJson, data] = isJSONValid(hash);
     if (isvalidJson) {
@@ -200,7 +316,6 @@ const hashedDecode2 = (hash: string) => {
         codes: [
           { title: "HTML", code: "html" },
           { title: "Markdown", code: "markdown" },
-          { title: "PUG", code: "pug" },
         ],
       },
       css: {
@@ -249,20 +364,15 @@ const hashedDecode2 = (hash: string) => {
       },
     };
     const response = {
-      config,
+      config: { ...configDefault, ...config },
       version: version || "1.0.0",
       languages: languagesjson,
     };
     return response;
   } catch (error) {
     return {
-      version: "1.0.0",
-      config: {
-        splitSize: [50, 50],
-        setting: true,
-        view: "html",
-        sizeWindow: "auto",
-      },
+      version: "2.0.0",
+      config: configDefault,
       languages: {
         html: {
           codeId: "HTML",
@@ -273,7 +383,6 @@ const hashedDecode2 = (hash: string) => {
           codes: [
             { title: "HTML", code: "html" },
             { title: "Markdown", code: "markdown" },
-            { title: "PUG", code: "pug" },
           ],
         },
         css: {
@@ -348,14 +457,13 @@ const IframePreview = ({
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const { isFullscreen, toggleFullscreen } = useFullscreenStore();
+  // const [messages, setMessages] = useState<any[]>([]);
 
   const handleIframeResize = () => {
-    console.log(setting, "setting");
     const iframe = iframeRef.current;
     if (iframe && iframe.contentWindow && iframe.contentDocument) {
       const iframeBody = iframe.contentDocument.body;
       const iframeHeight = iframeBody.scrollHeight;
-      console.log(iframeHeight, "iframeHeight");
       iframe.style.height = isFullscreen
         ? "calc(100vh - 47px)"
         : setting
@@ -393,7 +501,6 @@ const IframePreview = ({
         className="bg-white-degrade"
         name="widget"
         title="widget"
-        frameBorder="0"
         width="100%"
         scrolling="auto"
         // sandbox={setting ? "allow-scripts" : "allow-same-origin"}
@@ -449,7 +556,7 @@ const CodeEditor = ({
   useEffect(() => {
     const timeout = setTimeout(() => {
       setOutput(createHtml([htmlGroup2.item, cssGroup2.item, jsGroup2.item]));
-    }, 300); // Añadimos un pequeño retraso para evitar demasiadas actualizaciones
+    }, 600); // Añadimos un pequeño retraso para evitar demasiadas actualizaciones
 
     const firstActiveTitle = getAllActiveTitles([
       htmlGroup2.item,
@@ -710,10 +817,30 @@ const CodeEditor = ({
                       })}
                     </div>
 
-                    <IframePreview
-                      output={output}
-                      setting={configSetting.setting}
-                    />
+                    <div>
+                      {configSetting.setting && (
+                        <div className="flex justify-between items-center bg-[#FFF8F9] px-2 border-b border-secondary-50">
+                          <div className="flex gap-4 font-raleway text-xs ps-2">
+                            <div className="options-active relative px-2 cursor-pointer flex items-center text-secondary-400 font-bold h-[36px]">
+                              VISTA
+                            </div>
+                            <div className="relative flex items-center cursor-pointer px-2 text-primary-400 h-[36px]">
+                              CONSOLA
+                            </div>
+                          </div>
+                          <div className="py-2 pe-2 cursor-pointer">
+                            <ReactIcon name="update" size="20" />
+                          </div>
+                        </div>
+                      )}
+
+                      <IframePreview
+                        output={output}
+                        setting={configSetting.setting}
+                      />
+                      {/* <div className="h-full bg-white">{output}</div> */}
+                      {/* <ConsoleViewer /> */}
+                    </div>
                   </Split>
                 </div>
               </>
