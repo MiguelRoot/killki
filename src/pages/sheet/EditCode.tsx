@@ -29,6 +29,69 @@ const transpileTypeScriptToJavaScript = (typeScriptCode: string) => {
   return result.outputText;
 };
 
+function previewFactory(data: any) {
+  if (data.stack === "angular") {
+    return /*html*/ `
+        <html>
+          <style>${data["angular"].language.css.content}</style>
+          <body>${data["angular"].language.html.content}</body>
+          <script>${data["angular"].language.javascript.content}</script>
+        </html>
+      `;
+  } else if (data.stack === "react") {
+    return /*html*/ `
+        <html>
+          <style>${data["react"].language.css.content}</style>
+          <body>${data["react"].language.html.content}</body>
+          <script>${data["react"].language.javascript.content}</script>
+        </html>
+      `;
+  } else if (data.stack === "vanillaJs") {
+    return /*html*/ `
+        <html>
+          <body></body>
+          <script>${data["vanillaJs"].language.javascript.content}</script>
+        </html>
+      `;
+  } else if (data.stack === "vanillaTs") {
+    return /*html*/ `
+        <html>
+          <body></body>
+          <script>${data["vanillaTs"].language.javascript.content}</script>
+        </html>
+      `;
+  } else if (data.stack === "static") {
+    return /*html*/ `
+        <html>
+          <style>${data["static"].language.css.content}</style>
+          <body>${data["static"].language.html.content}</body>
+          <script>${data["static"].language.javascript.content}</script>
+        </html>
+      `;
+  } else {
+    const htmlContent = marked(data["notes"].language.html.content);
+    marked.setOptions({
+      gfm: true,
+      breaks: true,
+    });
+    return /*html*/ `
+        <html lang="es" onload="resizeIframe()">
+          <style>${styleMarkDown}</style>
+          <body>${htmlContent}</body>
+          <script  type="module">
+            ${javascriptMarkdown}
+            function resizeIframe() {
+              const document = window.parent.document;
+              const iframe = document.getElementById('widget'); 
+              iframe.style.height = (document.documentElement.scrollHeight + 18) + 'px';
+              console.log(iframe);
+            }
+          </script>
+        </html>
+      `;
+  }
+}
+
 export const createHtml = ([html, css, js]: MenuItemType[]) => {
   console.log(html, css, js, "html, css, js");
   if (!html || !css || !js) return "";
@@ -411,6 +474,472 @@ const hashedDecode2 = (hash: string) => {
     };
   }
 };
+const hashedDecode3 = (dataRes: string) => {
+  const [valid, dataResObject] = isJSONValid(dataRes);
+  console.log("dataResObject v3", dataResObject);
+
+  const html = { title: "HTML", code: "html" };
+  const css = { title: "CSS", code: "css" };
+  const scss = { title: "SCSS", code: "scss" };
+  const javascript = { title: "JS", code: "javascript" };
+  const typescript = { title: "TS", code: "typescript" };
+  const markdown = { title: "Markdown", code: "markdown" };
+  const typescriptReact = { title: "TSX", code: "typescript" };
+
+  if (valid && dataResObject?.version === "1.0.0") {
+    const markdownActive = dataResObject.languages.html.code === "markdown";
+    const stack = markdownActive ? "notes" : "static";
+    const newObject: any = {
+      version: "2.0.0",
+      config: {
+        splitSize: [50, 50],
+        setting: true,
+        sizeWindow: "auto",
+        stack: stack,
+      },
+      stacks: {
+        angular: {
+          icon: "angular",
+          title: "Angular",
+          subtitle: "Typescript",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "scss",
+              codes: [scss, css],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescript],
+            },
+          },
+        },
+
+        react: {
+          icon: "react",
+          title: "React",
+          subtitle: "Typescript",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "scss",
+              codes: [scss, css],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescriptReact],
+            },
+          },
+        },
+
+        vanillaJs: {
+          icon: "javascript",
+          title: "Vanilla",
+          subtitle: "Javascript",
+          console: true,
+          view: false,
+          language: {
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "javascript",
+              codes: [javascript],
+            },
+          },
+        },
+
+        vanillaTs: {
+          icon: "typescript",
+          title: "Vanilla",
+          subtitle: "Typescript",
+          console: true,
+          view: false,
+          language: {
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescript],
+            },
+          },
+        },
+
+        static: {
+          icon: "html5",
+          title: "Static",
+          subtitle: "HTML/CSS/JS",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "css",
+              codes: [css, scss],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "javascript",
+              codes: [javascript],
+            },
+          },
+        },
+
+        notes: {
+          icon: "markdown",
+          title: "Notes",
+          subtitle: "Markdown",
+          console: false,
+          view: false,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "markdown",
+              codes: [markdown],
+            },
+          },
+        },
+      },
+    };
+
+    // const stackData = newObject.config.stack;
+    if (stack === "notes") {
+      newObject.stacks[stack].language.html.content =
+        dataResObject.languages.html.content;
+      newObject.stacks[stack].language.html.active = "markdown";
+    } else {
+      newObject.stacks[stack].language.html.content =
+        dataResObject.languages.html.content;
+      newObject.stacks[stack].language.html.active = "html";
+
+      newObject.stacks[stack].language.css.content =
+        dataResObject.languages.css.content;
+      newObject.stacks[stack].language.css.active = "css";
+
+      newObject.stacks[stack].language.javascript.content =
+        dataResObject.languages.javascript.content;
+      newObject.stacks[stack].language.javascript.active = "javascript";
+    }
+    console.log("newObject v3 v3", newObject);
+    return newObject;
+  } else {
+    return {
+      version: "2.0.0",
+      config: {
+        splitSize: [50, 50],
+        setting: true,
+        sizeWindow: "auto",
+        stack: "notes",
+      },
+      stacks: {
+        angular: {
+          icon: "angular",
+          title: "Angular",
+          subtitle: "Typescript",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "scss",
+              codes: [scss, css],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescript],
+            },
+          },
+        },
+
+        react: {
+          icon: "react",
+          title: "React",
+          subtitle: "Typescript",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "scss",
+              codes: [scss, css],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescriptReact],
+            },
+          },
+        },
+
+        vanillaJs: {
+          icon: "javascript",
+          title: "Vanilla",
+          subtitle: "Javascript",
+          console: true,
+          view: false,
+          language: {
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "javascript",
+              codes: [javascript],
+            },
+          },
+        },
+
+        vanillaTs: {
+          icon: "typescript",
+          title: "Vanilla",
+          subtitle: "Typescript",
+          console: true,
+          view: false,
+          language: {
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "typescript",
+              codes: [typescript],
+            },
+          },
+        },
+
+        static: {
+          icon: "html5",
+          title: "Static",
+          subtitle: "HTML/CSS/JS",
+          console: true,
+          view: true,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "html",
+              codes: [html],
+            },
+            css: {
+              codeId: "CSS",
+              content: "",
+              active: "css",
+              codes: [css, scss],
+            },
+            javascript: {
+              codeId: "JS",
+              content: "",
+              active: "javascript",
+              codes: [javascript],
+            },
+          },
+        },
+
+        notes: {
+          icon: "markdown",
+          title: "Notes",
+          subtitle: "Markdown",
+          console: false,
+          view: false,
+          language: {
+            html: {
+              codeId: "HTML",
+              content: "",
+              active: "markdown",
+              codes: [markdown],
+            },
+          },
+        },
+      },
+    };
+  }
+
+  // const dataObject = {
+  //   version: "2.0.0",
+  //   config: {
+  //     splitSize: [50, 50],
+  //     setting: true,
+  //     sizeWindow: "auto",
+  //     stack: "notes",
+  //   },
+  //   stacks: {
+  //     angular: {
+  //       icon: "angular",
+  //       title: "Angular",
+  //       subtitle: "Typescript",
+  //       console: true,
+  //       view: true,
+  //       language: {
+  //         html: {
+  //           codeId: "HTML",
+  //           content: "",
+  //           active: "html",
+  //           codes: [html],
+  //         },
+  //         css: {
+  //           codeId: "CSS",
+  //           content: "",
+  //           active: "scss",
+  //           codes: [scss, css],
+  //         },
+  //         javascript: {
+  //           codeId: "JS",
+  //           content: "",
+  //           active: "typescript",
+  //           codes: [typescript],
+  //         },
+  //       },
+  //     },
+
+  //     react: {
+  //       icon: "react",
+  //       title: "React",
+  //       subtitle: "Typescript",
+  //       console: true,
+  //       view: true,
+  //       language: {
+  //         html: {
+  //           codeId: "HTML",
+  //           content: "",
+  //           active: "html",
+  //           codes: [html],
+  //         },
+  //         css: {
+  //           codeId: "CSS",
+  //           content: "",
+  //           active: "scss",
+  //           codes: [scss, css],
+  //         },
+  //         javascript: {
+  //           codeId: "JS",
+  //           content: "",
+  //           active: "typescript",
+  //           codes: [typescriptReact],
+  //         },
+  //       },
+  //     },
+
+  //     vanillaJs: {
+  //       icon: "javascript",
+  //       title: "Vanilla",
+  //       subtitle: "Javascript",
+  //       console: true,
+  //       view: false,
+  //       language: {
+  //         javascript: {
+  //           codeId: "JS",
+  //           content: "",
+  //           active: "javascript",
+  //           codes: [javascript],
+  //         },
+  //       },
+  //     },
+
+  //     vanillaTs: {
+  //       icon: "typescript",
+  //       title: "Vanilla",
+  //       subtitle: "Typescript",
+  //       console: true,
+  //       view: false,
+  //       language: {
+  //         javascript: {
+  //           codeId: "JS",
+  //           content: "",
+  //           active: "typescript",
+  //           codes: [typescript],
+  //         },
+  //       },
+  //     },
+
+  //     static: {
+  //       icon: "html5",
+  //       title: "Static",
+  //       subtitle: "HTML/CSS/JS",
+  //       console: true,
+  //       view: true,
+  //       language: {
+  //         html: {
+  //           codeId: "HTML",
+  //           content: "",
+  //           active: "html",
+  //           codes: [html],
+  //         },
+  //         css: {
+  //           codeId: "CSS",
+  //           content: "",
+  //           active: "css",
+  //           codes: [css, scss],
+  //         },
+  //         javascript: {
+  //           codeId: "JS",
+  //           content: "",
+  //           active: "javascript",
+  //           codes: [javascript],
+  //         },
+  //       },
+  //     },
+
+  //     notes: {
+  //       icon: "markdown",
+  //       title: "Notes",
+  //       subtitle: "Markdown",
+  //       console: false,
+  //       view: false,
+  //       language: {
+  //         html: {
+  //           codeId: "HTML",
+  //           content: "",
+  //           active: "markdown",
+  //           codes: [markdown],
+  //         },
+  //       },
+  //     },
+  //   },
+  // };
+};
 
 const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
   updateHtml,
@@ -523,6 +1052,7 @@ const getAllActiveTitles = (groups: Array<MenuItemType>): Array<string> => {
   }, []);
 };
 
+// editor main
 const CodeEditor = ({
   dataCode,
   titleCode,
@@ -532,6 +1062,7 @@ const CodeEditor = ({
 }) => {
   // const { config, languages } = hashedDecode(dataCode);
   const { config, languages, version } = hashedDecode2(dataCode);
+  console.log("languages GAAAAAAAA", languages);
   // console.log(languages, "dataCode");
   const { html, css, javascript } = languages;
 
@@ -579,11 +1110,6 @@ const CodeEditor = ({
       setting: !prevConfig.setting,
     }));
   };
-
-  // // Función para alternar entre pantalla completa y tamaño normal
-  // const onToggleFullscreen = () => {
-  //   toggleFullscreen(!isFullscreen);
-  // };
 
   return (
     <div className="editor-container">
