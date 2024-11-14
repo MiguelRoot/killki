@@ -222,7 +222,12 @@ const CodeEditorWithPreview: React.FC = () => {
         <iframe
           ref={iframeRef}
           title="Preview"
-          style={{ width: "100%", height: "100%", border: "none" }}
+          style={{
+            width: "100%",
+            height: "100%",
+            minHeight: "500px",
+            border: "none",
+          }}
           sandbox="allow-scripts"
         />
       </div>

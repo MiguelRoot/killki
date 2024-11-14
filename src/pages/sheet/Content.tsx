@@ -131,7 +131,7 @@ export default function Content({ idSheet }: any) {
                 height="513"
                 viewBox="0 0 1247 513"
                 fill="none"
-                className="absolute top-[-120px] opacity-30 z-[-1]"
+                className="absolute top-[-120px] opacity-30 z-[-1] max-w-full"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <g opacity="0.3" filter="url(#filter0_f_8979_5)">

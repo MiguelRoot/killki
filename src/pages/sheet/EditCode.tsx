@@ -6,7 +6,7 @@ import TabContent from "../../react/tab/TabContent";
 import TabHeader from "../../react/tab/TabHeader";
 
 import Dropdown from "../../react/components/Dropdown/Dropdown";
-import { marked } from "marked";
+import { marked, use } from "marked";
 import { styleBase, styleMarkDown } from "./defaultStyle";
 import useMenuItem, { type MenuItemType } from "./useMenuItem";
 import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
@@ -16,8 +16,23 @@ import ReactIcon from "../../react/components/Icon/IconApp";
 import { MONACO_BASE_PATH } from "../../content/config";
 // const ts = require("typescript");
 import ts from "typescript";
+import type {
+  IConfig,
+  IStoreSheets,
+  IStacks,
+  IIndexStack,
+  ICode,
+  ILanguage,
+  IContent,
+  IIndexLanguage,
+} from "./editor/editor.model";
+import { useStackStore } from "./editor/useStackStore";
+import { useContentStore, type IRollContent } from "./editor/useContentStore";
+import { useConfigStore } from "./editor/useConfigStore";
 interface ComponentThatSetsHtmlProps {
-  updateHtml: (newHtml: string) => void;
+  // updateHtml: (newHtml: string) => void;
+  indexLang: IIndexLanguage;
+  codeId: string;
   defaultLanguage: string; // Nueva prop para configurar el lenguaje por defecto
   iniValue: string;
 }
@@ -29,55 +44,161 @@ const transpileTypeScriptToJavaScript = (typeScriptCode: string) => {
   return result.outputText;
 };
 
-function previewFactory(data: any) {
-  if (data.stack === "angular") {
+function previewFactory(indexStack: IIndexStack, contents: IRollContent) {
+  if (indexStack === "angular") {
+    // Código TypeScript
+
+    // import { Component } from "@angular/core";
+    // @Component({
+    //   selector: "app-my",
+    //   template: ` <div class="container">{{ name }}</div> `,
+    // })
+    // class MyComponent {
+    //   name: string = "home";
+    //   constructor() {}
+
+    //   ngOnInit() {}
+    // }
+    // const DECLARATIONS = [MyComponent]
+
+    let tsCode = contents.javascript?.content || "";
+    let codeContent = `
+      const { NgModule } = ng.core;
+      const { CommonModule } = ng.common;
+      const { BrowserModule } = ng.platformBrowser;
+
+      
+      @Component({
+        selector: 'app-root',
+        template: \`${contents.html?.content}\`
+      })
+      class AppComponent {}
+
+      @NgModule({
+      imports: [
+        BrowserModule,
+        CommonModule,
+      ],
+        declarations: [AppComponent, ...DECLARATIONS],
+        bootstrap: [AppComponent],
+        providers: []
+      })
+
+      class AppModule {}
+      const { platformBrowserDynamic } = ng.platformBrowserDynamic;
+      platformBrowserDynamic()
+      .bootstrapModule(AppModule)
+      .catch((err) => console.error(err));
+  `;
+
+    let joinCode = tsCode + codeContent;
+
+    // Mapeo de los módulos de Angular a las referencias UMD
+    const angularUMDMap = {
+      "@angular/core": "ng.core",
+      "@angular/common": "ng.common",
+      "@angular/platform-browser": "ng.platformBrowser",
+      "@angular/platform-browser-dynamic": "ng.platformBrowserDynamic",
+      "@angular/compiler": "ng.compiler",
+      "@angular/forms": "ng.forms",
+    };
+
+    // Función para hacer el reemplazo dinámico
+    for (const [angularModule, umdReference] of Object.entries(angularUMDMap)) {
+      const regex = new RegExp(
+        `import\\s*{([^}]*)}\\s*from\\s*['"]${angularModule}['"];?`,
+        "g"
+      );
+      joinCode = joinCode.replace(regex, (_, imports) => {
+        const formattedImports = imports
+          .split(",")
+          .map((item: any) => item.trim())
+          .join(", ");
+        return `const { ${formattedImports} } = ${umdReference};`;
+      });
+    }
+
+    // Transforma el código TypeScript a JavaScript
+    const jsCode = ts.transpileModule(joinCode, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS },
+    }).outputText;
+
     return /*html*/ `
         <html>
-          <style>${data["angular"].language.css.content}</style>
-          <body>${data["angular"].language.html.content}</body>
-          <script>${data["angular"].language.javascript.content}</script>
+          <style>${contents.css?.content}</style>
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.9.5/typescript.min.js"></script>
+
+            <!-- Angular and Dependencies -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/zone.js/0.9.0/zone.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/6.4.0/rxjs.umd.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/core-js/2.6.5/core.min.js"></script>
+
+            <!-- Angular UMD Modules -->
+            <script src="https://unpkg.com/@angular/core@12.2.17/bundles/core.umd.js"></script>
+            <script src="https://unpkg.com/@angular/common@12.2.17/bundles/common.umd.js"></script>
+            <script src="https://unpkg.com/@angular/compiler@12.2.17/bundles/compiler.umd.js"></script>
+            <script src="https://unpkg.com/@angular/platform-browser@12.2.17/bundles/platform-browser.umd.js"></script>
+            <script src="https://unpkg.com/@angular/platform-browser-dynamic@12.2.17/bundles/platform-browser-dynamic.umd.js"></script>
+
+          </head>
+            <body>
+              <app-root></app-root>
+              <script>
+                ${jsCode}
+              </script>
+            </body>
         </html>
       `;
-  } else if (data.stack === "react") {
+  } else if (indexStack === "react") {
     return /*html*/ `
         <html>
-          <style>${data["react"].language.css.content}</style>
-          <body>${data["react"].language.html.content}</body>
-          <script>${data["react"].language.javascript.content}</script>
+          <style>${contents.css?.content}</style>
+          <body>${contents.html?.content}</body>
+          <script>${contents.javascript?.content}</script>
         </html>
       `;
-  } else if (data.stack === "vanillaJs") {
+  } else if (indexStack === "vanillaJs") {
     return /*html*/ `
         <html>
           <body></body>
-          <script>${data["vanillaJs"].language.javascript.content}</script>
+          <script>${contents.javascript?.content}</script>
         </html>
       `;
-  } else if (data.stack === "vanillaTs") {
+  } else if (indexStack === "vanillaTs") {
     return /*html*/ `
         <html>
           <body></body>
-          <script>${data["vanillaTs"].language.javascript.content}</script>
+          <script>${contents.javascript?.content}</script>
         </html>
       `;
-  } else if (data.stack === "static") {
+  } else if (indexStack === "static") {
     return /*html*/ `
         <html>
-          <style>${data["static"].language.css.content}</style>
-          <body>${data["static"].language.html.content}</body>
-          <script>${data["static"].language.javascript.content}</script>
+          <style>${contents.css?.content}</style>
+          <body>${contents.html?.content}</body>
+          <script>${contents.javascript?.content}</script>
         </html>
       `;
   } else {
-    const htmlContent = marked(data["notes"].language.html.content);
+    const mardownhtml: string = contents.html?.content || "";
+    const htmlContent = marked(mardownhtml);
     marked.setOptions({
       gfm: true,
       breaks: true,
     });
     return /*html*/ `
         <html lang="es" onload="resizeIframe()">
-          <style>${styleMarkDown}</style>
-          <body>${htmlContent}</body>
+          <style>${styleBase} ${styleMarkDown}</style>
+          <body>
+            ${htmlMarkdown}
+            <div id="markdown-content">
+              ${htmlContent}
+            </div>
+          </body>
+          <script src="${MONACO_BASE_PATH}/loader.js"></script>
           <script  type="module">
             ${javascriptMarkdown}
             function resizeIframe() {
@@ -92,7 +213,7 @@ function previewFactory(data: any) {
   }
 }
 
-export const createHtml = ([html, css, js]: MenuItemType[]) => {
+const createHtml = ([html, css, js]: MenuItemType[]) => {
   console.log(html, css, js, "html, css, js");
   if (!html || !css || !js) return "";
 
@@ -196,304 +317,308 @@ function isJSONValid(cadena: string): [boolean, any] {
   }
 }
 
-const hashedDecode2 = (hash: string) => {
-  const html = { title: "HTML", code: "html" };
-  const css = { title: "CSS", code: "css" };
-  const scss = { title: "SCSS", code: "scss" };
-  const javascript = { title: "JS", code: "javascript" };
-  const typescript = { title: "TS", code: "typescript" };
-  const markdown = { title: "Markdown", code: "markdown" };
-  const typescriptReact = { title: "TSX", code: "typescript" };
+// const hashedDecode2 = (hash: string) => {
+//   const html = { title: "HTML", code: "html" };
+//   const css = { title: "CSS", code: "css" };
+//   const scss = { title: "SCSS", code: "scss" };
+//   const javascript = { title: "JS", code: "javascript" };
+//   const typescript = { title: "TS", code: "typescript" };
+//   const markdown = { title: "Markdown", code: "markdown" };
+//   const typescriptReact = { title: "TSX", code: "typescript" };
 
-  const configDefault = {
-    splitSize: [50, 50],
-    setting: true,
-    sizeWindow: "auto",
-    stack: "notes",
+//   const configDefault = {
+//     splitSize: [50, 50],
+//     setting: true,
+//     sizeWindow: "auto",
+//     stack: "notes",
 
-    stacks: {
-      angular: {
-        icon: "angular",
-        title: "Angular",
-        subtitle: "Typescript",
-        console: true,
-        view: true,
-        language: {
-          html: {
-            codeId: "HTML",
-            content: "",
-            active: "html",
-            codes: [html],
-          },
-          css: {
-            codeId: "CSS",
-            content: "",
-            active: "scss",
-            codes: [scss, css],
-          },
-          javascript: {
-            codeId: "JS",
-            content: "",
-            active: "typescript",
-            codes: [typescript],
-          },
-        },
-      },
+//     stacks: {
+//       angular: {
+//         icon: "angular",
+//         title: "Angular",
+//         subtitle: "Typescript",
+//         console: true,
+//         view: true,
+//         language: {
+//           html: {
+//             codeId: "HTML",
+//             content: "",
+//             active: "html",
+//             codes: [html],
+//           },
+//           css: {
+//             codeId: "CSS",
+//             content: "",
+//             active: "scss",
+//             codes: [scss, css],
+//           },
+//           javascript: {
+//             codeId: "JS",
+//             content: "",
+//             active: "typescript",
+//             codes: [typescript],
+//           },
+//         },
+//       },
 
-      react: {
-        icon: "react",
-        title: "React",
-        subtitle: "Typescript",
-        console: true,
-        view: true,
-        language: {
-          html: {
-            codeId: "HTML",
-            content: "",
-            active: "html",
-            codes: [html],
-          },
-          css: {
-            codeId: "CSS",
-            content: "",
-            active: "scss",
-            codes: [scss, css],
-          },
-          javascript: {
-            codeId: "JS",
-            content: "",
-            active: "typescript",
-            codes: [typescriptReact],
-          },
-        },
-      },
+//       react: {
+//         icon: "react",
+//         title: "React",
+//         subtitle: "Typescript",
+//         console: true,
+//         view: true,
+//         language: {
+//           html: {
+//             codeId: "HTML",
+//             content: "",
+//             active: "html",
+//             codes: [html],
+//           },
+//           css: {
+//             codeId: "CSS",
+//             content: "",
+//             active: "scss",
+//             codes: [scss, css],
+//           },
+//           javascript: {
+//             codeId: "JS",
+//             content: "",
+//             active: "typescript",
+//             codes: [typescriptReact],
+//           },
+//         },
+//       },
 
-      vanillaJs: {
-        icon: "javascript",
-        title: "Vanilla",
-        subtitle: "Javascript",
-        console: true,
-        view: false,
-        language: {
-          javascript: {
-            codeId: "JS",
-            content: "",
-            active: "javascript",
-            codes: [javascript],
-          },
-        },
-      },
+//       vanillaJs: {
+//         icon: "javascript",
+//         title: "Vanilla",
+//         subtitle: "Javascript",
+//         console: true,
+//         view: false,
+//         language: {
+//           javascript: {
+//             codeId: "JS",
+//             content: "",
+//             active: "javascript",
+//             codes: [javascript],
+//           },
+//         },
+//       },
 
-      vanillaTs: {
-        icon: "typescript",
-        title: "Vanilla",
-        subtitle: "Typescript",
-        console: true,
-        view: false,
-        language: {
-          javascript: {
-            codeId: "JS",
-            content: "",
-            active: "typescript",
-            codes: [typescript],
-          },
-        },
-      },
+//       vanillaTs: {
+//         icon: "typescript",
+//         title: "Vanilla",
+//         subtitle: "Typescript",
+//         console: true,
+//         view: false,
+//         language: {
+//           javascript: {
+//             codeId: "JS",
+//             content: "",
+//             active: "typescript",
+//             codes: [typescript],
+//           },
+//         },
+//       },
 
-      static: {
-        icon: "html5",
-        title: "Static",
-        subtitle: "HTML/CSS/JS",
-        console: true,
-        view: true,
-        language: {
-          html: {
-            codeId: "HTML",
-            content: "",
-            active: "html",
-            codes: [html],
-          },
-          css: {
-            codeId: "CSS",
-            content: "",
-            active: "css",
-            codes: [css, scss],
-          },
-          javascript: {
-            codeId: "JS",
-            content: "",
-            active: "javascript",
-            codes: [javascript],
-          },
-        },
-      },
+//       static: {
+//         icon: "html5",
+//         title: "Static",
+//         subtitle: "HTML/CSS/JS",
+//         console: true,
+//         view: true,
+//         language: {
+//           html: {
+//             codeId: "HTML",
+//             content: "",
+//             active: "html",
+//             codes: [html],
+//           },
+//           css: {
+//             codeId: "CSS",
+//             content: "",
+//             active: "css",
+//             codes: [css, scss],
+//           },
+//           javascript: {
+//             codeId: "JS",
+//             content: "",
+//             active: "javascript",
+//             codes: [javascript],
+//           },
+//         },
+//       },
 
-      notes: {
-        icon: "markdown",
-        title: "Notes",
-        subtitle: "Markdown",
-        console: false,
-        view: false,
-        language: {
-          html: {
-            codeId: "HTML",
-            content: "",
-            active: "markdown",
-            codes: [markdown],
-          },
-        },
-      },
-    },
-  };
+//       notes: {
+//         icon: "markdown",
+//         title: "Notes",
+//         subtitle: "Markdown",
+//         console: false,
+//         view: false,
+//         language: {
+//           html: {
+//             codeId: "HTML",
+//             content: "",
+//             active: "markdown",
+//             codes: [markdown],
+//           },
+//         },
+//       },
+//     },
+//   };
 
-  try {
-    const [isvalidJson, data] = isJSONValid(hash);
-    if (isvalidJson) {
-      if (data.version === "1.0.0") {
-        return data;
-      }
-    }
+//   try {
+//     const [isvalidJson, data] = isJSONValid(hash);
+//     if (isvalidJson) {
+//       if (data.version === "1.0.0") {
+//         return data;
+//       }
+//     }
 
-    const databefore = JSON.parse(decode(hash));
-    const config = databefore.config;
-    const version = databefore.version;
-    const languages = databefore.languages;
-    const [html, css, javascript] = languages;
+//     const databefore = JSON.parse(decode(hash));
+//     const config = databefore.config;
+//     const version = databefore.version;
+//     const languages = databefore.languages;
+//     const [html, css, javascript] = languages;
 
-    const languagesjson = {
-      html: {
-        codeId: "HTML",
-        title:
-          Object.values<any>(html).find((language) => {
-            return language.active;
-          })?.title || "HTML",
-        active: Object.values<any>(html).some((language) => language.active),
-        content:
-          Object.values<any>(html).find((language) => {
-            return language.active;
-          })?.content || "",
-        code:
-          Object.values<any>(html).find((language: any) => {
-            return language.active;
-          })?.code || "html",
-        codes: [
-          { title: "HTML", code: "html" },
-          { title: "Markdown", code: "markdown" },
-        ],
-      },
-      css: {
-        codeId: "CSS",
-        title:
-          Object.values<any>(css).find((language: any) => {
-            return language.active;
-          })?.title || "CSS",
-        active: Object.values(css).some((language: any) => language.active),
-        content:
-          Object.values<any>(css).find((language) => {
-            if (language.active) {
-              return language.content;
-            }
-          })?.content || "",
-        code:
-          Object.values<any>(css).find((language: any) => {
-            return language.code;
-          })?.code || "css",
-        codes: [
-          { title: "CSS", code: "css" },
-          { title: "SCSS", code: "scss" },
-        ],
-      },
-      javascript: {
-        codeId: "JS",
-        title:
-          Object.values<any>(javascript).find((language) => {
-            return language.active;
-          })?.title || "JS",
-        active: Object.values(javascript).some(
-          (language: any) => language.active
-        ),
-        content:
-          Object.values<any>(javascript).find((language) => {
-            return language.active;
-          })?.content || "",
-        code:
-          Object.values<any>(javascript).find((language: any) => {
-            return language.active;
-          })?.code || "javascript",
-        codes: [
-          { title: "JS", code: "javascript" },
-          { title: "TypeScript", code: "typescript" },
-        ],
-      },
-    };
-    const response = {
-      config: { ...configDefault, ...config },
-      version: version || "1.0.0",
-      languages: languagesjson,
-    };
-    return response;
-  } catch (error) {
-    return {
-      version: "2.0.0",
-      config: configDefault,
-      languages: {
-        html: {
-          codeId: "HTML",
-          title: "HTML",
-          active: true,
-          content: "",
-          code: "html",
-          codes: [
-            { title: "HTML", code: "html" },
-            { title: "Markdown", code: "markdown" },
-          ],
-        },
-        css: {
-          codeId: "CSS",
-          title: "CSS",
-          active: false,
-          content: "",
-          code: "css",
-          codes: [
-            { title: "CSS", code: "css" },
-            { title: "SCSS", code: "scss" },
-          ],
-        },
-        javascript: {
-          codeId: "JS",
-          title: "JS",
-          active: false,
-          content: "",
-          code: "javascript",
-          codes: [
-            { title: "JS", code: "javascript" },
-            { title: "TypeScript", code: "typescript" },
-          ],
-        },
-      },
-    };
-  }
-};
-const hashedDecode3 = (dataRes: string) => {
+//     const languagesjson = {
+//       html: {
+//         codeId: "HTML",
+//         title:
+//           Object.values<any>(html).find((language) => {
+//             return language.active;
+//           })?.title || "HTML",
+//         active: Object.values<any>(html).some((language) => language.active),
+//         content:
+//           Object.values<any>(html).find((language) => {
+//             return language.active;
+//           })?.content || "",
+//         code:
+//           Object.values<any>(html).find((language: any) => {
+//             return language.active;
+//           })?.code || "html",
+//         codes: [
+//           { title: "HTML", code: "html" },
+//           { title: "Markdown", code: "markdown" },
+//         ],
+//       },
+//       css: {
+//         codeId: "CSS",
+//         title:
+//           Object.values<any>(css).find((language: any) => {
+//             return language.active;
+//           })?.title || "CSS",
+//         active: Object.values(css).some((language: any) => language.active),
+//         content:
+//           Object.values<any>(css).find((language) => {
+//             if (language.active) {
+//               return language.content;
+//             }
+//           })?.content || "",
+//         code:
+//           Object.values<any>(css).find((language: any) => {
+//             return language.code;
+//           })?.code || "css",
+//         codes: [
+//           { title: "CSS", code: "css" },
+//           { title: "SCSS", code: "scss" },
+//         ],
+//       },
+//       javascript: {
+//         codeId: "JS",
+//         title:
+//           Object.values<any>(javascript).find((language) => {
+//             return language.active;
+//           })?.title || "JS",
+//         active: Object.values(javascript).some(
+//           (language: any) => language.active
+//         ),
+//         content:
+//           Object.values<any>(javascript).find((language) => {
+//             return language.active;
+//           })?.content || "",
+//         code:
+//           Object.values<any>(javascript).find((language: any) => {
+//             return language.active;
+//           })?.code || "javascript",
+//         codes: [
+//           { title: "JS", code: "javascript" },
+//           { title: "TypeScript", code: "typescript" },
+//         ],
+//       },
+//     };
+//     const response = {
+//       config: { ...configDefault, ...config },
+//       version: version || "1.0.0",
+//       languages: languagesjson,
+//     };
+//     return response;
+//   } catch (error) {
+//     return {
+//       version: "2.0.0",
+//       config: configDefault,
+//       languages: {
+//         html: {
+//           codeId: "HTML",
+//           title: "HTML",
+//           active: true,
+//           content: "",
+//           code: "html",
+//           codes: [
+//             { title: "HTML", code: "html" },
+//             { title: "Markdown", code: "markdown" },
+//           ],
+//         },
+//         css: {
+//           codeId: "CSS",
+//           title: "CSS",
+//           active: false,
+//           content: "",
+//           code: "css",
+//           codes: [
+//             { title: "CSS", code: "css" },
+//             { title: "SCSS", code: "scss" },
+//           ],
+//         },
+//         javascript: {
+//           codeId: "JS",
+//           title: "JS",
+//           active: false,
+//           content: "",
+//           code: "javascript",
+//           codes: [
+//             { title: "JS", code: "javascript" },
+//             { title: "TypeScript", code: "typescript" },
+//           ],
+//         },
+//       },
+//     };
+//   }
+// };
+
+const hashedDecode3 = (dataRes: string): IStoreSheets => {
   const [valid, dataResObject] = isJSONValid(dataRes);
   console.log("dataResObject v3", dataResObject);
 
-  const html = { title: "HTML", code: "html" };
-  const css = { title: "CSS", code: "css" };
-  const scss = { title: "SCSS", code: "scss" };
-  const javascript = { title: "JS", code: "javascript" };
-  const typescript = { title: "TS", code: "typescript" };
-  const markdown = { title: "Markdown", code: "markdown" };
-  const typescriptReact = { title: "TSX", code: "typescript" };
+  const html: ICode = { title: "HTML", code: "html" };
+  const css: ICode = { title: "CSS", code: "css" };
+  const scss: ICode = { title: "SCSS", code: "scss" };
+  const javascript: ICode = { title: "JS", code: "javascript" };
+  const typescript: ICode = { title: "TS", code: "typescript" };
+  const markdown: ICode = { title: "Markdown", code: "markdown" };
+  const typescriptReact: ICode = { title: "TSX", code: "typescript" };
 
   if (valid && dataResObject?.version === "1.0.0") {
     const markdownActive = dataResObject.languages.html.code === "markdown";
     const stack = markdownActive ? "notes" : "static";
+
+    console.log("dataResObject 😤😤😤", dataResObject);
+
     const newObject: any = {
       version: "2.0.0",
       config: {
-        splitSize: [50, 50],
-        setting: true,
+        splitSize: dataResObject.config.splitSize,
+        setting: dataResObject.config.setting,
         sizeWindow: "auto",
         stack: stack,
       },
@@ -942,15 +1067,27 @@ const hashedDecode3 = (dataRes: string) => {
 };
 
 const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
-  updateHtml,
+  indexLang,
+  codeId,
   defaultLanguage,
   iniValue,
 }) => {
-  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
+  const { isFullscreen } = useFullscreenStore();
+  const { currentStack } = useStackStore();
+  const { updateContent } = useContentStore();
 
   const handleEditorChange = (value: string | undefined) => {
-    if (value !== undefined) {
-      updateHtml(value); // Actualiza el estado html en el componente padre
+    if (value != undefined) {
+      if (currentStack) {
+        updateContent(indexLang, value);
+        // previewFactory(currentStack);
+        // const newStack = currentStack[indexStack].language[indexLang]!.content;
+
+        // updateStack({
+        //   ...currentStack,
+        // });
+      }
+      // updateStack(value); // Actualiza el estado html en el componente padre
     }
   };
 
@@ -978,15 +1115,30 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
 };
 
 const IframePreview = ({
-  output,
+  initValue,
   setting,
 }: {
-  output: string;
+  initValue: any;
   setting: boolean;
 }) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
-  // const [messages, setMessages] = useState<any[]>([]);
+  const { isFullscreen } = useFullscreenStore();
+  const { currentConfig } = useConfigStore();
+  const [delayedContent, setDelayedContent] = useState<string | null>(null);
+
+  const { contentStore } = useContentStore();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!currentConfig) return;
+      const newhtml = previewFactory(currentConfig?.stack, contentStore);
+      setDelayedContent(newhtml);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [contentStore]);
+
+  useEffect(() => {}, [initValue]);
 
   const handleIframeResize = () => {
     const iframe = iframeRef.current;
@@ -1011,7 +1163,7 @@ const IframePreview = ({
         iframe.onload = null; // Limpia el evento al desmontar
       }
     };
-  }, [output]);
+  }, [delayedContent]);
 
   useEffect(() => {
     handleIframeResize(); // Ajusta la altura del iframe cuando cambia el setting
@@ -1033,7 +1185,7 @@ const IframePreview = ({
         width="100%"
         scrolling="auto"
         // sandbox={setting ? "allow-scripts" : "allow-same-origin"}
-        srcDoc={output}
+        srcDoc={delayedContent ?? ""}
         style={{
           height: "100%",
         }}
@@ -1060,61 +1212,63 @@ const CodeEditor = ({
   dataCode: string;
   titleCode: string;
 }) => {
-  // const { config, languages } = hashedDecode(dataCode);
-  const { config, languages, version } = hashedDecode2(dataCode);
-  console.log("languages GAAAAAAAA", languages);
-  // console.log(languages, "dataCode");
-  const { html, css, javascript } = languages;
-
-  const [output, setOutput] = useState("");
-  // const { activeTab, setActiveTab } = useTabContext();
-  const { activeTab, setActiveTab } = useTabStore();
-  const [configSetting, setConfigSetting] = useState(config); // Estado para controlar el ajuste automático
-  // const { isFullscreen, toggleFullscreen } = useFullscreen();
-  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
-
-  const htmlGroup2 = useMenuItem(html);
-  const cssGroup2 = useMenuItem(css);
-  const jsGroup2 = useMenuItem(javascript);
+  const { config, stacks } = hashedDecode3(dataCode);
+  const { currentStack, updateStack } = useStackStore();
+  const { currentConfig, updateConfig } = useConfigStore();
+  const { updateLanguage } = useContentStore();
 
   useEffect(() => {
-    htmlGroup2.updateState(html);
-    cssGroup2.updateState(css);
-    jsGroup2.updateState(javascript);
-    setConfigSetting(config);
+    updateStack(stacks);
+    updateConfig(config);
   }, [dataCode]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setOutput(createHtml([htmlGroup2.item, cssGroup2.item, jsGroup2.item]));
-    }, 600); // Añadimos un pequeño retraso para evitar demasiadas actualizaciones
-
-    const firstActiveTitle = getAllActiveTitles([
-      htmlGroup2.item,
-      cssGroup2.item,
-      jsGroup2.item,
-    ]);
-
-    const tabActive = firstActiveTitle.some((title) => title === activeTab);
-    if (!tabActive) {
-      setActiveTab(firstActiveTitle[0] || "");
+    // init language
+    if (currentStack && currentConfig) {
+      const valueHtml = currentStack[currentConfig.stack].language.html;
+      valueHtml && updateLanguage("html", valueHtml);
+      const valueCss = currentStack[currentConfig.stack].language.css;
+      valueCss && updateLanguage("css", valueCss);
+      const valueJs = currentStack[currentConfig.stack].language.javascript;
+      valueJs && updateLanguage("javascript", valueJs);
+      // init tab active
+      const tabActive: IContent[] = Object.values(
+        currentStack[currentConfig.stack].language
+      );
+      if (tabActive.length > 0) {
+        const active: string = tabActive[0]!.codeId;
+        setActiveTab(active);
+      }
     }
+  }, [currentStack, currentConfig]);
 
-    return () => clearTimeout(timeout); // Limpiar el timeout en cada cambio
-  }, [htmlGroup2.item, cssGroup2.item, jsGroup2.item]);
+  // useEffect(() => {
+  //   setConfigSetting(config);
+  // }, [currentStack]);
+
+  const updateActiveStack = (index: IIndexStack) => {
+    if (!currentConfig) return;
+    updateConfig({
+      ...currentConfig,
+      stack: index,
+    });
+  };
+
+  const { setActiveTab } = useTabStore();
+
+  const { isFullscreen, toggleFullscreen } = useFullscreenStore();
 
   const toggleSetting = () => {
-    console.log("click");
-    setConfigSetting((prevConfig: any) => ({
-      splitSize: prevConfig.setting ? [0, 100] : [50, 50],
-      setting: !prevConfig.setting,
-    }));
+    if (!currentConfig) return;
+    updateConfig({
+      ...currentConfig,
+      splitSize: currentConfig.setting ? [0, 100] : [50, 50],
+      setting: !currentConfig.setting,
+    });
   };
 
   return (
     <div className="editor-container">
-      {/* {firstActiveTitle} */}
-
       <div>
         <div className="App" style={{ minHeight: "70vh" }}>
           <div
@@ -1131,46 +1285,47 @@ const CodeEditor = ({
           >
             {
               <>
-                <div className="g-border-b flex justify-between items-center text-[14px] pb-1">
+                <div className="bg-primary-900 rounded-t-lg flex text-primary-50 justify-between items-center text-[14px] pb-1">
                   <div
                     style={{
                       paddingLeft: isFullscreen ? "8px" : "auto",
                     }}
                     className="flex-grow basis-0"
                   >
-                    {configSetting.setting && (
+                    {currentStack && currentConfig && currentConfig.setting && (
                       <div className="flex ">
-                        {[htmlGroup2.item, cssGroup2.item, jsGroup2.item].map(
-                          (lang) => {
-                            if (lang.active) {
-                              return (
-                                <div key={lang.codeId}>
-                                  <TabHeader value={lang.codeId}>
-                                    {/* <IconReact size="20" name={language.code} /> */}
-                                    <div className="flex items-center">
-                                      {lang.codeId}
-                                      <span className="ms-1 text-[12px]">
-                                        {lang.codeId !== lang.title && (
-                                          <span>({lang.title})</span>
-                                        )}
-                                      </span>
-                                    </div>
-                                  </TabHeader>
+                        {(
+                          Object.values(
+                            currentStack[currentConfig.stack].language
+                          ) as IContent[]
+                        ).map((lang) => {
+                          return (
+                            <div key={lang.codeId}>
+                              <TabHeader value={lang.codeId}>
+                                <div className="flex items-center">
+                                  {lang.codeId}
+                                  <span className="ms-1 text-[12px]">
+                                    {lang.codeId !== lang.codeId && (
+                                      <span>({lang.codeId})</span>
+                                    )}
+                                  </span>
                                 </div>
-                              );
-                            } else {
-                              return "";
-                            }
-                          }
-                        )}
+                              </TabHeader>
+                            </div>
+                          );
+                        })}
 
-                        <Dropdown>
+                        {/* <Dropdown>
                           <Dropdown.Toggle className="-rotate-90">
                             <ReactIcon name="arrow-up" />
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
                             <div>
-                              {[htmlGroup2, cssGroup2, jsGroup2].map((lang) => {
+                              {(
+                                Object.values(
+                                  stacks[config.stack].language
+                                ) as IDataItemLanguage[]
+                              ).map((lang) => {
                                 return (
                                   <div className="item" key={lang.item.codeId}>
                                     <button onClick={() => lang.toggleActive()}>
@@ -1196,7 +1351,7 @@ const CodeEditor = ({
                               })}
                             </div>
                           </Dropdown.Menu>
-                        </Dropdown>
+                        </Dropdown> */}
                       </div>
                     )}
                   </div>
@@ -1213,7 +1368,7 @@ const CodeEditor = ({
                       onClick={() => toggleSetting()}
                       className="p-2 hover:bg-secondary-200 rounded-md"
                     >
-                      {configSetting.setting ? (
+                      {currentConfig?.setting ? (
                         <ReactIcon name="code" size="small" />
                       ) : (
                         <ReactIcon name="view" size="small" />
@@ -1234,18 +1389,18 @@ const CodeEditor = ({
                       <Dropdown.Menu align="right">
                         <div className="p-2 hover:bg-gray-100/60 rounded-md">
                           <Dropdown.Item
-                            onClick={() => {
-                              // console.log(config);
-                              copyJson({
-                                version: version,
-                                config: configSetting,
-                                languages: {
-                                  html: htmlGroup2.item,
-                                  css: cssGroup2.item,
-                                  javascript: jsGroup2.item,
-                                },
-                              });
-                            }}
+                          // onClick={() => {
+                          //   // console.log(config);
+                          //   copyJson({
+                          //     version: version,
+                          //     config: configSetting,
+                          //     languages: {
+                          //       html: htmlGroup2.item,
+                          //       css: cssGroup2.item,
+                          //       javascript: jsGroup2.item,
+                          //     },
+                          //   });
+                          // }}
                           >
                             Copiar json
                           </Dropdown.Item>
@@ -1253,122 +1408,140 @@ const CodeEditor = ({
                         <div className="p-2 hover:bg-gray-100/60 rounded-md">
                           <Dropdown.Item
                             onClick={() => {
-                              // console.log(config);
-                              copyToClipboard({
-                                version: version,
-                                config: configSetting,
-                                languages: [
-                                  htmlGroup2.item,
-                                  cssGroup2.item,
-                                  jsGroup2.item,
-                                ],
-                              });
+                              // copyToClipboard({
+                              //   version: version,
+                              //   config: configSetting,
+                              //   languages: [
+                              //     htmlGroup2.item,
+                              //     cssGroup2.item,
+                              //     jsGroup2.item,
+                              //   ],
+                              // });
                             }}
                           >
                             Copiar hash
+                          </Dropdown.Item>
+                        </div>
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("angular");
+                            }}
+                          >
+                            Angular
                           </Dropdown.Item>
                         </div>
                       </Dropdown.Menu>
                     </Dropdown>
                   </div>
                 </div>
-                <div style={{ height: isFullscreen ? "100%" : "auto" }}>
-                  <Split
-                    className="wrap"
-                    sizes={configSetting.splitSize}
-                    minSize={0}
-                    expandToMin={false}
-                    gutterSize={configSetting.setting ? 8 : 0}
-                    gutterAlign="center"
-                    snapOffset={30}
-                    dragInterval={1}
-                    direction="horizontal"
-                    cursor="col-resize"
-                  >
-                    <div>
-                      {[htmlGroup2, cssGroup2, jsGroup2].map((lang) => {
-                        return (
-                          <div key={lang.item.codeId}>
-                            <TabContent value={lang.item.codeId}>
-                              <div className="relative overflow-hidden">
-                                {configSetting.setting && (
-                                  <div className="absolute right-4 top-0 z-10">
-                                    <Dropdown>
-                                      <Dropdown.Toggle>
-                                        <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] bg-white/95 border border-primary-0 text-primary-0">
-                                          {lang.item.title}{" "}
-                                          <ReactIcon
-                                            size="small"
-                                            name="arrow-up"
-                                          />
-                                        </div>
-                                      </Dropdown.Toggle>
-                                      <Dropdown.Menu align="right">
-                                        {lang.item.codes.map((code) => {
-                                          return (
-                                            <div
-                                              key={code.code}
-                                              className={`p-2 hover:bg-gray-100/80 rounded-md my-1 cursor-pointer text-sm ${
-                                                code.code === lang.item.code
-                                                  ? "bg-gray-100/80"
-                                                  : ""
-                                              }`}
-                                            >
-                                              <Dropdown.Item
-                                                onClick={() =>
-                                                  lang.updateTitleAndCode(code)
-                                                }
-                                              >
-                                                {code.title}
-                                              </Dropdown.Item>
+                {currentConfig && currentStack && (
+                  <div style={{ height: isFullscreen ? "100%" : "auto" }}>
+                    <Split
+                      className="wrap"
+                      sizes={currentConfig.splitSize}
+                      minSize={0}
+                      expandToMin={false}
+                      gutterSize={currentConfig.setting ? 8 : 0}
+                      gutterAlign="center"
+                      snapOffset={30}
+                      dragInterval={1}
+                      direction="horizontal"
+                      cursor="col-resize"
+                    >
+                      <div>
+                        {Object.entries(
+                          currentStack[currentConfig.stack].language
+                        ).map(([index, lang]: [string, IContent]) => {
+                          return (
+                            <div key={lang.codeId}>
+                              <TabContent value={lang.codeId}>
+                                <div className="relative overflow-hidden">
+                                  {currentConfig.setting &&
+                                    lang.codes.length > 1 && (
+                                      <div className="absolute right-4 top-0 z-10">
+                                        <Dropdown>
+                                          <Dropdown.Toggle>
+                                            <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] bg-white/95 border border-primary-0 text-primary-0">
+                                              {lang.active}{" "}
+                                              <ReactIcon
+                                                size="small"
+                                                name="arrow-up"
+                                              />
                                             </div>
-                                          );
-                                        })}
-                                      </Dropdown.Menu>
-                                    </Dropdown>
+                                          </Dropdown.Toggle>
+                                          <Dropdown.Menu align="right">
+                                            {lang.codes.map((code) => {
+                                              return (
+                                                <div
+                                                  key={code.code}
+                                                  className={`p-2 hover:bg-gray-100/80 rounded-md my-1 cursor-pointer text-sm ${
+                                                    code.code === lang.active
+                                                      ? "bg-gray-100/80"
+                                                      : ""
+                                                  }`}
+                                                >
+                                                  <Dropdown.Item
+                                                    onClick={() => {
+                                                      console.log(
+                                                        "Cambiar de lenguaje"
+                                                      );
+                                                    }}
+                                                  >
+                                                    {code.title}
+                                                  </Dropdown.Item>
+                                                </div>
+                                              );
+                                            })}
+                                          </Dropdown.Menu>
+                                        </Dropdown>
+                                      </div>
+                                    )}
+                                  <ContentEditor
+                                    indexLang={index as IIndexLanguage}
+                                    codeId={lang.codeId}
+                                    defaultLanguage={lang.active}
+                                    iniValue={lang.content}
+                                  />
+                                </div>
+                              </TabContent>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <div>
+                        {currentConfig.setting &&
+                          (currentStack[currentConfig.stack].view ||
+                            currentStack[currentConfig.stack].console) && (
+                            <div className="flex justify-between items-center bg-[#FFF8F9] px-2 border-b border-secondary-50">
+                              <div className="flex gap-4 font-raleway text-xs ps-2">
+                                {currentStack[currentConfig.stack].view && (
+                                  <div className="options-active relative px-2 cursor-pointer flex items-center text-secondary-400 font-bold h-[36px]">
+                                    VISTA
                                   </div>
                                 )}
-
-                                <ContentEditor
-                                  updateHtml={(newContent) =>
-                                    lang.updateContent(newContent)
-                                  }
-                                  defaultLanguage={lang.item.code}
-                                  iniValue={lang.item.content}
-                                />
+                                {currentStack[currentConfig.stack].console && (
+                                  <div className="relative flex items-center cursor-pointer px-2 text-primary-400 h-[36px]">
+                                    CONSOLA
+                                  </div>
+                                )}
                               </div>
-                            </TabContent>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    <div>
-                      {configSetting.setting && (
-                        <div className="flex justify-between items-center bg-[#FFF8F9] px-2 border-b border-secondary-50">
-                          <div className="flex gap-4 font-raleway text-xs ps-2">
-                            <div className="options-active relative px-2 cursor-pointer flex items-center text-secondary-400 font-bold h-[36px]">
-                              VISTA
+                              <div className="py-2 pe-2 cursor-pointer">
+                                <ReactIcon name="update" size="20" />
+                              </div>
                             </div>
-                            <div className="relative flex items-center cursor-pointer px-2 text-primary-400 h-[36px]">
-                              CONSOLA
-                            </div>
-                          </div>
-                          <div className="py-2 pe-2 cursor-pointer">
-                            <ReactIcon name="update" size="20" />
-                          </div>
-                        </div>
-                      )}
+                          )}
 
-                      <IframePreview
-                        output={output}
-                        setting={configSetting.setting}
-                      />
-                      {/* <div className="h-full bg-white">{output}</div> */}
-                      {/* <ConsoleViewer /> */}
-                    </div>
-                  </Split>
-                </div>
+                        <IframePreview
+                          initValue={currentStack[currentConfig.stack]}
+                          setting={currentConfig.setting}
+                        />
+                      </div>
+                    </Split>
+                  </div>
+                )}
               </>
             }
           </div>
@@ -1379,7 +1552,6 @@ const CodeEditor = ({
 };
 
 export default CodeEditor;
-
 // Envolver MyTabsComponent dentro de TabProvider
 export const AppEditor = ({ dataCode, title }: any) => {
   return <CodeEditor dataCode={dataCode} titleCode={title} />;

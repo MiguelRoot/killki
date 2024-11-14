@@ -131,6 +131,7 @@ body {
 }
 
 .bg-white-degrade {
+  min-height: 500px;
   background-image: linear-gradient(
     to top,
     rgba(255, 255, 255, 0) 0%,
