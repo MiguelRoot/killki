@@ -1,4 +1,4 @@
-import{c as e,r as t,m as a}from"./render-template.xhJa2qVM.js";import{u as o}from"./Content.XC_tK1T1.js";import"./astro/assets-service.dcMj-_5e.js";import"./index.eK40FDle.js";const s=`<p>Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.</p>
+import{c as e,r as t,m as a}from"./render-template.Eri8d3Qm.js";import{u as o}from"./Content.kXsVoIgK.js";import"./astro/assets-service.6pWuquGc.js";import"./index.eK40FDle.js";const s=`<p>Here is a sample of some basic Markdown syntax that can be used when writing Markdown content in Astro.</p>
 <h2 id="headings">Headings</h2>
 <p>The following HTML <code>&#x3C;h1></code>—<code>&#x3C;h6></code> elements represent six levels of section headings. <code>&#x3C;h1></code> is the highest section level while <code>&#x3C;h6></code> is the lowest.</p>
 <h1 id="h1">H1</h1>
