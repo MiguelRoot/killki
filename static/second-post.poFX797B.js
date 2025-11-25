@@ -1,7 +1,0 @@
-import{_ as t}from"./astro/assets-service.PzflkRYU.js";async function o(){return t(()=>import("./second-post.8tDM134x.js"),__vite__mapDeps([0,1,2,3,4]))}const e="@@ASTRO-LINKS@@",c="@@ASTRO-STYLES@@",r="@@ASTRO-SCRIPTS@@",l={__astroPropagation:!0,getMod:o,collectedLinks:e,collectedStyles:c,collectedScripts:r};export{l as default};
-function __vite__mapDeps(indexes) {
-  if (!__vite__mapDeps.viteFileDeps) {
-    __vite__mapDeps.viteFileDeps = ["static/second-post.8tDM134x.js","static/render-template.WD6Ith9N.js","static/astro/assets-service.PzflkRYU.js","static/Content.H3yxyDhf.js","static/index.eK40FDle.js"]
-  }
-  return indexes.map((i) => __vite__mapDeps.viteFileDeps[i])
-}
