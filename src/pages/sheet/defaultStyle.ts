@@ -128,6 +128,37 @@ ol {
   border-radius: 50%;
 }
 
+.tts-active {
+    background-color: #f4eafd;
+    border-radius: 4px;
+    outline: 4px solid #f4eafd;
+    transition:
+      background-color 0.1s ease,
+      outline 0.1s ease;
+}
+
+.mtk7 {
+    color: #8329fe !important;
+}
+.mtk23 {
+    color: #4e0101 !important;
+}
+
+.mtk21 {
+    color: #a31515 !important;
+}
+
+.bracket-highlighting-1 {
+    color: #d20303 !important;
+}
+
+.mtk8 {
+    color: #d20303 !important;
+}
+
+.monaco-editor .line-numbers {
+    color: #ddd2ff !important;
+}
 
   
 `;

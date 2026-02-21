@@ -1,0 +1,29 @@
+.animation {
+  view-timeline-name: --subjectReveal;
+  animation-timeline: --subjectReveal;
+
+  animation-name: appear;
+
+  animation-range: entry 15% cover 18%;
+  animation-fill-mode: both;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* avatar */
+
+/* Keyframe para ajustar la información */
+.box {
+  height: 100px;
+  display: inline-block;
+}

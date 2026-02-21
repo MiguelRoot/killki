@@ -16,8 +16,8 @@ const TabHeader: FC<TabHeaderProps> = ({ value, children }) => {
     <div
       onClick={() => setActiveTab(value)}
       // style={value === activeTab ? activeTabHeaderStyle : tabHeaderStyle}
-      className={`flex  items-center justify-center py-[8px] px-4 rounded-[4px] text-primary-600 min-w-[80px] font-bold cursor-pointer ${
-        value === activeTab ? "bg-primary-600 text-white" : ""
+      className={`flex items-center justify-center py-[8px] text-sm px-4 rounded-[4px] text-secondary-300 min-w-[70px] font-semibold cursor-pointer ${
+        value === activeTab ? " !text-secondary-0 " : ""
       }`}
     >
       {children}

@@ -26,6 +26,7 @@ interface DropdownToggleProps {
 interface DropdownMenuProps {
   children: ReactNode;
   align?: "left" | "right";
+  className?: string;
 }
 
 interface DropdownItemProps {
@@ -96,7 +97,7 @@ Dropdown.Toggle = ({ children, className }) => {
 };
 
 // Subcomponente Menu
-Dropdown.Menu = ({ children, align = "left" }) => {
+Dropdown.Menu = ({ children, align = "left", className = "" }) => {
   const context = useContext(DropdownContext);
   if (!context) {
     throw new Error("Dropdown.Menu must be used within a Dropdown");
@@ -108,7 +109,9 @@ Dropdown.Menu = ({ children, align = "left" }) => {
     align === "right" ? "dropdown-menu-right" : "dropdown-menu-left";
 
   return isOpen ? (
-    <div className={`dropdown-menu ${alignmentClass}`}>{children}</div>
+    <div className={`dropdown-menu ${alignmentClass} ${className}`}>
+      {children}
+    </div>
   ) : null;
 };
 

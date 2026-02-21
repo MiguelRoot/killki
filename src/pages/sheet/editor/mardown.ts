@@ -1,5 +1,3 @@
-import { MONACO_BASE_PATH } from "../../../content/config";
-
 const iconvoice =
   '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.69133 2.24999C9.57263 2.25459 9.45934 2.30078 9.37127 2.38049L5.09627 5.93549C5.02647 6.00481 4.94188 6.05742 4.84884 6.08937C4.7558 6.12133 4.65674 6.13179 4.55908 6.11999H1.80452C1.71511 6.11939 1.62649 6.13656 1.54378 6.17049C1.46106 6.20443 1.38592 6.25446 1.3227 6.31767C1.25949 6.38089 1.20946 6.45604 1.17552 6.53875C1.14158 6.62146 1.12442 6.71009 1.12502 6.79949V11.2016C1.12457 11.2909 1.14184 11.3794 1.17585 11.462C1.20985 11.5446 1.2599 11.6196 1.32311 11.6827C1.38631 11.7458 1.4614 11.7957 1.54404 11.8296C1.62667 11.8635 1.71521 11.8806 1.80452 11.88H4.55627C4.65393 11.8682 4.75299 11.8786 4.84603 11.9106C4.93906 11.9426 5.02366 11.9952 5.09345 12.0645L9.36845 15.6195C9.66152 15.863 9.97651 15.7455 9.97651 15.4569V2.54361C9.97871 2.50519 9.9729 2.46674 9.95946 2.43068C9.94602 2.39463 9.92523 2.36175 9.89842 2.33415C9.87161 2.30655 9.83936 2.28481 9.80371 2.27032C9.76806 2.25584 9.72979 2.24891 9.69133 2.24999ZM15.1875 3.54374L14.1801 4.5523C15.0307 5.8829 15.4827 7.42917 15.4827 9.00842C15.4827 10.5877 15.0307 12.1339 14.1801 13.4645L15.1841 14.4635C16.2849 12.8557 16.8742 10.9527 16.8748 9.00416C16.8754 7.05558 16.2873 5.15229 15.1875 3.54374ZM12.7502 5.97542L11.7591 6.97499C12.1991 7.56234 12.437 8.27648 12.437 9.01039C12.437 9.7443 12.1991 10.4584 11.7591 11.0458L12.7468 12.0335C13.4417 11.1774 13.8215 10.1085 13.8225 9.00576C13.8235 7.90306 13.4458 6.83346 12.7525 5.97599L12.7502 5.97542Z" fill="#7917F5"/></svg>';
 
@@ -11,11 +9,6 @@ export const htmlMarkdown = /*html*/ `
 `;
 
 export const javascriptMarkdown = /*javascript*/ `
-
-require.config({
-    paths: { 'vs': "${MONACO_BASE_PATH}" }
-  });
-
   require(['vs/editor/editor.main'], function(monaco) {
 
     // Función principal que procesa todos los bloques de código
@@ -56,7 +49,11 @@ require.config({
       monaco.editor.defineTheme('default', {
         base: 'vs',
         inherit: true,
-        rules: [],
+        rules: [
+          { token: 'comment', foreground: '808080' },
+          { token: 'tag', foreground: '6a15d6' },
+          { token: 'attribute', foreground: '6a15d6' },
+        ],
         colors: {
           'editor.background': '#FAF9FF',
         }
@@ -122,78 +119,132 @@ require.config({
 function getTextDocument() {
     let textToRead = '';
     const markdownContent = document.querySelector('#markdown-content');
-    if (!markdownContent) return "";
+    if (!markdownContent) return [];
 
-    markdownContent.childNodes.forEach((node, index) => {
-        // Verifica si el nodo no es un .code-block-container ni un pre
-        if (node.nodeType === Node.ELEMENT_NODE
-            && !node.classList.contains('code-block-container')
-            && node.tagName.toLowerCase() !== 'pre') {
-            // Añadir el texto de nodos elementales que no sean bloques de código
+    markdownContent.childNodes.forEach((node) => {
+        if (
+            node.nodeType === Node.ELEMENT_NODE &&
+            !node.classList.contains('code-block-container') &&
+            node.tagName.toLowerCase() !== 'pre'
+        ) {
             textToRead += node.textContent.trim() + ' ';
         } else if (node.nodeType === Node.TEXT_NODE) {
-            // Añadir texto directo (nodos de texto puros)
             textToRead += node.textContent.trim() + ' ';
         }
     });
-    return textToRead.trim();
+
+    // Dividir en frases por punto
+    const returntext = textToRead
+        .split('.')
+        .map(frase => frase.trim())
+        .filter(frase => frase.length > 0);
+    return returntext
 }
 
-  window.speechSynthesis.onvoiceschanged = function() {
-        // SAM Model
-        const model = {
-            isPlaying: false,
-            synth: window.speechSynthesis,
-            utterance: new SpeechSynthesisUtterance(getTextDocument()),
-            voices: [],
-        };
+function getReadableNodes() {
+    const container = document.querySelector('#markdown-content');
+    if (!container) return [];
 
-        // Configuración inicial
-        model.voices = model.synth.getVoices();
-        model.utterance.voice = model.voices[7];
-        model.utterance.lang = model.utterance.voice.lang;
-        model.utterance.rate = 1;
-        model.utterance.pitch = 1;
+    const nodes = [];
 
-        // SAM Actions
-        const actions = {
-            toggleSpeech: () => {
-                if (model.isPlaying) {
-                    actions.stopSpeech();
-                } else {
-                    actions.playSpeech();
-                }
-            },
-            playSpeech: () => {
-                model.synth.cancel();
-                model.synth.speak(model.utterance);
-                model.isPlaying = true;
-                render();
-            },
-            stopSpeech: () => {
-                model.synth.cancel();
-                model.isPlaying = false;
-                render();
-            }
-        };
+    container.querySelectorAll(
+        'h1, h2, h3, h4, h5, h6, p, li, tr'
+    ).forEach(node => {
 
-        // SAM State
-        function render() {
-            const speakButton = document.getElementById("voiceButton");
-            speakButton.innerHTML = model.isPlaying ? '${iconStop}' : '${iconvoice}';
-        }
+        // ❌ Ignorar <p> dentro de <li>
+        if (node.tagName === 'P' && node.closest('li')) return;
 
-        // Event listeners
-        document.getElementById("voiceButton").addEventListener("click", actions.toggleSpeech);
-        
-        // Listener para cuando termine la reproducción
-        model.utterance.onend = () => {
+        // ❌ Ignorar bloques vacíos
+        if (!node.textContent.trim()) return;
+
+        nodes.push(node);
+    });
+
+    return nodes;
+}
+
+window.speechSynthesis.onvoiceschanged = function () {
+    const nodes = getReadableNodes();
+    if (!nodes.length) return;
+
+    const model = {
+        synth: window.speechSynthesis,
+        voices: window.speechSynthesis.getVoices(),
+        index: 0,
+        isPlaying: false,
+        utterance: null
+    };
+
+    function highlight(node) {
+        nodes.forEach(n => n.classList.remove('tts-active'));
+        node.classList.add('tts-active');
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function createUtterance(text) {
+        const u = new SpeechSynthesisUtterance(text);
+        u.voice = model.voices[7];
+        u.lang = u.voice.lang;
+        u.rate = 1.1;
+        u.pitch = 1;
+
+        u.onstart = () => highlight(nodes[model.index]);
+        u.onend = handleEnd;
+
+        return u;
+    }
+
+    function speakCurrent() {
+        const node = nodes[model.index];
+        model.synth.cancel();
+        model.utterance = createUtterance(node.textContent.trim());
+        model.synth.speak(model.utterance);
+    }
+
+    function handleEnd() {
+        nodes[model.index]?.classList.remove('tts-active');
+        model.index++;
+
+        if (model.index < nodes.length && model.isPlaying) {
+            speakCurrent();
+        } else {
             model.isPlaying = false;
+            model.index = 0;
             render();
-        };
+        }
+    }
 
-        // Inicializar
-        render();
+    const actions = {
+        toggleSpeech() {
+            model.isPlaying ? actions.stopSpeech() : actions.playSpeech();
+        },
+        playSpeech() {
+            model.isPlaying = true;
+            model.index = 0;
+            speakCurrent();
+            render();
+        },
+        stopSpeech() {
+            model.synth.cancel();
+            nodes.forEach(n => n.classList.remove('tts-active'));
+            model.isPlaying = false;
+            model.index = 0;
+            render();
+        }
+    };
+
+    function render() {
+        const btn = document.getElementById('voiceButton');
+        btn.innerHTML = model.isPlaying ? '${iconStop}' : '${iconvoice}';
+    }
+
+    document
+        .getElementById('voiceButton')
+        .addEventListener('click', actions.toggleSpeech);
+
+    render();
 };
+
+
 
 `;

@@ -39,26 +39,34 @@ export async function fetchDataByUrl(url: string) {
     );
 }
 
-//
-// array de array to object
-interface Item {
-  [key: string]: string | null;
+export interface DataSheets {
+  header: string;
+  items: Item[];
 }
 
-interface GroupedResult {
+export interface Item {
+  title: Title;
+  content: string;
+  description: null | string;
+  note: null | string;
+  response: null | string;
+}
+
+export interface Title {
   title: string;
-  items: Item[];
+  type: null | string;
 }
 
 export function aggregateData(
   dataSheet: (string | null)[][],
-  titleSelector: { title: string },
-  itemFields: string[]
-): GroupedResult[] {
+  header: { header: string },
+  title: string,
+  itemFields: string[],
+): DataSheets[] {
   if (!Array.isArray(dataSheet)) return [];
 
-  const groupedResult: GroupedResult[] = [];
-  let currentGroup: GroupedResult | null = null;
+  const groupedResult: any[] = [];
+  let currentGroup: any | null = null;
 
   for (const row of dataSheet) {
     // Si la fila no tiene suficientes columnas, ignorarla
@@ -67,7 +75,7 @@ export function aggregateData(
     }
 
     // Detectar el cambio de título (cuando la primera columna coincide con el selector 'title')
-    if (row[0] === titleSelector.title) {
+    if (row[0] === header.header) {
       // Si ya hay un grupo actual, agregarlo al array final
       if (currentGroup) {
         groupedResult.push(currentGroup);
@@ -75,15 +83,21 @@ export function aggregateData(
 
       // Iniciar un nuevo grupo con el título en la segunda columna (si existe)
       currentGroup = {
-        title: row[1] || "", // Asegurarse de que no sea undefined
+        header: row[1] || "", // Asegurarse de que no sea undefined
         items: [],
       };
     } else if (currentGroup) {
       // Si no es un título, procesar la fila como un item
-      const item: Item = {};
+      const item: any = {};
       // Rellenar cada campo según el índice correspondiente
       for (let i = 0; i < itemFields.length; i++) {
-        item[itemFields[i]!] = row[i + 1] || null; // Asegurarse de no acceder fuera del array
+        if (i === 0) {
+          const titleRow = row[i + 1] || null;
+          const typeRow = row[i] || null;
+          item[title] = { title: titleRow, type: typeRow };
+        }
+
+        item[itemFields[i]!] = row[i + 2] || null; // Asegurarse de no acceder fuera del array
       }
       currentGroup.items.push(item);
     }

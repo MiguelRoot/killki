@@ -6,7 +6,9 @@ import {
   googleSheetData,
 } from "../../react/services/sheets/googleSheetData";
 import { AppEditor } from "./EditCode";
-import CodeEditorWithPreview from "./editor/editorStack";
+import ReactIcon from "../../react/components/Icon/IconApp";
+import Dropdown from "../../react/components/Dropdown/Dropdown";
+import { Response } from "../../react/components/response/Response";
 
 export default function Content({ idSheet }: any) {
   const [content, setContent] = useState<null | any>(null);
@@ -22,7 +24,7 @@ export default function Content({ idSheet }: any) {
     const initFech = async () => {
       const url = getUrlSheets(idSheet, 0);
       const data = await fetchDataByUrl(url);
-      const columns = googleSheetData(data, 0, ["A", "B", "C"]);
+      const columns = googleSheetData(data, 1, ["A", "B", "C", "D", "E", "F"]);
       setdataSheet(columns);
       setIsLoading(false);
     };
@@ -62,14 +64,18 @@ export default function Content({ idSheet }: any) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
-  const outputArray = aggregateData(dataSheet, { title: "#" }, [
-    "subtitle",
-    "code",
+  // pones un indes a la fila empezando c
+  const outputArray = aggregateData(dataSheet, { header: "#" }, "title", [
+    "response",
+    "description",
+    "content",
+    "note",
   ]);
+
+  console.log(outputArray, 'outputArray');
 
   return (
     <div>
-      {/* <CodeEditorWithPreview /> */}
       {isLoading && (
         <div className="text-lg text-primary-0 flex justify-center w-full">
           <div className="loading">Cargando</div>
@@ -78,43 +84,101 @@ export default function Content({ idSheet }: any) {
       {!isLoading && (
         <div className="mb-5 overflow-hidden">
           <div className="md:columns-2 lg:columns-4 text-sm gap-4 mb-14">
-            {outputArray.map(({ title, items }: any, index: number) => {
+            {outputArray.map(({ header, items }, index: number) => {
               return (
                 <div key={index} className="break-inside-avoid mb-6">
                   <div className="g-border-b">
                     <span className="text-white inline-block pb-1 pt-2 px-4 font-bold bg-primary-0 rounded-t-md  rounded-sm">
-                      {title}
+                      {header}
                     </span>
                   </div>
-                  <ul className=" [&>*:nth-child(even)]:bg-primary-100">
+                  <ul className=" [&>*:nth-child(even)]:bg-white text-primary-950 [&>*:nth-child(odd)]:bg-primary-50">
                     {items.map(
                       (
-                        { subtitle, description = null, code }: any,
+                        { title, content, description, note, response },
                         indexChild: number
                       ) => {
+                        const isActive =
+                          active === index.toString() + indexChild.toString();
+
+                        const type$ =
+                          title.type === "$" ? " !bg-primary-300" : "";
+                        const typei =
+                          title.type === "-"
+                            ? " border-l-4 border-primary-300"
+                            : "";
+
+                        const type$$ =
+                          title.type === "$$" ? " !bg-primary-200" : "";
+                        const typeii =
+                          title.type === "--"
+                            ? " border-l-2 border-primary-200"
+                            : "";
+
+                        const classActive = isActive
+                          ? " !bg-secondary-0 text-white"
+                          : "";
+                        const activeTitle = isActive ? " !opacity-100" : "";
+
+                        const cursor = content ? " cursor-pointer" : "";
+
                         return (
                           <li
                             key={indexChild}
-                            className={
-                              active ===
-                              index.toString() + indexChild.toString()
-                                ? "text-white font-bold px-3 py-1 !bg-secondary-0 cursor-pointer text-shadow  rounded-sm"
-                                : "" +
-                                  "font-bold font-raleway px-3 py-1 cursor-pointer"
-                            }
+                            className={`relative group font-semibold font-raleway px-3 mt-[0.113rem] py-1 rounded-[2px] ${type$} ${type$$} ${classActive} ${cursor} ${typeii} ${typei}`}
                             onClick={() => {
+                              if (!content) return;
                               handleScroll();
                               handleActive(
                                 index.toString() + indexChild.toString(),
                                 {
-                                  subtitle,
-                                  description,
-                                  code,
+                                  subtitle: title.title,
+                                  code: content,
                                 }
                               );
                             }}
                           >
-                            {subtitle}
+                            <div>
+                              <div className="flex items-center gap-1">
+                                {response && (
+                                <Response dataType={response ?? ''} />
+                              )}
+                              <span className="pe-3">{title.title}</span>
+                              </div>
+                              {description && (
+                                <span className="block text-[13px] font-normal pe-2 mt-1 mb-1 leading-tight whitespace-pre-wrap">
+                                  {description}
+                                </span>
+                              )}
+                            </div>
+                            {content && (
+                              <span
+                                className={`absolute top-1 right-1 text-primary-200 opacity-40 group-hover:opacity-100 ${activeTitle}`}
+                              >
+                                <ReactIcon name="arrow-up" size="21" />
+                              </span>
+                            )}
+                            {note && (
+                              <span
+                                className={`absolute top-0 z-10 bottom-0 my-auto h-[21px] right-1 text-primary-200 ${activeTitle}`}
+                              >
+                                <Dropdown>
+                                  <Dropdown.Toggle>
+                                    <span className="opacity-40 group-hover:opacity-100">
+                                      <ReactIcon name="exclamation" size="21" />
+                                    </span>
+                                  </Dropdown.Toggle>
+                                  <Dropdown.Menu
+                                    align="right"
+                                    className="w-full !min-w-[230px]"
+                                  >
+                                    <div className="text-xs w-full whitespace-pre-wrap">
+                                      {note}
+                                    </div>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </span>
+                            )}
                           </li>
                         );
                       }

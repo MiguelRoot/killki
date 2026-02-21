@@ -17,10 +17,10 @@ export default {
           800: "var(--secondary-800)",
           900: "var(--secondary-900)",
           950: "var(--secondary-950)",
-          1000: "var(--secondary-1000)",
         },
         primary: {
           0: "var(--primary)",
+          10: "var(--primary-10)",
           50: "var(--primary-50)",
           100: "var(--primary-100)",
           200: "var(--primary-200)",
@@ -32,7 +32,12 @@ export default {
           800: "var(--primary-800)",
           900: "var(--primary-900)",
           950: "var(--primary-950)",
-          1000: "var(--primary-1000)",
+        },
+        homemenu: {
+          100: "var(--homemenu-about)",
+          200: "var(--homemenu-experience)",
+          300: "var(--homemenu-projects)",
+          400: "var(--homemenu-skills)",
         },
       },
       fontFamily: {

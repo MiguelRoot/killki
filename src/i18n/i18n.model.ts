@@ -9,6 +9,7 @@ export interface II18n {
   phone: string;
   email: string;
   presentation: string;
+  detalies: string[];
   profile: string;
   education: Education[];
   experience: Experience[];
@@ -36,6 +37,7 @@ export interface Experience {
 export interface Menu {
   label: string;
   path: string;
+  color: string;
 }
 
 export interface Project {

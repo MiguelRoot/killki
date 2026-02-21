@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { IIndexStack, IStacks } from "./editor.model";
+import type { IStacks } from "./editor.model";
 
 interface IStackStore {
   currentStack: IStacks | null;

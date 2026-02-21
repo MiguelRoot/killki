@@ -1,6 +1,7 @@
 ---
 // Importa la biblioteca 'node-fetch'
 // import fetch from "node-fetch";
+import AppIcon from "../../components/AppIcon.astro";
 import BaseHead from "../../components/sections/BaseHead.astro";
 import Footer from "../../components/sections/Footer.astro";
 import MenuFooter from "../../components/sections/MenuFooter.astro";
@@ -31,10 +32,10 @@ export async function getStaticPaths() {
   <body>
     <main class="mx-auto px-3 md:px-8 max-w-screen-xl min-h-screen">
       <div
-        class="absolute top-0 left-0 pointer-events-none w-full z-10 overflow-hidden"
+        class="absolute top-0 left-0 pointer-events-none w-[100vw] md:w-[50vw] z-10 max-w-full"
       >
         <svg
-          class="mt-[-450px] ms-[-300px] opacity-30"
+          class="mt-[-450px] opacity-30 max-w-full"
           width="1020"
           height="932"
           viewBox="0 0 1020 932"
@@ -72,29 +73,13 @@ export async function getStaticPaths() {
         </svg>
       </div>
       <div class="mt-10">
-        <a href="/">
-          <div
-            class="relative inline-flex items-center justify-center p-0.5 mb-1 overflow-hidden text-sm font-medium text-primary-0 rounded-full group bg-gradient-to-br from-secondary-0 to-primary-0 group-hover:from-secondary-0 group-hover:to-primary-0"
-          >
-            <span
-              class="relative p-2 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-full"
-            >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M11.4375 18.75L4.6875 12L11.4375 5.25M5.625 12H19.3125"
-                  stroke="#F91111"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"></path>
-              </svg>
-            </span>
-          </div>
+        <a
+          href="/"
+          class="custom-bg-button relative inline-flex items-center justify-center p-0.5 mb-1 overflow-hidden text-sm font-medium text-primary-0 rounded-full group bg-gradient-to-br from-secondary-0 to-primary-0 group-hover:from-secondary-0"
+        >
+          <span class="relative p-2 bg-white rounded-full">
+            <AppIcon name="arrow-back" />
+          </span>
         </a>
       </div>
       <div>

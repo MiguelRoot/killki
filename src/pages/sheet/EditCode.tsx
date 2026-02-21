@@ -1,14 +1,14 @@
 import { useState, useEffect, type FC, useRef } from "react";
-import { encode, decode } from "js-base64";
+import { encode } from "js-base64";
 import Split from "react-split";
-import Editor from "@monaco-editor/react";
+import Editor, { type Monaco } from "@monaco-editor/react";
 import TabContent from "../../react/tab/TabContent";
 import TabHeader from "../../react/tab/TabHeader";
 
 import Dropdown from "../../react/components/Dropdown/Dropdown";
-import { marked, use } from "marked";
+import { marked } from "marked";
 import { styleBase, styleMarkDown } from "./defaultStyle";
-import useMenuItem, { type MenuItemType } from "./useMenuItem";
+import { type MenuItemType } from "./useMenuItem";
 import { htmlMarkdown, javascriptMarkdown } from "./editor/mardown";
 import { useFullscreenStore } from "./editor/useFullscreen";
 import { useTabStore } from "../../react/tab/TabContext";
@@ -17,14 +17,12 @@ import { MONACO_BASE_PATH } from "../../content/config";
 // const ts = require("typescript");
 import ts from "typescript";
 import type {
-  IConfig,
   IStoreSheets,
-  IStacks,
   IIndexStack,
   ICode,
-  ILanguage,
   IContent,
   IIndexLanguage,
+  ILanguage,
 } from "./editor/editor.model";
 import { useStackStore } from "./editor/useStackStore";
 import { useContentStore, type IRollContent } from "./editor/useContentStore";
@@ -47,19 +45,6 @@ const transpileTypeScriptToJavaScript = (typeScriptCode: string) => {
 function previewFactory(indexStack: IIndexStack, contents: IRollContent) {
   if (indexStack === "angular") {
     // Código TypeScript
-
-    // import { Component } from "@angular/core";
-    // @Component({
-    //   selector: "app-my",
-    //   template: ` <div class="container">{{ name }}</div> `,
-    // })
-    // class MyComponent {
-    //   name: string = "home";
-    //   constructor() {}
-
-    //   ngOnInit() {}
-    // }
-    // const DECLARATIONS = [MyComponent]
 
     let tsCode = contents.javascript?.content || "";
     let codeContent = `
@@ -155,16 +140,114 @@ function previewFactory(indexStack: IIndexStack, contents: IRollContent) {
   } else if (indexStack === "react") {
     return /*html*/ `
         <html>
+        <!-- CDN para React y ReactDOM -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+        <!-- CDN para TypeScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/typescript/4.9.5/typescript.min.js"></script>
           <style>${contents.css?.content}</style>
           <body>${contents.html?.content}</body>
           <script>${contents.javascript?.content}</script>
+            <!-- Configuración de TypeScript -->
+            <script data-tsconfig>
+              {
+                "compilerOptions": {
+                  "jsx": "react-jsx",
+                  "target": "es5"
+                }
+              }
+            </script>
         </html>
+
       `;
   } else if (indexStack === "vanillaJs") {
     return /*html*/ `
         <html>
-          <body></body>
-          <script>${contents.javascript?.content}</script>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              background-color: #121212;
+              color: white;
+              margin: 0;
+              padding: 20px;
+            }
+            #console-output {
+              background: #1e1e1e;
+              border: 1px solid #333;
+              border-radius: 4px;
+              padding: 10px;
+              height: 300px;
+              overflow-y: auto;
+              font-family: monospace;
+              white-space: pre-wrap;
+            }
+            .log { color: #90ee90; } /* Verde */
+            .warn { color: #ffa500; } /* Naranja */
+            .error { color: #ff6f6f; } /* Rojo */
+            .info { color: #87ceeb; } /* Azul claro */
+          </style>
+        </head>
+          <body><div id="console-output"></div></body>
+          <script>
+            const consoleOutput = document.getElementById("console-output");
+
+            // Función para agregar mensajes al DOM
+            function addMessage(type, message) {
+              const msgDiv = document.createElement("div");
+              msgDiv.className = type;
+
+              // Si el mensaje es un objeto, formatearlo como JSON
+              if (typeof message === "object") {
+                msgDiv.textContent = "[" + type.toUpperCase() + "] " + JSON.stringify(message, null, 2);
+              } else {
+                msgDiv.textContent = "[" + type.toUpperCase() + "] " + message;
+              }
+
+              consoleOutput.appendChild(msgDiv);
+              consoleOutput.scrollTop = consoleOutput.scrollHeight; // Scroll automático
+            }
+
+            // Sobrescribir métodos de la consola
+            const originalConsole = {
+              log: console.log,
+              warn: console.warn,
+              error: console.error,
+              info: console.info
+            };
+
+            console.log = function (...args) {
+              originalConsole.log.apply(console, args);
+              args.forEach(arg => addMessage("log", arg));
+            };
+
+            console.warn = function (...args) {
+              originalConsole.warn.apply(console, args);
+              args.forEach(arg => addMessage("warn", arg));
+            };
+
+            console.error = function (...args) {
+              originalConsole.error.apply(console, args);
+              args.forEach(arg => addMessage("error", arg));
+            };
+
+            console.info = function (...args) {
+              originalConsole.info.apply(console, args);
+              args.forEach(arg => addMessage("info", arg));
+            };
+
+            // Capturar errores no manejados en JavaScript
+            window.addEventListener("error", function (event) {
+              addMessage("error", "Error no manejado: " + event.message + " en " + event.filename + ":" + event.lineno + ":" + event.colno);
+            });
+
+            // Capturar Promesas rechazadas no manejadas
+            window.addEventListener("unhandledrejection", function (event) {
+              addMessage("error", "Promesa no manejada: " + event.reason);
+            });
+          </script>
+          <script type="module">${contents.javascript?.content}</script>
         </html>
       `;
   } else if (indexStack === "vanillaTs") {
@@ -199,13 +282,17 @@ function previewFactory(indexStack: IIndexStack, contents: IRollContent) {
             </div>
           </body>
           <script src="${MONACO_BASE_PATH}/loader.js"></script>
+          
           <script  type="module">
+            require.config({
+              paths: { 'vs': "${MONACO_BASE_PATH}" }
+            });
             ${javascriptMarkdown}
             function resizeIframe() {
               const document = window.parent.document;
               const iframe = document.getElementById('widget'); 
               iframe.style.height = (document.documentElement.scrollHeight + 18) + 'px';
-              console.log(iframe);
+              
             }
           </script>
         </html>
@@ -214,7 +301,7 @@ function previewFactory(indexStack: IIndexStack, contents: IRollContent) {
 }
 
 const createHtml = ([html, css, js]: MenuItemType[]) => {
-  console.log(html, css, js, "html, css, js");
+  // console.log(html, css, js, "html, css, js");
   if (!html || !css || !js) return "";
 
   // default content
@@ -225,11 +312,10 @@ const createHtml = ([html, css, js]: MenuItemType[]) => {
   // Ejemplo de uso:
   const tsCode = `
   const saludo: string = 'Hola, mundo!';
-  console.log(saludo);
 `;
 
   const jsCode = transpileTypeScriptToJavaScript(tsCode);
-  console.log(jsCode, "jsCode");
+  // console.log(jsCode, "jsCode");
 
   // markdown
   let javascriptMarkdownRef = "";
@@ -273,7 +359,7 @@ const createHtml = ([html, css, js]: MenuItemType[]) => {
           const document = window.parent.document;
           const iframe = document.getElementById('widget'); 
           iframe.style.height = (document.documentElement.scrollHeight + 18) + 'px';
-          console.log(iframe);
+ 
         }
       </script>
       <script src="${MONACO_BASE_PATH}/loader.js"></script>
@@ -598,7 +684,11 @@ function isJSONValid(cadena: string): [boolean, any] {
 
 const hashedDecode3 = (dataRes: string): IStoreSheets => {
   const [valid, dataResObject] = isJSONValid(dataRes);
-  console.log("dataResObject v3", dataResObject);
+
+  if (valid && dataResObject?.version === "2.0.0") {
+    return dataResObject;
+  }
+  // console.log("dataResObject v3", dataResObject);
 
   const html: ICode = { title: "HTML", code: "html" };
   const css: ICode = { title: "CSS", code: "css" };
@@ -611,8 +701,6 @@ const hashedDecode3 = (dataRes: string): IStoreSheets => {
   if (valid && dataResObject?.version === "1.0.0") {
     const markdownActive = dataResObject.languages.html.code === "markdown";
     const stack = markdownActive ? "notes" : "static";
-
-    console.log("dataResObject 😤😤😤", dataResObject);
 
     const newObject: any = {
       version: "2.0.0",
@@ -775,7 +863,7 @@ const hashedDecode3 = (dataRes: string): IStoreSheets => {
         dataResObject.languages.javascript.content;
       newObject.stacks[stack].language.javascript.active = "javascript";
     }
-    console.log("newObject v3 v3", newObject);
+    // console.log("newObject v3 v3", newObject);
     return newObject;
   } else {
     return {
@@ -1075,6 +1163,7 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
   const { isFullscreen } = useFullscreenStore();
   const { currentStack } = useStackStore();
   const { updateContent } = useContentStore();
+  const { currentConfig } = useConfigStore();
 
   const handleEditorChange = (value: string | undefined) => {
     if (value != undefined) {
@@ -1091,6 +1180,15 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
     }
   };
 
+  const handleEditorDidMount = (monaco: Monaco) => {
+    monaco.editor.defineTheme("default", {
+      base: "vs",
+      inherit: true,
+      rules: [{ token: "comment", foreground: "808080" }],
+      colors: {},
+    });
+  };
+
   return (
     <Editor
       theme="vs-light"
@@ -1099,6 +1197,7 @@ const ContentEditor: FC<ComponentThatSetsHtmlProps> = ({
       defaultLanguage={defaultLanguage}
       value={iniValue}
       onChange={handleEditorChange}
+      beforeMount={handleEditorDidMount}
       options={{
         minimap: { enabled: false },
         automaticLayout: true,
@@ -1213,17 +1312,20 @@ const CodeEditor = ({
   titleCode: string;
 }) => {
   const { config, stacks } = hashedDecode3(dataCode);
+
   const { currentStack, updateStack } = useStackStore();
   const { currentConfig, updateConfig } = useConfigStore();
-  const { updateLanguage } = useContentStore();
 
+  const { contentStore, updateLanguage } = useContentStore();
+
+  // init stacks and config
   useEffect(() => {
     updateStack(stacks);
     updateConfig(config);
   }, [dataCode]);
 
+  // init languages
   useEffect(() => {
-    // init language
     if (currentStack && currentConfig) {
       const valueHtml = currentStack[currentConfig.stack].language.html;
       valueHtml && updateLanguage("html", valueHtml);
@@ -1231,20 +1333,21 @@ const CodeEditor = ({
       valueCss && updateLanguage("css", valueCss);
       const valueJs = currentStack[currentConfig.stack].language.javascript;
       valueJs && updateLanguage("javascript", valueJs);
-      // init tab active
-      const tabActive: IContent[] = Object.values(
-        currentStack[currentConfig.stack].language
-      );
-      if (tabActive.length > 0) {
-        const active: string = tabActive[0]!.codeId;
-        setActiveTab(active);
-      }
     }
-  }, [currentStack, currentConfig]);
+  }, [currentStack]);
 
-  // useEffect(() => {
-  //   setConfigSetting(config);
-  // }, [currentStack]);
+  // init tab active
+  useEffect(() => {
+    if (!currentStack || !currentConfig) return;
+    const tabActive: IContent[] = Object.values(
+      currentStack[currentConfig.stack].language
+    );
+
+    if (tabActive.length > 0) {
+      const active: string = tabActive[0]!.codeId;
+      setActiveTab(active);
+    }
+  }, [currentConfig]);
 
   const updateActiveStack = (index: IIndexStack) => {
     if (!currentConfig) return;
@@ -1285,37 +1388,231 @@ const CodeEditor = ({
           >
             {
               <>
-                <div className="bg-primary-900 rounded-t-lg flex text-primary-50 justify-between items-center text-[14px] pb-1">
+                <div className="bg-primary-900 rounded-t-lg flex text-primary-50 pe-2 ps-4 justify-between items-center text-[14px] py-1">
+                  <h3 className="text-base font-raleway font-bold flex gap-2 items-center">
+                    {currentConfig && (
+                      <ReactIcon name={currentConfig.stack} size="18" />
+                    )}
+                    {/* {currentConfig?.stack} */}
+                    {titleCode}
+                  </h3>
                   <div
                     style={{
-                      paddingLeft: isFullscreen ? "8px" : "auto",
+                      paddingRight: isFullscreen ? "8px" : "auto",
                     }}
-                    className="flex-grow basis-0"
+                    className="flex items-center flex-grow basis-0 justify-end"
                   >
-                    {currentStack && currentConfig && currentConfig.setting && (
-                      <div className="flex ">
-                        {(
-                          Object.values(
-                            currentStack[currentConfig.stack].language
-                          ) as IContent[]
-                        ).map((lang) => {
-                          return (
-                            <div key={lang.codeId}>
-                              <TabHeader value={lang.codeId}>
-                                <div className="flex items-center">
-                                  {lang.codeId}
-                                  <span className="ms-1 text-[12px]">
-                                    {lang.codeId !== lang.codeId && (
-                                      <span>({lang.codeId})</span>
-                                    )}
-                                  </span>
-                                </div>
-                              </TabHeader>
-                            </div>
-                          );
-                        })}
+                    <div
+                      className="p-2 hover:bg-primary-0 cursor-pointer rounded-md"
+                      onClick={toggleFullscreen}
+                    >
+                      <ReactIcon name="update" size="small" />
+                    </div>
 
-                        {/* <Dropdown>
+                    <div
+                      className="p-2 hover:bg-primary-0 cursor-pointer rounded-md"
+                      onClick={toggleFullscreen}
+                    >
+                      <ReactIcon name="fullscreen" size="small" />
+                    </div>
+
+                    <div className="border-l border-white/30 h-[18px] mx-3"></div>
+
+                    <div
+                      onClick={() => toggleSetting()}
+                      className="p-2 hover:bg-primary-0 cursor-pointer rounded-md"
+                    >
+                      {currentConfig?.setting ? (
+                        <ReactIcon name="view" size="small" />
+                      ) : (
+                        <ReactIcon name="code" size="small" />
+                      )}
+                    </div>
+
+                    <Dropdown>
+                      <Dropdown.Toggle>
+                        <div className="p-2 hover:bg-primary-0 rounded-md">
+                          <ReactIcon name="menu-kebab" size="small" />
+                        </div>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu align="right" className="leading-snug">
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              const udpateContent = () => {
+                                const languages =
+                                  stacks[currentConfig!.stack].language;
+
+                                let resLeng: ILanguage = { ...languages };
+                                if (languages.css) {
+                                  resLeng.css!.content =
+                                    contentStore.css?.content || "";
+                                }
+                                if (languages?.html) {
+                                  resLeng.html!.content =
+                                    contentStore.html?.content || "";
+                                }
+                                if (languages?.javascript) {
+                                  resLeng.javascript!.content =
+                                    contentStore.javascript?.content || "";
+                                }
+                                return resLeng;
+                              };
+
+                              copyJson({
+                                version: "2.0.0",
+                                config: currentConfig,
+                                stacks: {
+                                  ...stacks,
+                                  ...(stacks[currentConfig!.stack].language =
+                                    udpateContent()),
+                                },
+                              });
+                            }}
+                          >
+                            Copiar json
+                          </Dropdown.Item>
+                        </div>
+
+                        <div className="w-full border-t border-primary-0/5 my-2"></div>
+
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("angular");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="angular" size="16" />
+                              <span>Angular</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("react");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="react" size="16" />
+                              <span>React</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("static");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="static" size="16" />
+                              <span>Static</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("vanillaJs");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="javascript" size="16" />
+                              <span>Vanilla JS</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("vanillaTs");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="typescript" size="16" />
+                              <span>Vanilla TS</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+
+                        <div className="p-2 hover:bg-gray-100/60 rounded-md cursor-pointer">
+                          <Dropdown.Item
+                            onClick={() => {
+                              // console.log(config);
+                              updateActiveStack("notes");
+                            }}
+                          >
+                            <div className="flex gap-2">
+                              <ReactIcon name="markdown" size="16" />
+                              <span>Notas</span>
+                            </div>
+                          </Dropdown.Item>
+                        </div>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                </div>
+                {currentConfig && currentStack && (
+                  <div style={{ height: isFullscreen ? "100%" : "auto" }}>
+                    <Split
+                      className="wrap"
+                      sizes={currentConfig.splitSize}
+                      minSize={0}
+                      expandToMin={false}
+                      gutterSize={currentConfig.setting ? 8 : 0}
+                      gutterAlign="center"
+                      snapOffset={30}
+                      dragInterval={1}
+                      direction="horizontal"
+                      cursor="col-resize"
+                    >
+                      <div
+                        style={{
+                          overflow: isFullscreen ? "hidden" : "auto",
+                        }}
+                      >
+                        <div className="bg-secondary-50">
+                          <div
+                            style={{
+                              paddingLeft: isFullscreen ? "8px" : "auto",
+                            }}
+                            className="flex-grow basis-0"
+                          >
+                            {currentStack &&
+                              currentConfig &&
+                              currentConfig.setting && (
+                                <div className="flex ">
+                                  {(
+                                    Object.values(
+                                      currentStack[currentConfig.stack].language
+                                    ) as IContent[]
+                                  ).map((lang) => {
+                                    return (
+                                      <div key={lang.codeId}>
+                                        <TabHeader value={lang.codeId}>
+                                          <div className="flex items-center">
+                                            {lang.codeId}
+                                            <span className="ms-1 text-[12px]">
+                                              {lang.codeId !== lang.codeId && (
+                                                <span>({lang.codeId})</span>
+                                              )}
+                                            </span>
+                                          </div>
+                                        </TabHeader>
+                                      </div>
+                                    );
+                                  })}
+
+                                  {/* <Dropdown>
                           <Dropdown.Toggle className="-rotate-90">
                             <ReactIcon name="arrow-up" />
                           </Dropdown.Toggle>
@@ -1352,118 +1649,23 @@ const CodeEditor = ({
                             </div>
                           </Dropdown.Menu>
                         </Dropdown> */}
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="text-lg font-raleway font-bold text-secondary-950">
-                    ({titleCode})
-                  </h3>
-                  <div
-                    style={{
-                      paddingRight: isFullscreen ? "8px" : "auto",
-                    }}
-                    className="flex items-center flex-grow basis-0 justify-end"
-                  >
-                    <div
-                      onClick={() => toggleSetting()}
-                      className="p-2 hover:bg-secondary-200 rounded-md"
-                    >
-                      {currentConfig?.setting ? (
-                        <ReactIcon name="code" size="small" />
-                      ) : (
-                        <ReactIcon name="view" size="small" />
-                      )}
-                    </div>
-                    <div
-                      className="p-2 hover:bg-secondary-200 rounded-md"
-                      onClick={toggleFullscreen}
-                    >
-                      <ReactIcon name="fullscreen" size="small" />
-                    </div>
-                    <Dropdown>
-                      <Dropdown.Toggle>
-                        <div className="p-2 hover:bg-secondary-100 rounded-md">
-                          <ReactIcon name="menu-kebab" size="small" />
+                                </div>
+                              )}
+                          </div>
                         </div>
-                      </Dropdown.Toggle>
-                      <Dropdown.Menu align="right">
-                        <div className="p-2 hover:bg-gray-100/60 rounded-md">
-                          <Dropdown.Item
-                          // onClick={() => {
-                          //   // console.log(config);
-                          //   copyJson({
-                          //     version: version,
-                          //     config: configSetting,
-                          //     languages: {
-                          //       html: htmlGroup2.item,
-                          //       css: cssGroup2.item,
-                          //       javascript: jsGroup2.item,
-                          //     },
-                          //   });
-                          // }}
-                          >
-                            Copiar json
-                          </Dropdown.Item>
-                        </div>
-                        <div className="p-2 hover:bg-gray-100/60 rounded-md">
-                          <Dropdown.Item
-                            onClick={() => {
-                              // copyToClipboard({
-                              //   version: version,
-                              //   config: configSetting,
-                              //   languages: [
-                              //     htmlGroup2.item,
-                              //     cssGroup2.item,
-                              //     jsGroup2.item,
-                              //   ],
-                              // });
-                            }}
-                          >
-                            Copiar hash
-                          </Dropdown.Item>
-                        </div>
-                        <div className="p-2 hover:bg-gray-100/60 rounded-md">
-                          <Dropdown.Item
-                            onClick={() => {
-                              // console.log(config);
-                              updateActiveStack("angular");
-                            }}
-                          >
-                            Angular
-                          </Dropdown.Item>
-                        </div>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                </div>
-                {currentConfig && currentStack && (
-                  <div style={{ height: isFullscreen ? "100%" : "auto" }}>
-                    <Split
-                      className="wrap"
-                      sizes={currentConfig.splitSize}
-                      minSize={0}
-                      expandToMin={false}
-                      gutterSize={currentConfig.setting ? 8 : 0}
-                      gutterAlign="center"
-                      snapOffset={30}
-                      dragInterval={1}
-                      direction="horizontal"
-                      cursor="col-resize"
-                    >
-                      <div>
                         {Object.entries(
                           currentStack[currentConfig.stack].language
                         ).map(([index, lang]: [string, IContent]) => {
                           return (
                             <div key={lang.codeId}>
                               <TabContent value={lang.codeId}>
-                                <div className="relative overflow-hidden">
+                                <div className="relative">
                                   {currentConfig.setting &&
                                     lang.codes.length > 1 && (
-                                      <div className="absolute right-4 top-0 z-10">
+                                      <div className="absolute right-4 -top-[35px] z-10">
                                         <Dropdown>
                                           <Dropdown.Toggle>
-                                            <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] bg-white/95 border border-primary-0 text-primary-0">
+                                            <div className="flex items-center px-2 py-[2px] rounded-md text-[12px] border border-primary-0 text-primary-0">
                                               {lang.active}{" "}
                                               <ReactIcon
                                                 size="small"
@@ -1512,7 +1714,7 @@ const CodeEditor = ({
                       </div>
 
                       <div>
-                        {currentConfig.setting &&
+                        {/* {currentConfig.setting &&
                           (currentStack[currentConfig.stack].view ||
                             currentStack[currentConfig.stack].console) && (
                             <div className="flex justify-between items-center bg-[#FFF8F9] px-2 border-b border-secondary-50">
@@ -1532,7 +1734,7 @@ const CodeEditor = ({
                                 <ReactIcon name="update" size="20" />
                               </div>
                             </div>
-                          )}
+                          )} */}
 
                         <IframePreview
                           initValue={currentStack[currentConfig.stack]}

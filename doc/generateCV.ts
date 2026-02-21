@@ -14,8 +14,20 @@ import {
   WidthType,
   HeightRule,
 } from "docx";
-import { translations } from "../src/i18n/translations";
+
+
+// import { translations } from "../src/i18n/translations";
+import { DataPage, i18n, i18nDetail } from "../src/i18n";
 import type { Education, Experience, II18n } from "../src/i18n/i18n.model";
+const frontendEs = i18nDetail("frontend", "es");
+const backendEs = i18nDetail("backend", "es");
+const fullstackEs = i18nDetail("fullstack", "es");
+
+const frontendEn = i18nDetail("frontend", "en");
+const backendEn = i18nDetail("backend", "en");
+const fullstackEn = i18nDetail("fullstack", "en");
+
+// const listaCV = [frontendEs, backendEs, fullstackEs, frontendEn, backendEn, fullstackEn];
 
 function textBorderBottom(paragraph: any) {
   return new Table({
@@ -131,7 +143,7 @@ function laboralExperience(data: Experience): Paragraph[] {
   ];
 }
 
-function studentExperience(data: Education): Paragraph[] {
+function studentExperience(data: any): Paragraph[] {
   return [
     new Paragraph({
       tabStops: [
@@ -173,18 +185,22 @@ function studentExperience(data: Education): Paragraph[] {
 }
 
 // Crear el documento
-function createDocument(data: II18n) {
-  const labotalList = data.experience.map((experience) => {
+function createDocument(data: DataPage) {
+  const labotalList = data.profile.experience.map((experience: any) => {
     return laboralExperience(experience);
   });
 
-  const educationList = data.education.map((education) => {
+  // const detalles = data.detalies.map((detalies) => {
+  //   return new Paragraph({ text: detalies, bullet: { level: 0 } });
+  // });
+
+  const educationList = data.global.education.map((education) => {
     return studentExperience(education);
   });
 
-  const skillsListNivel1 = data.skills.filter((skill) => skill.level === 1);
-  const skillsListNivel2 = data.skills.filter((skill) => skill.level === 2);
-  const skillsListNivel3 = data.skills.filter((skill) => skill.level === 3);
+  const skillsListNivel1 = data.skillsList.filter((skill) => skill.level === 1);
+  const skillsListNivel2 = data.skillsList.filter((skill) => skill.level === 2);
+  const skillsListNivel3 = data.skillsList.filter((skill) => skill.level === 3);
 
   return new Document({
     sections: [
@@ -195,7 +211,7 @@ function createDocument(data: II18n) {
             alignment: AlignmentType.CENTER,
             children: [
               new TextRun({
-                text: data.name,
+                text: data.detail.name,
                 bold: true,
                 size: 48, // Tamaño de letra grande
               }),
@@ -208,19 +224,31 @@ function createDocument(data: II18n) {
               alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
-                  text: data.city + " - ",
+                  text: "🏠 " + data.detail.city + " - 💼 ",
                 }),
                 new ExternalHyperlink({
                   children: [
                     new TextRun({
-                      text: "linkedin.com/in/miguelkillki",
+                      text: "linkedin.com",
                       style: "Hyperlink", // Aplica el estilo de hipervínculo
                     }),
                   ],
-                  link: data.linkedin,
+                  link: data.detail.linkedin,
+                }),
+               new TextRun({
+                  text: " - 🌐 "
+                }),
+                new ExternalHyperlink({
+                  children: [
+                    new TextRun({
+                      text: "Portfolio",
+                      style: "Hyperlink", // Aplica el estilo de hipervínculo
+                    }),
+                  ],
+                  link: data.profile.web,
                 }),
                 new TextRun({
-                  text: ` - ${data.phone} - ${data.email}`,
+                  text: ` - 📱 ${data.detail.phone} - 📧 ${data.detail.email}`,
                 }),
               ],
               spacing: { after: 40 }, // Espaciado después del párrafo
@@ -230,7 +258,7 @@ function createDocument(data: II18n) {
           // Descripción personal
           new Paragraph({
             alignment: AlignmentType.JUSTIFIED,
-            children: [new TextRun(data.profile)],
+            children: [new TextRun(data.profile.profile)],
             spacing: { after: 300 },
           }),
 
@@ -298,13 +326,16 @@ function createDocument(data: II18n) {
 }
 
 // Guardar el documento
-const saveDocument = async () => {
-  const buffer: Buffer = await Packer.toBuffer(createDocument(translations.es));
+const saveDocument = async (objectText: DataPage, language: string, pro: string) => {
+  const buffer: Buffer = await Packer.toBuffer(createDocument(objectText));
   await writeFile(
-    "./dist/static/Curriculum_Miguel_Angel_Llacta_Flores.docx",
+    "./dist/static/Curriculum_Miguel_Angel_Llacta_Flores-" + pro + "-" + language + ".docx",
     buffer
   );
-  console.log("Documento generado exitosamente.");
+  // console.log("Documento generado exitosamente.");
 };
 
-saveDocument();
+saveDocument(frontendEs, "es", "frontend");
+saveDocument(frontendEs, "es", "backend");
+saveDocument(fullstackEs, "es", "fullstack");
+// saveDocument(frontendEn, "en");

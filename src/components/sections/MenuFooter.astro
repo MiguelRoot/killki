@@ -1,46 +1,26 @@
 ---
 import { i18n } from "../../i18n";
 import { LISTPAGESID } from "../../pages/sheet/listPageId";
-// import type { Locale } from "../i18n/translations";
-// import { translations } from "../i18n/translations";
-
-// const currentLocale: Locale = "es";
-// const texts = translations[currentLocale];
 
 const { currentLocale } = Astro;
 
 const texts = i18n(currentLocale);
-
-// function getRowsAandB(data: any) {
-//   const rowsAandB = data.table.rows.map((row: any) => {
-//     const columnA = row.c[0].v;
-//     const columnB = row.c[1].v;
-//     return [columnA, columnB];
-//   });
-//   return rowsAandB;
-// }
-
-// const getUrl =
-//   "https://docs.google.com/spreadsheets/d/1FnP7HpwBhO_AmW6PzieZzNl3a0pfd3MIcc2JTnOoVko/gviz/tq?tqx=out:json&tq&gid=0";
-
-// const response = await fetch(getUrl)
-//   .then((res: any) => res.text())
-//   .then((json: any) =>
-//     JSON.parse(json.substring(json.indexOf("{"), json.lastIndexOf("}") + 1))
-//   );
-// const listIds: any = getRowsAandB(response);
 ---
 
 <div class="mt-14 columns-2 md:grid md:grid-cols-3">
   <div class="break-inside-avoid">
     <h4 class="font-bold font-raleway mb-2 text-secondary-0">Secciones</h4>
     <ul class="[&>*]:mb-1">
-      <li><a href="/">{currentLocale === "en" ? "Home" : "Inicio"}</a></li>
+      <li>
+        <a class="text-primary-950 hover:text-secondary-0" href="/"
+          >{currentLocale === "en" ? "Home" : "Inicio"}</a
+        >
+      </li>
       {
         texts.menu.map((item) => (
           <li>
             <a
-              class="text-primary-1000"
+              class="text-primary-950 hover:text-secondary-0"
               href={`${currentLocale === "en" ? "/en" : ""}/#${item.path}`}
             >
               {item.label}
@@ -57,7 +37,10 @@ const texts = i18n(currentLocale);
       {
         LISTPAGESID.map((item: any) => (
           <li>
-            <a class="text-primary-1000" href={"/sheet/" + item.pageId}>
+            <a
+              class="text-primary-950 hover:text-secondary-0"
+              href={"/sheet/" + item.pageId}
+            >
               {item.title}
             </a>
           </li>
@@ -70,7 +53,7 @@ const texts = i18n(currentLocale);
     <ul>
       <li>
         <a
-          class="text-primary-1000 blank"
+          class="text-primary-950 hover:text-secondary-0 blank"
           target="_blank"
           href="https://github.com/MiguelRoot/angular-sidebar-admin"
         >

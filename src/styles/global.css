@@ -5,15 +5,7 @@
  */
 
 :root {
-  /* --accent: #2337ff;
-  --accent-dark: #000d8a;
-  --black: 15, 18, 25;
-  --gray: 96, 115, 159;
-  --gray-light: 105, 68, 227;
-  --gray-dark: 34, 41, 57;
-  --gray-gradient: rgba(var(--gray-light), 3%), #fff;
-  --box-shadow: 0 2px 6px rgba(var(--gray), 25%),
-    0 8px 24px rgba(var(--gray), 33%), 0 16px 32px rgba(var(--gray), 33%); */
+  --primary-rgb: 157, 78, 221;
   --secondary: #f91111;
   --secondary-50: #fff0f0;
   --secondary-100: #ffdede;
@@ -28,20 +20,111 @@
   --secondary-950: #4e0101;
   --secondary-1000: #602f2f;
 
-  --primary: #6a15d6;
-  --primary-50: #f5f2ff;
-  --primary-100: #ede7ff;
-  --primary-200: #ddd2ff;
-  --primary-300: #c4aeff;
-  --primary-400: #a881ff;
-  --primary-500: #8e4eff;
-  --primary-600: #8329fe;
-  --primary-700: #7418e9;
-  --primary-800: #6a15d6;
-  --primary-900: #5112a0;
-  --primary-950: #31086d;
-  --primary-1000: #583d7b;
+  --homemenu-about: #59257e;
+  --homemenu-experience: #2c5215;
+  --homemenu-projects: #064d74;
+  --homemenu-skills: #285362;
 }
+
+body {
+  --primary-rgb: 157, 78, 221;
+  --primary: #8130c0;
+  --primary-10: #fdfbff;
+  --primary-50: #faf6fe;
+  --primary-100: #f4eafd;
+  --primary-200: #ead9fb;
+  --primary-300: #dabaf8;
+  --primary-400: #c38ef2;
+  --primary-500: #ac63e9;
+  --primary-600: #9d4edd;
+  --primary-700: #8130c0;
+  --primary-800: #6d2c9d;
+  --primary-900: #59257e;
+  --primary-950: #3c0f5c;
+}
+
+body.experience {
+  --primary-rgb: 78, 160, 16;
+  --primary: #336113;
+  --primary-10: #fafff5;
+  --primary-50: #f3fee7;
+  --primary-100: #e5fbcc;
+  --primary-200: #cbf79f;
+  --primary-300: #a8ef67;
+  --primary-400: #87e338;
+  --primary-500: #6bcf1a;
+  --primary-600: #4ea010;
+  --primary-700: #3d7a11;
+  --primary-800: #336113;
+  --primary-900: #2c5215;
+  --primary-950: #142d06;
+}
+
+body.projects {
+  --primary-rgb: 0, 110, 171;
+  --primary: #006eab;
+  --primary-10: #def2ff;
+  --primary-50: #eff9ff;
+  --primary-100: #def2ff;
+  --primary-200: #b6e8ff;
+  --primary-300: #75d8ff;
+  --primary-400: #2cc5ff;
+  --primary-500: #00b3ff;
+  --primary-600: #008bd4;
+  --primary-700: #006eab;
+  --primary-800: #005d8d;
+  --primary-900: #064d74;
+  --primary-950: #04314d;
+}
+
+body.skills {
+  --primary-rgb: 43, 121, 143;
+  --primary: #85d0db;
+  --primary-10: #142d38;
+  /* --primary-50: #254654;
+  --primary-100: #d9f2f4;
+  --primary-200: #b7e4ea;
+  --primary-300: #85d0db;
+  --primary-400: #4cb2c4;
+  --primary-500: #3196a9;
+  --primary-600: #285362;
+  --primary-700: #b7e4ea;
+  --primary-800: #b7e4ea;
+  --primary-900: #b7e4ea;
+  --primary-950: #b7e4ea; */
+
+  --primary-950: #b6e4eb;
+  --primary-900: #d8f1f5;
+  --primary-800: #b6e4eb;
+  --primary-700: #84d0dc;
+  --primary-600: #4bb2c5;
+  --primary-500: #2f96ab;
+  --primary-400: #2a7a90;
+  --primary-300: #286376;
+  --primary-200: #285362;
+  --primary-100: #254654;
+  --primary-50: #142d38;
+
+  /* secondary */
+  --secondary: #facece;
+  --secondary-950: #fdf3f3;
+  --secondary-900: #fce4e4;
+  --secondary-800: #facece;
+  --secondary-700: #f5acac;
+  --secondary-600: #ec7d7d;
+  --secondary-500: #e05353;
+  --secondary-400: #cc3636;
+  --secondary-300: #b22b2b;
+  --secondary-200: #8e2626;
+  --secondary-100: #772525;
+  --secondary-50: #400f0f;
+
+  --homemenu-about: #b491ce;
+  --homemenu-experience: #91bb73;
+  --homemenu-projects: #5296bb;
+  --homemenu-skills: #6aa0b2;
+}
+
 @font-face {
   font-family: "Atkinson";
   src: url("/fonts/atkinson-hyperlegible/AtkinsonHyperlegible-Regular.woff2")
@@ -58,18 +141,6 @@
   font-style: normal;
   font-display: swap;
 }
-
-/*
- Fonts Raleway
-*/
-/* 
-@font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway/Raleway-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-} */
 
 @font-face {
   font-family: "Raleway";
@@ -103,31 +174,21 @@
   font-display: swap;
 }
 
-/* @font-face {
-  font-family: "Raleway";
-  src: url("/fonts/Raleway/Raleway-ExtraBold.woff2") format("woff2");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-} */
-
 body {
   font-family: "Atkinson", sans-serif;
   margin: 0;
   padding: 0;
   text-align: left;
-  background-color: #fcfcff;
-  /* background: linear-gradient(var(--gray-gradient)) no-repeat; */
-  /* background-size: none !important; */
-  color: var(--primary-1000);
+
   word-wrap: break-word;
   overflow-wrap: break-word;
   font-size: 16px;
   line-height: 1.3;
+  transition: background-color 0.5s;
 }
 
 .text-shadow {
-  text-shadow: 0px 0px 15px rgba(136, 115, 239, 0.5);
+  text-shadow: 0px 0px 15px rgba(var(--primary-rgb), 0.5);
 }
 
 .bg-white-degrade {
@@ -148,7 +209,7 @@ a.blank {
 a.blank::before {
   content: "";
   display: block;
-  background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M6.47133 10.4713L11.6667 5.27601L12.862 6.47134C12.9552 6.56454 13.074 6.62802 13.2033 6.65373C13.3326 6.67944 13.4666 6.66624 13.5884 6.61579C13.7102 6.56534 13.8143 6.47992 13.8876 6.37031C13.9609 6.2607 14 6.13184 14 6.00001V2.66667L13.9993 2.63467C13.9918 2.46336 13.9182 2.30161 13.7941 2.18331C13.6699 2.06501 13.5048 1.99932 13.3333 2.00001H10C9.86817 2.00003 9.7393 2.03915 9.62969 2.1124C9.52009 2.18566 9.43466 2.28977 9.38421 2.41157C9.33377 2.53337 9.32057 2.66739 9.34628 2.79669C9.37199 2.92599 9.43546 3.04477 9.52867 3.13801L10.724 4.33334L5.52867 9.52867C5.46499 9.59017 5.4142 9.66373 5.37927 9.74507C5.34433 9.8264 5.32594 9.91388 5.32517 10.0024C5.3244 10.0909 5.34127 10.1787 5.37479 10.2606C5.40831 10.3426 5.45781 10.417 5.5204 10.4796C5.583 10.5422 5.65743 10.5917 5.73936 10.6252C5.82129 10.6587 5.90908 10.6756 5.9976 10.6748C6.08612 10.6741 6.1736 10.6557 6.25494 10.6207C6.33627 10.5858 6.40984 10.535 6.47133 10.4713ZM2.66667 2.00001C2.48986 2.00001 2.32029 2.07024 2.19526 2.19527C2.07024 2.32029 2 2.48986 2 2.66667V12C2 12.5304 2.21071 13.0391 2.58579 13.4142C2.96086 13.7893 3.46957 14 4 14H12C12.5304 14 13.0391 13.7893 13.4142 13.4142C13.7893 13.0391 14 12.5304 14 12V8.66667C14 8.48986 13.9298 8.32029 13.8047 8.19527C13.6797 8.07024 13.5101 8 13.3333 8C13.1565 8 12.987 8.07024 12.8619 8.19527C12.7369 8.32029 12.6667 8.48986 12.6667 8.66667V12C12.6667 12.1768 12.5964 12.3464 12.4714 12.4714C12.3464 12.5964 12.1768 12.6667 12 12.6667H4C3.82319 12.6667 3.65362 12.5964 3.5286 12.4714C3.40357 12.3464 3.33333 12.1768 3.33333 12V3.33334H7.33333C7.51014 3.33334 7.67971 3.2631 7.80474 3.13808C7.92976 3.01305 8 2.84348 8 2.66667C8 2.48986 7.92976 2.32029 7.80474 2.19527C7.67971 2.07024 7.51014 2.00001 7.33333 2.00001H2.66667Z' fill='%235F477E'/%3E%3C/svg%3E%0A");
+  /* background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M6.47133 10.4713L11.6667 5.27601L12.862 6.47134C12.9552 6.56454 13.074 6.62802 13.2033 6.65373C13.3326 6.67944 13.4666 6.66624 13.5884 6.61579C13.7102 6.56534 13.8143 6.47992 13.8876 6.37031C13.9609 6.2607 14 6.13184 14 6.00001V2.66667L13.9993 2.63467C13.9918 2.46336 13.9182 2.30161 13.7941 2.18331C13.6699 2.06501 13.5048 1.99932 13.3333 2.00001H10C9.86817 2.00003 9.7393 2.03915 9.62969 2.1124C9.52009 2.18566 9.43466 2.28977 9.38421 2.41157C9.33377 2.53337 9.32057 2.66739 9.34628 2.79669C9.37199 2.92599 9.43546 3.04477 9.52867 3.13801L10.724 4.33334L5.52867 9.52867C5.46499 9.59017 5.4142 9.66373 5.37927 9.74507C5.34433 9.8264 5.32594 9.91388 5.32517 10.0024C5.3244 10.0909 5.34127 10.1787 5.37479 10.2606C5.40831 10.3426 5.45781 10.417 5.5204 10.4796C5.583 10.5422 5.65743 10.5917 5.73936 10.6252C5.82129 10.6587 5.90908 10.6756 5.9976 10.6748C6.08612 10.6741 6.1736 10.6557 6.25494 10.6207C6.33627 10.5858 6.40984 10.535 6.47133 10.4713ZM2.66667 2.00001C2.48986 2.00001 2.32029 2.07024 2.19526 2.19527C2.07024 2.32029 2 2.48986 2 2.66667V12C2 12.5304 2.21071 13.0391 2.58579 13.4142C2.96086 13.7893 3.46957 14 4 14H12C12.5304 14 13.0391 13.7893 13.4142 13.4142C13.7893 13.0391 14 12.5304 14 12V8.66667C14 8.48986 13.9298 8.32029 13.8047 8.19527C13.6797 8.07024 13.5101 8 13.3333 8C13.1565 8 12.987 8.07024 12.8619 8.19527C12.7369 8.32029 12.6667 8.48986 12.6667 8.66667V12C12.6667 12.1768 12.5964 12.3464 12.4714 12.4714C12.3464 12.5964 12.1768 12.6667 12 12.6667H4C3.82319 12.6667 3.65362 12.5964 3.5286 12.4714C3.40357 12.3464 3.33333 12.1768 3.33333 12V3.33334H7.33333C7.51014 3.33334 7.67971 3.2631 7.80474 3.13808C7.92976 3.01305 8 2.84348 8 2.66667C8 2.48986 7.92976 2.32029 7.80474 2.19527C7.67971 2.07024 7.51014 2.00001 7.33333 2.00001H2.66667Z' fill='%235F477E'/%3E%3C/svg%3E%0A"); */
   position: absolute;
   width: 16px;
   height: 16px;
@@ -157,21 +218,11 @@ a.blank::before {
   bottom: 0;
 }
 
-.hoverLInk {
-  /* position: relative;
-  display: inline-block;
-  padding-right: 24px; */
-}
-
 .hoverLInk h2 {
   position: relative;
   display: inline-block;
   padding-right: 25px;
 }
-
-/* .hoverLInk h2:hover {
-  color: #ff0000;
-} */
 
 .hoverLInk:hover h2::before {
   content: "";
@@ -206,15 +257,63 @@ a.blank::before {
   margin: auto;
 }
 
-.options-active {
-  &::before {
-    content: "";
-    display: block;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    border-bottom: var(--secondary-500) 2px solid;
-    margin-bottom: -1px;
-    right: 0;
+.options-active::before {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-bottom: var(--secondary-500) 2px solid;
+  margin-bottom: -1px;
+  right: 0;
+}
+
+.grid-card {
+  display: grid;
+  grid-template-areas: "itemA itemB" "itemA itemC" "itemA itemD";
+  /* grid-template-areas: "itemB itemB" "itemA itemC" "itemD itemD"; */
+  gap: 0.875rem 1.25rem;
+  grid-template-columns: 130px 1fr;
+  grid-template-rows: auto auto auto;
+}
+
+@media (max-width: 768px) {
+  .grid-card {
+    grid-template-areas: "itemB itemB" "itemA itemC" "itemD itemD";
+    grid-template-columns: 100px 1fr;
   }
 }
+
+.grid-card .grid-card-image {
+  grid-area: itemA;
+}
+.grid-card .grid-card-title {
+  grid-area: itemB;
+}
+.grid-card .grid-card-description {
+  grid-area: itemC;
+}
+.grid-card .grid-card-stack {
+  grid-area: itemD;
+}
+
+/* color imagen card */
+.card-color {
+  background: linear-gradient(135deg, #6a15d6 50%, #b22b2b 100%);
+}
+
+/* .custom-bg-button {
+  transition: 0.5s;
+} */
+
+.custom-bg-button:hover span {
+  background: linear-gradient(
+    180deg,
+    var(--primary-50) 0%,
+    var(--secondary-50) 100%
+  );
+}
+
+/* * {
+  outline: 1px solid red;
+} */

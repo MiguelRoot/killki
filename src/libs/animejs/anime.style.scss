@@ -1,0 +1,62 @@
+.animation-item {
+  transition:
+    opacity 0.2s,
+    transform 0.3s;
+}
+
+/* Animation Items */
+.animation-item.animation-opacity {
+  opacity: 0;
+}
+.animation-item.animation-xr {
+  opacity: 0;
+  transform: translateX(8px);
+}
+.animation-item.animation-xr-lg {
+  opacity: 0;
+  transform: translateX(10px);
+}
+@media screen and (min-width: 1024px) {
+  .animation-item.animation-xr-lg {
+    transform: translateX(30px);
+  }
+}
+.animation-item.animation-xl {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+.animation-item.animation-xl-lg {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+@media screen and (min-width: 1024px) {
+  .animation-item.animation-xl-lg {
+    transform: translateX(-30px);
+  }
+}
+.animation-item.animation-yb {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.animation-item.animation-yb-lg {
+  opacity: 0;
+  transform: translateY(10px);
+}
+@media screen and (min-width: 1024px) {
+  .animation-item.animation-yb-lg {
+    transform: translateY(30px);
+  }
+}
+.animation-item.animation-yt {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.animation-item.animation-yt-lg {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+@media screen and (min-width: 1024px) {
+  .animation-item.animation-yt-lg {
+    transform: translateY(-30px);
+  }
+}

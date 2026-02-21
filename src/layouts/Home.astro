@@ -1,26 +1,128 @@
 ---
-// import { getRelativeLocaleUrl } from "astro:i18n";
 import BaseHead from "../components/sections/BaseHead.astro";
 import Footer from "../components/sections/Footer.astro";
 import Menu from "../components/sections/Menu.astro";
 import MenuFooter from "../components/sections/MenuFooter.astro";
 import Social from "../components/sections/Social.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
-import { i18n } from "../i18n";
+import { i18n, i18nDetail } from "../i18n";
 import DonwloadCV from "../components/DonwloadCV.astro";
 import AppIcon from "../components/AppIcon.astro";
+const { page, lang }: any = Astro.props as {
+  page: string;
+  lang: string;
+};
+
+const isDev = import.meta.env.MODE === "development";
+const scriptSrc = isDev
+  ? "/node_modules/lax.js/lib/lax.min.js"
+  : "/static/lax/lax.min.js";
 
 const { currentLocale } = Astro;
 
+
 const texts = i18n(currentLocale);
+const dataPage = i18nDetail(page, lang);
+console.log(dataPage, "dataPage");
+// import "../libs/gsap/gsap.css";
 ---
 
-<!doctype html>
+<!-- <pre>
+{JSON.stringify(dataPage, null, 2)}
+</pre> -->
+
+
+<style is:global>
+  .anime-item {
+    transition: opacity 0.2s;
+    /* transform 0.3s; */
+  }
+
+  /* Animation Items */
+  .anime-item.fade-opacity {
+    opacity: 0;
+  }
+  .anime-item.fade-xr {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  .anime-item.fade-xr-lg {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  @media (min-width: 1024px) {
+    .anime-item.fade-xr-lg {
+      transform: translateX(30px);
+    }
+  }
+  .anime-item.fade-xl {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  .anime-item.fade-xl-lg {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  @media (min-width: 1024px) {
+    .anime-item.fade-xl-lg {
+      transform: translateX(-30px);
+    }
+  }
+  .anime-item.fade-yb {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .anime-item.fade-yb-lg {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  @media (min-width: 1024px) {
+    .anime-item.fade-yb-lg {
+      transform: translateY(30px);
+    }
+  }
+  .anime-item.fade-yt {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  .anime-item.fade-yt-lg {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  @media (min-width: 1024px) {
+    .anime-item.fade-yt-lg {
+      transform: translateY(-30px);
+    }
+  }
+
+  /* Link Effect 1 */
+  .link-left {
+    position: relative;
+  }
+  .link-left::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 1px;
+    opacity: 1;
+    background-color: currentColor;
+    transform-origin: bottom right;
+    transform: scale(0);
+    transition: transform 0.4s ease;
+  }
+  .link-left:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
+</style>
+
 <html lang={currentLocale}>
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
   </head>
-  <body>
+  <body class="bg-primary-10">
     <div class="relative h-full w-full">
       <div
         class="absolute h-full w-full bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)]"
@@ -28,12 +130,12 @@ const texts = i18n(currentLocale);
       </div>
     </div>
     <!-- <Header title={SITE_TITLE} /> -->
-    <main class="mx-auto px-3 md:px-8 max-w-screen-xl">
+    <main class="mx-auto px-3 md:px-8 max-w-screen-xl relative">
       <div
-        class="fixed top-0 left-0 pointer-events-none w-full z-10 overflow-hidden"
+        class="fixed top-0 left-0 pointer-events-none text-primary-600 w-[100vw] md:w-[50vw] z-10 max-w-full"
       >
         <svg
-          class="mt-[-450px] ms-[-300px] opacity-30"
+          class="mt-[-450px] opacity-20 max-w-full"
           width="1020"
           height="932"
           viewBox="0 0 1020 932"
@@ -45,7 +147,7 @@ const texts = i18n(currentLocale);
               fill-rule="evenodd"
               clip-rule="evenodd"
               d="M864.057 486.614C846.653 541.287 806.82 583.111 770.741 627.698C739.657 666.112 706.529 700.357 667.059 730.064C623.094 763.155 581.632 809.207 526.674 811.397C471.538 813.594 425.235 772.698 379.685 741.515C336.858 712.197 306.364 671.8 269.447 635.304C218.92 585.354 131.721 557.014 121.837 486.614C112.283 418.556 181.643 365.732 224.009 311.657C261.557 263.732 303.468 221.284 355.036 188.966C407.988 155.781 464.867 112.886 526.674 121.978C588.379 131.055 614.616 209.842 671.469 235.515C737.749 265.445 836.532 224.162 880.816 281.9C923.187 337.144 885.182 420.249 864.057 486.614Z"
-              fill="#8873EF"></path>
+              fill="currentColor"></path>
           </g>
           <defs>
             <filter
@@ -71,46 +173,65 @@ const texts = i18n(currentLocale);
         </svg>
       </div>
 
-      <article class="grid grid-cols-1 lg:grid-cols-2 md:gap-16">
+      <article class="lg:flex lg:gap-16">
         <div
-          class="lg:sticky lg:top-0 lg:h-[100vh] lg:flex lg:flex-col lg:justify-between pt-10"
+          class="lg:sticky lg:top-0 lg:h-[100vh] lg:flex lg:flex-col lg:justify-between pt-10 lg:min-h-[565px] w-full"
         >
-          <div>
-            <div class="flex mb-1">
-              <div class="rounded-full me-3 w-[70px]">
-                <img src="/images/profile.png" alt="miguel killki" />
+          <div class="min-h-[328px]">
+
+            <div class="flex mb-1 anime-item fade-yt">
+              <div class="box">
+                <div class="border-animation me-4 h-full bg-primary-300">
+                  <img
+                    src="/images/profile.png"
+                    class="h-full"
+                    alt="miguel killki"
+                  />
+                </div>
               </div>
-              <div>
-                <DonwloadCV />
+              <div class="flex flex-col justify-end">
+                <DonwloadCV page={page} lang={lang} />
                 <div
-                  class="md:text-2xl font-raleway text-primary-600 font-bold lg:mt-1 order-2"
+                  class="text-xl md:text-2xl font-raleway text-primary-700 font-extrabold mt-1 order-2"
                 >
-                  {texts.welcome}
+                  {dataPage.global.welcome}
                 </div>
               </div>
               <!-- <div class="text-start lg:hidden block order-1">
                 <Menu />
               </div> -->
             </div>
-            <h1
-              class="font-raleway bg-text-title font-extrabold text-primary-1000 text-4xl md:text-6xl mb-4"
-            >
-              {texts.senior}
-            </h1>
+            <div class="mb-4 anime-item fade-yt">
+              <h1
+                class="font-raleway bg-text-title inline font-extrabold text-primary-950 text-4xl md:text-[54px]"
+              >
+                {dataPage.detail.senior}
+              </h1>
+            </div>
             <span
-              class="font-raleway text-xl md:text-2xl text-primary-1000 font-bold"
-              >{texts.career}</span
-            >
-            <p class="text-primary-1000 mt-2">{texts.presentation}</p>
+              class="font-raleway text-xl md:text-2xl text-primary-950 font-bold anime-item fade-yt"
+              >{dataPage.profile.career}</span>
+            <p class="text-primary-950 mt-2 anime-item fade-yt">
+              {dataPage.global.presentation}
+            </p>
           </div>
 
-          <nav class="menu-home">
-            <ul class="[&>*]:mb-2 hidden lg:block">
+          <nav class="menu-home anime-item fade-yt">
+            <div
+              class="text-homemenu-200 text-homemenu-100 text-homemenu-300 text-homemenu-400"
+            >
+            </div>
+            <ul class="[&>*]:mb-3 hidden lg:block">
               {
-                texts.menu.map((item) => (
+                dataPage.menu.map((item: any, index: number) => (
                   <li>
                     <a
-                      class="font-raleway font-bold text-primary-600"
+                      class={
+                        "font-raleway font-bold text-" +
+                        item.color +
+                        " " +
+                        (String(index) == "0" ? "active" : "")
+                      }
                       href={"#" + item.path}
                     >
                       {item.label}
@@ -120,30 +241,42 @@ const texts = i18n(currentLocale);
               }
             </ul>
           </nav>
-
-          <Social />
+          <div class="anime-item fade-yb">
+            <Social />
+          </div>
         </div>
         <!-- BODY -->
-        <div class="mt-4 lg:mt-10">
-          <section class="hidden lg:block">
-            <Menu />
-          </section>
+        <div class="mt-1 w-full">
+          <section id="about" class="pt-4 lg:pt-10 anime-item fade-yt mb-14">
+            <div class="hidden lg:block">
+              <Menu />
+            </div>
 
-          <section id="about" class="mb-7">
-            <p>
-              {texts.profile}
-            </p>
+            <div class="text-primary-950 mb-2">
+              <p>
+                {dataPage.profile.profile}
+              </p>
+            </div>
+            <!-- <ul class="text-primary-950">
+              {
+                texts.detalies?.map((detal) => {
+                  return <li class="mb-2">{detal}</li>;
+                })
+              }
+            </ul> -->
           </section>
 
           <section id="experience">
-            <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden">
+            <h2
+              class="font-bold flex items-center text-xl mb-3 lg:hidden anime-item fade-xr-lg text-primary-0"
+            >
               <AppIcon name="porfolio" />
-              <span class="ms-2">{texts.menu[1]?.label}</span>
+              <span class="ms-2">{dataPage.menu[1]?.label}</span>
             </h2>
             {
-              texts.experience.map((items) => {
+              dataPage.profile.experience.map((items) => {
                 return (
-                  <div class="md:flex lg-14 mb-8">
+                  <div class="md:flex lg-14 mb-8 anime-item fade-yb-lg">
                     {/* <div class="me-3 pt-1 text-primary-1000 text-sm leading-5 min-w-[88px]">
                       {items.startDate}
                     </div> */}
@@ -157,15 +290,15 @@ const texts = i18n(currentLocale);
                         </div>
                       </div>
                       <div class="md:flex items-center justify-between mb-3">
-                        <div class="text-lg font-raleway font-bold text-primary-600 text-shadow">
+                        <div class="text-lg font-raleway font-bold text-primary-700 text-shadow">
                           {items.position}
                         </div>
-                        <div class="">{items.startDate}</div>
+                        <div class="text-primary-600">{items.startDate}</div>
                       </div>
                       {/* <div class="mb-3">{items.description}</div> */}
                       <ul class="list-disc ps-4">
                         {items.detalies.map((detalie) => (
-                          <li class="text-primary-1000 mb-1">{detalie}</li>
+                          <li class="text-primary-950 mb-3">{detalie}</li>
                         ))}
                       </ul>
                     </div>
@@ -175,78 +308,88 @@ const texts = i18n(currentLocale);
             }
           </section>
           <section id="projects" class="mt-14">
-            <h2 class="font-bold flex items-center text-xl mb-3 lg:hidden">
+            <h2
+              class="font-bold flex items-center text-xl mb-3 lg:hidden anime-item fade-yb-lg text-primary-0"
+            >
               <AppIcon name="code" />
               <span class="ms-2">{texts.menu[2]?.label}</span>
             </h2>
             {
-              texts.projects.map((item) => {
+              dataPage.profile.projects.map((item) => {
                 return (
-                  <div class="group bg-gradient-to-br transition-all hover:from-secondary-0 hover:to-primary-0 rounded-xl p-0.5 mb-5 md:ms-[-16px] relative">
-                    <div class="hoverLInk rounded-lg bg-[#FCFCFF] transform-none md:pt-5 pb-4 md:px-4  flex-col md:flex-row flex ease-in-out">
-                      <div class="absolute top-[-90px] right-0 opacity-0 group-hover:opacity-50 pointer-events-none">
-                        <svg
-                          width="759"
-                          height="430"
-                          viewBox="0 0 759 430"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g opacity="0.3" filter="url(#filter0_f_8757_5886)">
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M614.621 220.721C603.057 235.632 576.591 247.039 552.619 259.2C531.965 269.677 509.955 279.017 483.729 287.119C454.518 296.144 426.969 308.704 390.453 309.302C353.819 309.901 323.054 298.747 292.789 290.242C264.334 282.246 244.073 271.228 219.544 261.274C185.972 247.651 128.035 239.922 121.468 220.721C115.119 202.159 161.204 187.752 189.353 173.003C214.301 159.932 242.149 148.355 276.412 139.541C311.595 130.49 349.387 118.791 390.453 121.27C431.452 123.746 448.885 145.234 486.66 152.236C530.698 160.4 596.332 149.14 625.756 164.888C653.909 179.955 628.657 202.621 614.621 220.721Z"
-                              fill="#8873EF"
+                  <div class="group bg-gradient-to-br transition-all hover:from-primary-600 hover:to-secondary-600 rounded-xl md:p-0.5 mb-5 md:ms-[-16px] relative anime-item fade-yb-lg">
+                    <div class="absolute text-primary-700 top-[-90px] right-0 opacity-0 group-hover:opacity-45 pointer-events-none">
+                      <svg
+                        width="759"
+                        height="430"
+                        viewBox="0 0 759 430"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <g opacity="0.3" filter="url(#filter0_f_8757_5886)">
+                          <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M614.621 220.721C603.057 235.632 576.591 247.039 552.619 259.2C531.965 269.677 509.955 279.017 483.729 287.119C454.518 296.144 426.969 308.704 390.453 309.302C353.819 309.901 323.054 298.747 292.789 290.242C264.334 282.246 244.073 271.228 219.544 261.274C185.972 247.651 128.035 239.922 121.468 220.721C115.119 202.159 161.204 187.752 189.353 173.003C214.301 159.932 242.149 148.355 276.412 139.541C311.595 130.49 349.387 118.791 390.453 121.27C431.452 123.746 448.885 145.234 486.66 152.236C530.698 160.4 596.332 149.14 625.756 164.888C653.909 179.955 628.657 202.621 614.621 220.721Z"
+                            fill="currentColor"
+                          />
+                        </g>
+                        <defs>
+                          <filter
+                            id="filter0_f_8757_5886"
+                            x="0.874512"
+                            y="0.932983"
+                            width="757.628"
+                            height="428.392"
+                            filterUnits="userSpaceOnUse"
+                            color-interpolation-filters="sRGB"
+                          >
+                            <feFlood
+                              flood-opacity="0"
+                              result="BackgroundImageFix"
                             />
-                          </g>
-                          <defs>
-                            <filter
-                              id="filter0_f_8757_5886"
-                              x="0.874512"
-                              y="0.932983"
-                              width="757.628"
-                              height="428.392"
-                              filterUnits="userSpaceOnUse"
-                              color-interpolation-filters="sRGB"
-                            >
-                              <feFlood
-                                flood-opacity="0"
-                                result="BackgroundImageFix"
-                              />
-                              <feBlend
-                                mode="normal"
-                                in="SourceGraphic"
-                                in2="BackgroundImageFix"
-                                result="shape"
-                              />
-                              <feGaussianBlur
-                                stdDeviation="60"
-                                result="effect1_foregroundBlur_8757_5886"
-                              />
-                            </filter>
-                          </defs>
-                        </svg>
+                            <feBlend
+                              mode="normal"
+                              in="SourceGraphic"
+                              in2="BackgroundImageFix"
+                              result="shape"
+                            />
+                            <feGaussianBlur
+                              stdDeviation="60"
+                              result="effect1_foregroundBlur_8757_5886"
+                            />
+                          </filter>
+                        </defs>
+                      </svg>
+                    </div>
+                    <div class="grid-card rounded-lg group-hover:bg-primary-10 transform-none md:pt-5 pb-4 md:px-4  flex-col md:flex-row flex ease-in-out">
+                      <div class="grid-card-image">
+                        <div class="relative w-full h-[100px] md:h-[130px] overflow-hidden rounded-lg">
+                          <div class="group-hover:bg-transparent scale-[1.2] bg-primary-600 mix-blend-hue absolute rounded-xl w-full h-full" />
+                          <img
+                            src={"/projects/" + item.image}
+                            class="w-full h-full bg-white md:h-[130px] rounded-lg object-cover"
+                            alt=""
+                          />
+                        </div>
                       </div>
-
-                      <div class="mt-4 md:mt-0 order-2 md:order-1 relative rounded-lg overflow-hidden grow-0 shrink-0 w-[130px] h-[130px]">
-                        <div class="group-hover:bg-transparent bg-primary-900 mix-blend-hue absolute w-full h-100 top-0 bottom-0" />
-                        <img
-                          src={"/projects/" + item.image}
-                          class="w-full h-full"
-                          alt=""
-                        />
-                      </div>
-                      <div class="md:ms-5 order-1 md:order-2">
-                        <h2 class="blank font-raleway text-base font-bold text-primary-600 md:text-primary-1000 group-hover:text-primary-600 mb-3">
+                      <div class="grid-card-title">
+                        <h2 class="flex items-center gap-2 font-raleway text-base font-bold md:text-primary-950 group-hover:text-secondary-600 hover:!text-primary-700">
                           <a target="_blank" href={item.link}>
                             {item.title}
                           </a>
+                          <div class="opacity-0 group-hover:opacity-100">
+                            <AppIcon name="link" size="18" />
+                          </div>
                         </h2>
-                        <p class="text-primary-1000 mb-4">{item.description}</p>
+                      </div>
+                      <div class="grid-card-description">
+                        <p class="text-primary-950">{item.description}</p>
+                      </div>
+                      <div class="grid-card-stack">
                         <ul class="flex flex-wrap">
-                          {item.stack.map((tag) => (
-                            <li class="py-1 px-3 mb-2 text-sm text-primary-600 group-hover:bg-secondary-100 bg-primary-50 rounded-md me-2 group-hover:text-secondary-0">
+                          {item.stack?.map((tag) => (
+                            <li class="py-1 px-3 mb-2 text-sm text-primary-700 group-hover:bg-secondary-50 bg-primary-50 rounded-md me-2 group-hover:text-secondary-0">
                               {tag}
                             </li>
                           ))}
@@ -260,8 +403,10 @@ const texts = i18n(currentLocale);
           </section>
 
           <section id="skills" class="mt-14">
-            <h2 class="font-bold flex items-center text-xl mb-5 lg:hidden">
-              <AppIcon name="skills" />
+            <h2
+              class="font-bold flex items-center text-xl mb-5 lg:hidden anime-item fade-yb-lg text-primary-0"
+            >
+              <AppIcon name="skills-section" />
               <span class="ms-2">{texts.menu[3]?.label}</span>
             </h2>
 
@@ -269,13 +414,13 @@ const texts = i18n(currentLocale);
               {
                 texts.skills.map((item) => {
                   return (
-                    <div class="mb-8">
+                    <div class="mb-8 anime-item fade-opacity">
                       <AppIcon
                         name={`skill-${item.icon}`}
                         size="72"
                         class="shadow-[0px_0px_24px_rgba(0,_0,_0,_0.04)] rounded-full"
                       />
-                      <span class="font-bold font-raleway block mt-4">
+                      <span class="font-bold font-raleway block mt-4 text-primary-950">
                         {item.title}
                       </span>
                     </div>
@@ -284,62 +429,259 @@ const texts = i18n(currentLocale);
               }
             </div>
           </section>
-
-          <MenuFooter />
+          <div class="anime-item fade-yt">
+            <MenuFooter />
+            <Footer />
+          </div>
         </div>
       </article>
     </main>
-    <Footer />
+    <div class="anime-item fade-yb"></div>
+
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const sections = document.querySelectorAll("section"),
-          nav: any = document.querySelector("nav"),
-          navLinks = nav.querySelectorAll("a"),
-          navHeight = nav.offsetHeight;
+        // menu scroll
+        const Model = {
+          state: {
+            currentSection: null as HTMLElement | null,
+            navHeight: 0,
+          },
 
-        window.addEventListener("scroll", function () {
-          const curPos = window.scrollY;
+          setNavHeight(height: number) {
+            this.state.navHeight = height;
+          },
 
-          sections.forEach(function (section) {
-            const top = section.offsetTop - navHeight,
-              bottom = top + section.offsetHeight;
+          setCurrentSection(section: HTMLElement | null) {
+            this.state.currentSection = section;
+          },
 
-            if (curPos >= top && curPos <= bottom) {
-              navLinks.forEach(function (link: any) {
-                link.classList.remove("active");
+          getNavHeight() {
+            return this.state.navHeight;
+          },
+
+          getCurrentSection() {
+            return this.state.currentSection;
+          },
+        };
+
+        const Actions = {
+          updateActiveSection(curPos: number) {
+            const sections = document.querySelectorAll("section");
+            const nav = document.querySelector("nav");
+            if (!nav) return;
+
+            const listSection = Array.from(sections)?.map(
+              (section) => section.id
+            );
+            sections.forEach((section) => {
+              // console.log(section.id, "section.id");
+              const top = section.offsetTop - Model.getNavHeight();
+              const bottom = top + section.offsetHeight;
+
+              if (curPos >= top && curPos <= bottom) {
+                // console.log(curPos, "curPos init");
+                Model.setCurrentSection(section);
+                const navLinks = nav.querySelectorAll("a");
+
+                navLinks.forEach((link) => link.classList.remove("active"));
+                sections.forEach((sec) => sec.classList.remove("active"));
+
+                section.classList.add("active");
+
+                const sectionId = section.id;
+                listSection.forEach((id) => {
+                  document.body.classList.remove(id);
+                });
+                document.body.classList.add(sectionId);
+                const activeLink = nav.querySelector(
+                  `a[href="#${section.getAttribute("id")}"]`
+                );
+                activeLink?.classList.add("active");
+              }
+            });
+          },
+
+          scrollToSection(targetId: string) {
+            const targetSection = document.querySelector(targetId)!;
+            if (!targetSection) return;
+
+            const targetOffsetTop =
+              (targetSection as HTMLElement).offsetTop - Model.getNavHeight();
+            // console.log(targetOffsetTop);
+            window.scrollTo({
+              top: targetOffsetTop,
+              behavior: "smooth",
+            });
+          },
+        };
+
+        const State = {
+          init() {
+            const nav = document.querySelector("nav");
+            if (!nav) return;
+
+            Model.setNavHeight(nav.offsetHeight - 80);
+
+            window.addEventListener("scroll", () => {
+              const curPos = window.scrollY;
+              Actions.updateActiveSection(curPos);
+            });
+
+            const navLinks = nav.querySelectorAll("a");
+            navLinks.forEach((link) => {
+              link.addEventListener("click", (e: Event) => {
+                e.preventDefault();
+                const targetId = link.getAttribute("href");
+                if (targetId) {
+                  Actions.scrollToSection(targetId);
+                }
               });
-              sections.forEach(function (sec) {
-                sec.classList.remove("active");
-              });
+            });
+          },
+        };
 
-              section.classList.add("active");
-              nav
-                .querySelector('a[href="#' + section.getAttribute("id") + '"]')
-                ?.classList.add("active");
-            }
-          });
+        const curPos = window.scrollY;
+        console.log(curPos);
+        Actions.updateActiveSection(curPos);
+
+        // Inicializar el estado
+        State.init();
+      });
+    </script>
+
+    <script type="module" src={scriptSrc}></script>
+    <!-- <script type="module" src={animationjs}></script> -->
+
+    <script type="module">
+      // import lax from "../../node_modules/lax.js/lib/lax.min.js";
+
+      window.onload = function () {
+        lax.init();
+
+        // Crear un controlador de scroll
+        lax.addDriver("scrollY", function () {
+          return window.scrollY;
         });
 
-        navLinks.forEach(function (link: any) {
-          link.addEventListener("click", (e: any) => {
-            e.preventDefault();
-            var targetId = link.getAttribute("href"),
-              targetSection = document.querySelector(targetId);
+        // Seleccionar el elemento y animar su altura
+        const box = document.querySelector(".box");
 
-            if (targetSection) {
-              var targetOffsetTop = targetSection.offsetTop - navHeight;
-
-              window.scrollTo({
-                top: targetOffsetTop,
-                behavior: "smooth",
-              });
-            }
-          });
+        lax.addElements(".box", {
+          scrollY: {
+            height: [
+              [0, 300], // Rango del scroll
+              [104, 78], // Cambiar altura de 104px a 78px
+            ],
+          },
         });
+
+        // Actualizar la altura manualmente con lax.js
+        lax.addDriver("scrollY", () => {
+          const scrollY = window.scrollY;
+          const minScroll = 0;
+          const maxScroll = 300;
+          const minHeight = 78;
+          const maxHeight = 104;
+
+          // Interpolar la altura basada en el scroll (decreciente)
+          const interpolatedHeight =
+            maxHeight -
+            ((maxHeight - minHeight) * (scrollY - minScroll)) /
+              (maxScroll - minScroll);
+
+          // Limitar los valores para evitar errores
+          const height = Math.min(
+            Math.max(interpolatedHeight, minHeight),
+            maxHeight
+          );
+
+          // Aplicar la altura calculada
+          box.style.height = `${height}px`;
+        });
+      };
+    </script>
+
+    <script>
+      import { animationGSap } from "../libs/gsap/gsap";
+      animationGSap();
+    </script>
+
+    <script type="text/javascript">
+      // Texto que se moverá
+      const text = "😓 ¡A donde vas regresa! ";
+      let index = 0;
+      let scrollInterval;
+      let timeouts = [];
+      let hasVisibilityChanged = false;
+
+      // Convertir el texto a un array seguro para manipulación Unicode
+      const chars = Array.from(text);
+
+      // Función para mover el texto
+      function scrollTitle() {
+        document.title =
+          chars.slice(index).join("") + chars.slice(0, index).join("");
+        index = (index + 1) % chars.length; // Ciclar el texto
+      }
+
+      // Cambiar el título de la pestaña con un retraso
+      function setTitleWithTimeout(title, delay) {
+        const timeoutId = setTimeout(() => {
+          document.title = title;
+        }, delay);
+        timeouts.push(timeoutId);
+      }
+
+      function clearAllTimeouts() {
+        timeouts.forEach(clearTimeout);
+        timeouts = [];
+      }
+
+      // Detectar cambios de visibilidad de la pestaña
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          clearAllTimeouts();
+          index = 0;
+          // Iniciar el efecto cuando la pestaña esté inactiva
+          scrollInterval = setInterval(scrollTitle, 100);
+          hasVisibilityChanged = true;
+        } else {
+          if (hasVisibilityChanged) {
+            // Detener el efecto cuando el usuario regrese a la pestaña
+            clearInterval(scrollInterval);
+            document.title = "🤗 Miguel killki"; // Restablecer el título
+            setTitleWithTimeout("😏 Miguel killki", 800);
+            setTitleWithTimeout("😙 Miguel killki", 1600);
+            setTitleWithTimeout("😉 Miguel killki", 2400);
+            setTitleWithTimeout("🏃‍♂️ Miguel killki", 3200);
+            setTitleWithTimeout("Miguel killki", 4000);
+          }
+        }
       });
     </script>
 
     <style lang="scss">
+      .border-animation {
+        overflow: hidden;
+        animation: morph 6s linear infinite;
+      }
+
+      @keyframes morph {
+        0%,
+        100% {
+          border-radius: 40% 60% 60% 40% / 40% 40% 60% 50%;
+        }
+        30% {
+          border-radius: 60% 30% 50% 50% / 30% 30% 50% 50%;
+        }
+        60% {
+          border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%;
+        }
+        80% {
+          border-radius: 69% 31% 66% 34% / 40% 30% 70% 79%;
+        }
+      }
+
       @keyframes sizeImage {
         0% {
           transform: scale(1);
@@ -377,22 +719,23 @@ const texts = i18n(currentLocale);
       .menu-home {
         & a {
           position: relative;
-          padding-left: 30px;
-          transition: 0.5s ease-in-out;
-          color: var(--primary);
+          padding-left: 35px;
+          transition: 0.3s ease-in-out;
+          // color: var(--primary);
           &:before {
             content: "";
             position: absolute;
             border: solid 1px var(--primary);
-            left: -10px;
+            left: 0;
             top: 50%;
             width: 0;
-            transition: 0.5s ease-in-out;
+            transition: 0.3s ease-in-out;
             padding-right: 20px;
           }
 
           &.active {
-            padding-left: 55px;
+            padding-left: 60px;
+            font-size: 20px;
             color: var(--secondary);
             &:before {
               width: 50px;
@@ -411,7 +754,7 @@ const texts = i18n(currentLocale);
         background-clip: text;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        line-height: 69px;
+        line-height: 1.2;
       }
     </style>
   </body>
