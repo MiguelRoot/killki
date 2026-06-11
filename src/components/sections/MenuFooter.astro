@@ -1,10 +1,15 @@
 ---
-import { i18n } from "../../i18n";
+import { i18nDetail } from "../../i18n";
 import { LISTPAGESID } from "../../pages/sheet/listPageId";
 
 const { currentLocale } = Astro;
 
-const texts = i18n(currentLocale);
+const { page, lang }: any = Astro.props as {
+  page: string;
+  lang: string;
+};
+const dataPage = i18nDetail(page, lang);
+// const texts = i18n(currentLocale);
 ---
 
 <div class="mt-14 columns-2 md:grid md:grid-cols-3">
@@ -17,7 +22,7 @@ const texts = i18n(currentLocale);
         >
       </li>
       {
-        texts.menu.map((item) => (
+        dataPage.menu.map((item) => (
           <li>
             <a
               class="text-primary-950 hover:text-secondary-0"

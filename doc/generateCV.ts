@@ -198,9 +198,9 @@ function createDocument(data: DataPage) {
     return studentExperience(education);
   });
 
-  const skillsListNivel1 = data.skillsList.filter((skill) => skill.level === 1);
-  const skillsListNivel2 = data.skillsList.filter((skill) => skill.level === 2);
-  const skillsListNivel3 = data.skillsList.filter((skill) => skill.level === 3);
+  const skillsListNivel1 = data.skills.filter((skill) => skill.level === 1);
+  const skillsListNivel2 = data.skills.filter((skill) => skill.level === 2);
+  const skillsListNivel3 = data.skills.filter((skill) => skill.level === 3);
 
   return new Document({
     sections: [

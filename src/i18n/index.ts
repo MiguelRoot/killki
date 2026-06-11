@@ -1,5 +1,5 @@
-import { translations, profession } from "./translations";
-const { es, en } = translations;
+import { contentProfession } from "./translations";
+// const { es, en } = translations;
 
 export const LANG = {
   es: {
@@ -13,17 +13,17 @@ export const LANG = {
 };
 
 export const i18n = (lang: string | undefined) => {
-  const t = lang === "es" ? es : en;
+  const t = lang === "es"
   return t;
 };
 
 export const i18nDetail = (page: "frontend" | "fullstack" | "backend", lang: "es" | "en") : DataPage => {
   const dataPage = {
-    profile: profession[page]?.[lang],
-    detail: profession['detail'],
-    menu: profession["menu"]?.[lang],
-    skillsList: profession["skillsList"],
-    global: profession["global"][lang],
+    profile: contentProfession(lang)[page],
+    detail: contentProfession(lang)['detail'],
+    menu: contentProfession(lang)["menu"],
+    skills: contentProfession(lang)["skills"],
+    global: contentProfession(lang)["global"],
   }
   return dataPage as DataPage;
 }
@@ -35,7 +35,7 @@ export interface DataPage {
     profile:    Profile;
     detail:     Detail;
     menu:       Menu[];
-    skillsList: SkillsList[];
+    skills: SkillsList[];
     global:     Global;
 }
 
@@ -69,6 +69,7 @@ export interface Menu {
 }
 
 export interface Profile {
+    link:       { es: string; en: string };
     career:     string;
     web:        string;
     profile:    string;
